@@ -297,6 +297,45 @@ note the proof step a live environment must complete.
 
 ---
 
+## 6b. v06 + v07 build ledger (BUILD 017+) — cited proof per row
+
+Per v06 §G / Gate 8: **no row reads "fully coded" without a passing
+`tests/depth/` probe or runtime artifact cited inline.** Continues the
+`[BUILD NNN]` convention. Status: 🟢 REAL · 🟡 PARTIAL · ⬜ PLANNED · 🔒 BLOCKED-ENV.
+
+| Build | Item | Status | Cited proof |
+|-------|------|--------|-------------|
+| 017 | v07 no-shrink guard | 🟢 REAL | `tests/guards/test_no_shrink.py` (23 checks: LOC ≥ 15173, 14 baseline pkgs, 8 modules non-stub) |
+| 018 | v06 A — collapsible route-aware sidebar (Gate 1) | 🟢 REAL / 🔒 pixel | `console/src/lib/sidebar-logic.test.ts` (5 node:test); Playwright `e2e/sidebar.spec.ts` exec 🔒 (no dev server) |
+| 019 | v06 B — design-token parity (Gate 2) | 🟢 REAL | `console/src/tokens/README.md` maps every `--sv-*` token → MeDo source |
+| 020 | LLM ensemble provider config | 🟢 REAL | `tests/test_llm_providers.py` (5 tests incl. negative live-without-key BLOCKED-ENV); `.env.example` |
+| 021 | v06 C — offline seed lane + Demo Health (Gate 3) | 🟢 REAL / 🔒 pixel | `console/src/lib/seed.test.ts` (4 node:test); Playwright `e2e/offline-seed.spec.ts` exec 🔒 |
+| 022 | v06 D — BD replay fixtures + cost-envelope + kill-switch (Gate 4) | 🟢 REAL / 🔒 live | `tests/depth/test_bd_replay.py` (7 products from fixture), `tests/depth/test_bd_cost_envelope.py` (90-alert + 79→81% kill-switch); live 24h 🔒 BLOCKED-ENV |
+| 023 | v06 E — calibration persisted + contributions (Gate 5) | 🟢 REAL / 🔒 retrain | `tests/depth/test_calibration_probe.py` (5 tests, persisted `data/calibration/platt.json`, input-dependent); scheduled retrain 🔒 |
+| 024 | v06 F — `src/osint/` + ONNX runner + impersonation graph (Gate 7) | 🟢 REAL / 🔒 onnx | `tests/depth/test_osint.py` (8 tests, two distinct execs → distinct outputs/graphs/redaction); ONNX weights 🔒 BLOCKED-ENV |
+
+**Also fixed (pre-v06):** audit hash-chain determinism — `[FIX] 0b48d06` added a
+global monotonic `AuditLogRow.seq`; proof `tests/test_ops.py::TestAuditChain`.
+
+### DoppelDomain allow-list (v06 §G.2)
+
+`grep -r DoppelDomain` is expected to return references ONLY in these
+intentional **lineage/provenance** locations, which are allow-listed:
+`src/common/version.py` (rebrand note), `STATUS.md`, and this
+`docs/TRACEABILITY_MASTER.md`. The §4 grep rule is therefore "zero
+**product-facing** residue" — no `DoppelDomain` appears in any user-facing UI
+string, API response, or report template. (Confirmed: the rebrand replaced
+98 + 40 product-facing occurrences, 0 residual.)
+
+### Bright Data metric re-baseline (v06 §G.3)
+
+The unambiguous BD figure is **7 client classes / 23 methods** (the earlier
+"18 call sites" phrasing triggered a false-regression alarm). Proof:
+`src/integrations/brightdata/clients.py` (`ALL_CLIENTS` = 7) +
+`tests/depth/test_differential.py` + `tests/depth/test_bd_replay.py`.
+
+---
+
 ## 7. What this build will NOT falsely claim
 
 Per AP-1/AP-3: SpoofVane v0.5 does **not** claim 7/7 live Bright Data, 100/100
