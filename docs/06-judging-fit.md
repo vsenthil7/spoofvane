@@ -11,12 +11,12 @@
 | Axis | Weight | Self-score | Notes |
 | --- | --- | --- | --- |
 | **Application of Technology** | 25% | 10/10 | The entire product premise *requires* Bright Data. Without Scraping Browser + Web Unlocker + residential proxies you cannot reach the adversarial pages — there is no curl-based fallback. 5 of 7 Bright Data products used, each load-bearing rather than decorative. |
-| **Business Value** | 25% | 9/10 | Brand protection is a $5B+ category. ARR band $40K–$300K per brand. CISO-signed budget; mandatory post-incident. Buyer is named, ICP is concrete (consumer-facing brands with login pages). |
-| **Originality** | 20% | 9/10 | Page-DOM + visual fingerprinting via geo-pinned rendered browser, end to end, isn't packaged this way today. Existing tools are DNS/keyword based; the novel wedge is treating the *rendered page* as the signal. |
+| **Business Value** | 25% | 7/10 | Brand protection is a $5B+ category. Realistic ARR is $15K–$120K direct, $200–500K via OEM — corrected from the original $40K–$300K which assumed primary-vendor positioning we cannot defend. Buyer named (CISO), ICP concrete. See `07-competitive-analysis.md` §7 for the bottom-up TAM. |
+| **Originality** | 20% | 7/10 | Page-DOM + visual fingerprinting is *not* novel — academic work since 2008, and incumbents do versions of it. The genuine novelty is the *access-layer composition*: geo-pinned residential rendering + Web Unlocker bypass + hash-chained evidence ledger, packaged as a feed into existing brand-protection workflows. That packaging IS fresh; the individual algorithms are not. Honest 7/10. |
 | **Presentation** | 10% | 9/10 | Live demo lands hard: brand-targeted SERP search → suspect URL → live render in front of the audience → score → AI verdict → takedown draft → MCP from Claude. Visually dramatic, every step has a single screen. |
 | **AI Necessity** | 10% | 7/10 | ~45% AI footprint. Without the LLM verdict you have a noise-generator with > 30% false-positive rate. CLIP for logo detection. LLM drafts the takedowns. |
 | **Hackathon Fit (Track 3)** | 10% | 10/10 | Pure Track 3 — Security & Compliance. Brand impersonation is the canonical Track 3 example. |
-| **TOTAL** | 100% | **91.5/100** | Shortlist · Secondary priority in the AT-Hack0023 master matrix |
+| **TOTAL** | 100% | **84.5/100** | Honest self-score after competitive research (was 91.5 with overclaimed Originality + Business Value). Still strong; still Track 3 contender. The downgrade is the price of credibility under sceptical questioning. |
 
 ## 2. Where DoppelDomain wins
 
@@ -37,8 +37,13 @@ The product makes for a particularly cinematic 3-minute demo:
 3. The takedown draft is human-readable
 4. The MCP loop closes back into Claude
 
-### 2.3 Defensible moat
-The two non-trivial layers — adversarial-access stack (Bright Data) + cross-signal AI verdict — are individually expensive to replicate. Existing brand-protection vendors would need to either build the Bright Data layer themselves (Bright Data is the unique provider for this) or partner — and partnering doesn't change the LLM-verdict layer. The cross-signal correlator is a software moat on top of an infra moat.
+### 2.3 Defensibility (honest version)
+The original draft claimed a "defensible moat" — that was overstated. Two layers are non-trivial to replicate:
+
+1. **Adversarial-access stack** via Bright Data — Netcraft / Bolster could build their own residential proxy network, but it's a multi-year capital investment they haven't prioritised. They could also partner with Bright Data, which is the more realistic threat.
+2. **Cross-signal verdict layer** — the LLM is differentiated by prompt and tool-use schema, not by a unique model. A competent competitor could replicate it in 4–6 weeks.
+
+So this is a 12–24 month head-start, not a permanent moat. The product needs to use that window to either land OEM deals or build a takedown moat (registrar relationships). Section 5 of `07-competitive-analysis.md` covers what's missing for enterprise-grade defensibility.
 
 ## 3. Where DoppelDomain is weaker
 

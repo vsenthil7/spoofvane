@@ -56,16 +56,19 @@ Tab to the Claude window. Type *"Use DoppelDomain MCP. Show me all critical open
 
 ## 5. Close (15 seconds)
 
-> *"$5B+ category. ARR $40K to $300K per brand. Buying centre is the CISO, daily user is Trust & Safety. We've shown discovery → render → score → verdict → takedown → analyst workflow, end to end, in three minutes. That's DoppelDomain."*
+> *"We're not pitching a Netcraft replacement. We're pitching a complementary feed that reaches phishing pages incumbents can't — geo-blocked, Cloudflare-fronted, anti-bot-protected. Realistic ARR is $30–80K as an add-on into existing brand-protection workflows, or 6-figure OEM licences into the incumbents themselves. We've shown discovery → render → score → verdict → evidence pack, end-to-end, in three minutes. That's DoppelDomain."*
 
 ## 6. Q&A preparation
 
-| Likely question | Short answer |
+| Likely question | Honest answer |
 | --- | --- |
-| How is this different from Recorded Future / ZeroFox? | Those are DNS / keyword-driven. We are page-DOM driven. They can't even reach geo-targeted Cloudflare-fronted pages; we can. |
-| Won't phishing kits detect Bright Data IPs? | We use residential rotation. The whole point of residential proxies is that the IPs are indistinguishable from real customers. |
-| False-positive rate? | Two-tier: composite score gate, then LLM verdict. < 5% target after verdict. Conservative thresholds at onboarding. |
-| What if the LLM is wrong? | The verdict is structured with evidence and confidence. Analysts triage. The system surfaces, it doesn't auto-take-down. |
-| Legal risk of takedown drafts? | Every draft is marked "for legal review", never auto-sent. We provide the evidence pack with content hashes, not the takedown itself. |
-| Why not URLScan / PhishTank? | Latency. Coverage. They're crowd-sourced. We are proactive and per-brand. |
-| Mobile-app store impersonation? | In the architecture, out of scope for the prototype. Same engine, different discovery feed. |
+| How is this different from Netcraft? | Netcraft is mature and has 20 years of takedown relationships. Our wedge is reaching geo-pinned, anti-bot-protected pages their crawl footprint struggles with. We're a feed *into* a Netcraft pipeline, not a replacement. |
+| What about Memcyco's in-session detection? | Different problem. Memcyco protects users on the brand's own site in real time. We tell you what attacker infrastructure exists across the open web. Buy both — they're complementary. |
+| Is page-DOM similarity novel? | No — academic work since 2008, and incumbents do versions of it. Our wedge is the *access layer* (residential geo-pinning + Web Unlocker), not the similarity algorithm. |
+| Won't phishing kits detect Bright Data IPs? | Residential rotation. The whole point of residential proxies is that the IPs are indistinguishable from real customers. We also avoid known scanner fingerprints (browser canvas, viewport patterns). |
+| False-positive rate? | Two-tier: composite-score gate, then LLM verdict. < 5% target after verdict. Conservative thresholds at onboarding. |
+| What if the LLM is wrong? | The verdict is structured with evidence and confidence. Analysts triage. The system surfaces, it doesn't auto-take-down. Every takedown draft is marked "for legal review", never auto-sent. |
+| Is this enterprise-ready? | Not yet. We've documented the gap honestly in `08-enterprise-readiness.md`. Realistic path is 12 months as an OEM feed, 22+ months as a direct-sales product. |
+| Mobile-app store impersonation? | Not in the prototype. Same engine, different discovery feed — Q2 roadmap item. |
+| Why not URLScan / PhishTank? | Latency, coverage, crowd-sourced. We're proactive and per-brand, with structured per-page evidence and a tamper-evident ledger. |
+| What's a realistic ARR? | $15–35K mid-market add-on; $50–120K enterprise multi-brand; $200–500K OEM licence. The original draft quoted $40–300K — that was wrong for this positioning, and the corrected bottom-up TAM is in `07-competitive-analysis.md` §7. |

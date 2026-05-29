@@ -109,6 +109,8 @@ doppeldomain/
 | [docs/04-runbook.md](docs/04-runbook.md) | Day-2 ops, alerts, incident playbooks |
 | [docs/05-demo-script.md](docs/05-demo-script.md) | 3-minute live demo for judging |
 | [docs/06-judging-fit.md](docs/06-judging-fit.md) | Per-rubric-axis self-assessment |
+| [docs/07-competitive-analysis.md](docs/07-competitive-analysis.md) | 13-vendor feature matrix, head-to-heads, realistic ARR bands |
+| [docs/08-enterprise-readiness.md](docs/08-enterprise-readiness.md) | Procurement-checklist gap analysis with effort estimates |
 
 ## Licence
 

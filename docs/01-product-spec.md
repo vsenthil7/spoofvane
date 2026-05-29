@@ -8,37 +8,58 @@
 
 ## 1. Problem statement
 
-Brand impersonation is now the #1 entry vector for credential-theft and customer-defrauding attacks. Existing brand-protection tools (Recorded Future Brand Intelligence, ZeroFox, BrandShield) catch the obvious cases — typosquats of `acme.com` such as `acmme.com`, or domains containing the literal brand string. Attackers know this and moved on.
+Brand impersonation is one of the most damaging entry vectors for credential theft and customer fraud. A large brand-protection market already exists — Netcraft, ZeroFox, BrandShield, Bolster, MarkMonitor, Recorded Future, and others compete in this space, with mature platforms and seven-figure ARR contracts. **DoppelDomain is not a replacement for any of them.**
 
-### Modern phishing infrastructure profile
+The wedge DoppelDomain addresses is a specific, narrow blind spot in that existing stack: **phishing infrastructure that incumbents physically cannot reach with their current scanning approach.**
 
-- Uses **unrelated-looking domains** (`account-update-portal[.]xyz`) with no brand string
-- Hosts a **pixel-perfect clone** of the victim's login page, often scraped from the real site that morning
-- Sits behind **Cloudflare and aggressive bot detection** — security scanners receive a 403 or a JS challenge, not the actual phishing page
-- Rotates IPs and domains on a **48-hour cycle**
-- **Geo-targets**: the phishing payload only renders when the visitor's IP is in the victim country
+### The specific blind spot
 
-The signal almost nobody monitors at scale is **the rendered page DOM itself**. If a page anywhere on the open web is a near-pixel clone of your real login page, that is the phishing site — regardless of what the domain string looks like.
+Modern phishing kits use four techniques together that defeat most external scanners:
 
-You cannot do this without:
+1. **Unrelated-looking domains** (`account-update-portal[.]xyz`) — defeats keyword and typosquat filters
+2. **Geo-targeted rendering** — the payload only serves to IPs in the victim country; a US-only phishing page returns clean content to any EU scanner
+3. **Cloudflare / Akamai / hCaptcha fronting** — scanners receive a 403 or a JS challenge instead of the page
+4. **JS-heavy adversarial DOM** — the cloned login page only assembles client-side, so naive HTTP-fetch scanners see an empty shell
 
-1. The ability to **render JS-heavy adversarial pages** (real Chrome, not a curl)
-2. **Geo-distributed access** (residential IPs in the victim country)
-3. **Bypass of bot defences** that phishing kits put up *specifically to evade security scanners*
+Reaching these pages at scale requires three things together:
 
-This is exactly the capability Bright Data's Scraping Browser + Web Unlocker were built for.
+1. Real Chrome (not curl) — for JS-rendered DOM
+2. Residential IPs pinned to the victim's country — for geo-targeting
+3. Anti-bot challenge bypass — for the fronting layer
 
-## 2. Why this hasn't been solved already
+This is exactly the capability surface Bright Data's Scraping Browser + Web Unlocker + residential proxies were built for. DoppelDomain is the application of that capability surface to the phishing-detection problem.
 
-| Current approach | Why it fails |
-| --- | --- |
-| DNS / certificate-transparency monitoring | Catches typosquats; misses unrelated-looking domains |
-| Brand-keyword Google Alerts | Useless for domains that don't contain the brand name |
-| Standard brand-protection vendors | Crawl-based — phishing kits actively block crawlers; geo-targeted pages never render |
-| Manual takedown teams | Reactive — a customer reports the phishing page after being scammed |
-| URLScan / PhishTank | Crowd-sourced; latency hours-to-days; coverage spotty |
+### What is NOT novel
 
-The novel angle: **visually-similar / DOM-similar page detection across the open web, with the access stack to actually reach the adversarial pages.**
+To be clear about prior art:
+
+- **Visual + DOM similarity for phishing detection** has been published academically since the 2008 PhishZoo / Medvet work, and is a known capability inside Netcraft, BrandShield, and Bolster.
+- **Headless browser rendering for phishing analysis** is standard at Netcraft.
+- **Certificate-transparency monitoring** is offered by virtually every vendor in the space.
+
+### What IS the defensible wedge
+
+The combination of:
+
+- Geo-pinned residential rendering as a *first-class* per-brand setting (most competitors have datacentre-heavy crawl pools)
+- Web Unlocker integration so anti-bot-fronted pages still produce a fingerprint-able render
+- A hash-chained evidence ledger that survives registrar scrutiny
+- A delivery model that emits the result *into the customer's existing brand-protection workflow* (Slack, Splunk, ServiceNow) — not a competing dashboard
+
+For full competitive analysis with a 13-vendor feature matrix, see `07-competitive-analysis.md`. For an honest scoring against enterprise procurement requirements, see `08-enterprise-readiness.md`.
+
+## 2. How DoppelDomain fits next to existing tools
+
+The pitch is **complement, not replace**. The typical buyer already has a primary brand-protection vendor; DoppelDomain feeds that vendor's existing pipeline with results from pages it cannot otherwise reach.
+
+| Existing tool | What it does well | What DoppelDomain adds |
+| --- | --- | --- |
+| Netcraft / Bolster (primary brand protection) | Massive crawl, takedown relationships, 24×7 SOC | Geo-pinned + anti-bot-bypassed renders of pages they can't currently reach |
+| ZeroFox / BrandShield (broad DRP) | Social media, app stores, dark web | Depth on the web-page channel specifically |
+| Memcyco (in-session protection) | Real-time victim protection on the brand's own site | External view of attacker infrastructure across the open web |
+| Recorded Future (threat intel) | Broad threat-actor context | Live, structured per-URL phishing evidence |
+
+The detection output is intentionally formatted as a feed that drops into these existing workflows — Slack block-kit alerts, Splunk HEC payloads, hash-chained PDF evidence packs ready for legal review.
 
 ## 3. Users and buying centre
 
@@ -60,16 +81,35 @@ Reselling brand-protection-as-a-service into the mid-market.
 | **Legal / DMCA team** | Consumes evidence packs for registrar takedowns |
 | **SOC** | Receives IOCs via webhook into Splunk / Sentinel |
 
-**ARR band:** $40K–$300K depending on brand portfolio size and region count.
+**ARR band (corrected positioning):**
+
+| Customer profile | Realistic ARR |
+| --- | --- |
+| Mid-market, 1 brand, complementary to existing primary tool | $15K–$35K |
+| Enterprise, 3–8 sub-brands, multi-region | $50K–$120K |
+| OEM licence to a primary brand-protection vendor | $200K–$500K flat |
+
+The original draft of this spec quoted "$40K–$300K" — that range fits primary brand-protection contracts (Netcraft, BrandShield, MarkMonitor land in $80K–$500K), not DoppelDomain's complementary position. See `07-competitive-analysis.md` §7 for the bottom-up TAM derivation.
 
 ## 4. Use cases
 
+The prototype supports these use cases directly:
+
 1. **Login-page clone detection** — find pages anywhere on the web that visually clone the customer's real login page
 2. **Payment-page clone detection** — same for checkout / billing pages, where high-value attacks concentrate
-3. **Mobile-app store impersonation** — fake Android APK landing pages distributing trojanised apps
-4. **Geo-targeted phishing** — render the suspect URL from 5 regions; flag URLs that show the phishing payload only in some
-5. **Time-bomb phishing** — pages that look benign initially then activate on a specific date, detected by daily re-render and DOM diff
-6. **Pre-takedown evidence packaging** — one-click PDF export containing screenshots, DOM hash, WHOIS, hosting info, time-of-detection for the legal team and the registrar
+3. **Geo-targeted phishing** — render the suspect URL from the brand's target country via residential proxies; phishing pages that only render to victims in-country are caught
+4. **Time-bomb phishing (concept)** — pages that look benign initially then activate on a specific date; the prototype's daily re-render + DOM-diff loop supports this, though the demo runs a single pass
+5. **Pre-takedown evidence packaging** — one-click PDF export containing screenshots, DOM hash, WHOIS, hosting info, time-of-detection for the legal team and the registrar
+6. **Tamper-evident audit trail** — the hash-chained inspection ledger gives downstream legal / regulator reviewers cryptographic proof the evidence has not been altered post-detection
+
+Use cases that would belong to a fully-built version but are NOT in the prototype:
+
+- Mobile-app store impersonation (Google Play, App Store) — discovery layer would need new sources
+- Social-media impersonation (LinkedIn, X, Facebook) — different access patterns entirely
+- Paid-search and SEO abuse — discovery layer extension via Bright Data SERP API
+- Reverse-proxy / AiTM phishing — fundamentally a different detection model; would require an in-session SDK (Memcyco's territory)
+
+See `07-competitive-analysis.md` §3 for the full capability matrix.
 
 ## 5. User flow
 
