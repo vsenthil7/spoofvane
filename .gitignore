@@ -9,3 +9,8 @@ _backup/
 **/_backup/
 _cov.txt
 _covanalyze.py
+.env
+.env.*
+!.env.example
+_commitmsg.txt
+node_modules/
