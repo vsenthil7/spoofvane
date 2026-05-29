@@ -335,8 +335,10 @@ class AuditLogRepo:
         user_agent: str | None = None,
     ) -> None:
         from ..common.ids import alert_id as _id
+        next_seq = (self.s.scalar(select(func.max(orm.AuditLogRow.seq))) or 0) + 1
         row = orm.AuditLogRow(
             id=_id(),
+            seq=next_seq,
             tenant_id=tenant_id,
             actor=actor,
             action=action,

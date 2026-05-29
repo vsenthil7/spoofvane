@@ -127,6 +127,10 @@ class AuditLogRow(Base):
     __tablename__ = "audit_log"
 
     id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    # Monotonic insertion sequence — canonical ordering for the hash chain.
+    # created_at can tie when many rows are written in one transaction; seq never
+    # ties, so _latest() and verify_chain() agree on order deterministically.
+    seq: Mapped[int] = mapped_column(Integer, autoincrement=True, unique=True, index=True)
     tenant_id: Mapped[str | None] = mapped_column(String(40), index=True)
     actor: Mapped[str] = mapped_column(String(200))
     action: Mapped[str] = mapped_column(String(80), index=True)

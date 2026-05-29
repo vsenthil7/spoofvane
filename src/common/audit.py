@@ -20,7 +20,7 @@ import json
 from datetime import datetime, timezone
 from typing import Any
 
-from sqlalchemy import desc, select
+from sqlalchemy import desc, func, select
 from sqlalchemy.orm import Session
 
 from .. import storage as _storage_pkg  # noqa: F401 (namespace marker)
@@ -42,14 +42,24 @@ def _compute_hash(*, prev_hash: str, content: dict[str, Any]) -> str:
 
 
 def _latest_hash(s: Session, account_id: str | None) -> str:
+    """Latest row_hash for this account's chain (prev_hash links per-account)."""
     q = (
         select(orm.AuditLogRow.row_hash)
         .where(orm.AuditLogRow.tenant_id == account_id)
-        .order_by(desc(orm.AuditLogRow.created_at))
+        .order_by(desc(orm.AuditLogRow.seq))
         .limit(1)
     )
-    h = s.scalar(q)
-    return h or _GENESIS
+    return s.scalar(q) or _GENESIS
+
+
+def _next_seq(s: Session) -> int:
+    """Next GLOBAL monotonic sequence value (the table-wide ordering key).
+
+    Global (not per-account) so the unique seq never collides and verify_chain
+    has one deterministic total order even across tenants.
+    """
+    cur = s.scalar(select(func.max(orm.AuditLogRow.seq)))
+    return (cur or 0) + 1
 
 
 def record(
@@ -78,6 +88,7 @@ def record(
     row_hash = _compute_hash(prev_hash=prev, content=content)
     row = orm.AuditLogRow(
         id=make_id("audit"),
+        seq=_next_seq(s),
         tenant_id=account_id,
         actor=actor,
         action=action,
@@ -99,11 +110,13 @@ def record(
 
 def verify_chain(s: Session, account_id: str | None = None) -> dict[str, Any]:
     """Recompute the chain and report the first break, if any."""
-    q = select(orm.AuditLogRow).order_by(orm.AuditLogRow.created_at)
+    q = select(orm.AuditLogRow).order_by(orm.AuditLogRow.seq)
     if account_id is not None:
         q = q.where(orm.AuditLogRow.tenant_id == account_id)
     rows = list(s.scalars(q).all())
-    prev = _GENESIS
+    # prev_hash links per-account, so track a cursor per account even when
+    # verifying the whole table (rows interleave across tenants by global seq).
+    prev_by_acct: dict[str | None, str] = {}
     for i, r in enumerate(rows):
         content = {
             "actor": r.actor, "action": r.action, "account_id": r.tenant_id,
@@ -112,13 +125,14 @@ def verify_chain(s: Session, account_id: str | None = None) -> dict[str, Any]:
             "status_code": r.status_code, "detail": r.detail,
             "request_ip": r.request_ip,
         }
+        prev = prev_by_acct.get(r.tenant_id, _GENESIS)
         expected = _compute_hash(prev_hash=prev, content=content)
         if r.prev_hash != prev or r.row_hash != expected:
             return {
                 "valid": False, "verified": i, "total": len(rows),
                 "broken_at": r.id, "broken_index": i,
             }
-        prev = r.row_hash
+        prev_by_acct[r.tenant_id] = r.row_hash
     return {"valid": True, "verified": len(rows), "total": len(rows)}
 
 

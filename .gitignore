@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
+*.db
+data/
+_backup/
+**/_backup/
+_cov.txt
+_covanalyze.py
