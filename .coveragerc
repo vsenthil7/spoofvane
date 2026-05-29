@@ -1,0 +1,18 @@
+[run]
+branch = True
+source = src
+omit =
+    */tests/*
+    */_backup/*
+    */__main__.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    @abstractmethod
+    \.\.\.
+show_missing = True
