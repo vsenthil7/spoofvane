@@ -1,0 +1,9 @@
+{
+  "_fixture": true,
+  "url": "https://ads.example/acmebank-promo",
+  "dataset": "ad_creatives",
+  "advertiser": "advertiser-208",
+  "creative_id": "cr_48211",
+  "landing_url": "https://land-3920.example",
+  "fields_extracted": 9
+}

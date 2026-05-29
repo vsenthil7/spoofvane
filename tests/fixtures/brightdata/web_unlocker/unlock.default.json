@@ -1,0 +1,8 @@
+{
+  "_fixture": true,
+  "status": 200,
+  "final_url": "https://acmebank-secure-login.top/verify",
+  "challenge_solved": true,
+  "html_len": 3480,
+  "html": "<html><title>AcmeBank — Secure Login</title><body>unlocked credential-harvest page</body></html>"
+}

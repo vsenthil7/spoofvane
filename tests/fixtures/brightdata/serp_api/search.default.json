@@ -1,0 +1,12 @@
+{
+  "_fixture": true,
+  "engine": "google",
+  "query": "acmebank login",
+  "result_count": 4,
+  "results": [
+    {"rank": 1, "title": "acmebank login result 1", "url": "https://acmebank-secure.top/google", "source": "serp_brd_google"},
+    {"rank": 2, "title": "acmebank login result 2", "url": "https://my-acmebank.xyz/google", "source": "serp_brd_google"},
+    {"rank": 3, "title": "acmebank login result 3", "url": "https://acmebank-verify.cc/google", "source": "serp_brd_google"},
+    {"rank": 4, "title": "acmebank login result 4", "url": "https://acmebank.com/google", "source": "serp_brd_google"}
+  ]
+}

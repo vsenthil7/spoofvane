@@ -57,6 +57,14 @@ export const SEED_COST: CostRow[] = [
   { product: "residential", usd: 6.10, tenantId: "demo" },
 ];
 
+export const SEED_COST_SUMMARY = {
+  rows: SEED_COST,
+  totalUsd: 32.65,
+  envelopeUsd: 500.0,
+  pct: 0.0653,
+  throttled: false,
+};
+
 // One registry keyed by api method name, so the wrapper can look up a fallback
 // generically. Keeps seed shapes co-located with the method that returns them.
 export const SEED: Record<string, unknown> = {
@@ -69,6 +77,7 @@ export const SEED: Record<string, unknown> = {
   audit: SEED_AUDIT,
   reviewQueue: SEED_ALERTS.filter(a => a.verdict === "phish"),
   cost: SEED_COST,
+  costSummary: SEED_COST_SUMMARY,
 };
 
 /** A seeded value is plausible only if alerts above threshold are non-benign. */

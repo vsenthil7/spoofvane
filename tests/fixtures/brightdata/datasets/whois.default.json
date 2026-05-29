@@ -1,0 +1,9 @@
+{
+  "_fixture": true,
+  "domain": "acmebank-secure-login.top",
+  "source": "brd_dataset_whois",
+  "registrar": "Namecheap",
+  "created_days_ago": 4,
+  "is_newly_registered": true,
+  "registrant_country": "PA"
+}

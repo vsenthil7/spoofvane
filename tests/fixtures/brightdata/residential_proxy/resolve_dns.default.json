@@ -1,0 +1,7 @@
+{
+  "_fixture": true,
+  "domain": "acmebank-secure-login.top",
+  "country": "us",
+  "a_records": ["185.199.108.153", "104.21.5.42"],
+  "resolved": true
+}

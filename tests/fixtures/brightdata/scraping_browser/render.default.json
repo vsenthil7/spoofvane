@@ -1,0 +1,10 @@
+{
+  "_fixture": true,
+  "final_url": "https://acmebank-secure-login.top/verify",
+  "country": "us",
+  "rendered_from": "us-residential",
+  "screenshot_sha256": "f3a9c1d2e4b5076889aabbccddeeff00112233445566778899aabbccddeeff00",
+  "dom_nodes": 642,
+  "external_script_origins": ["cdn-12.example", "track-7.example"],
+  "har_entries": 23
+}

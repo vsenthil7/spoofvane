@@ -45,14 +45,39 @@ class CostRow:
 
 
 @dataclass
+class KillSwitchEvent:
+    """Emitted when cumulative spend crosses the throttle threshold."""
+    tenant_id: str
+    total_usd: float
+    envelope_usd: float
+    pct: float
+    ts: str
+
+
+# v06 §D — back-pressure: throttle BD spend at this fraction of the monthly
+# envelope so a runaway never burns the whole sponsor budget.
+KILL_SWITCH_THRESHOLD = 0.80
+
+
+@dataclass
 class CostTracker:
     _rows: list[CostRow] = field(default_factory=list)
     _by_tenant_usd: dict[str, float] = field(default_factory=lambda: defaultdict(float))
     _lock: threading.Lock = field(default_factory=threading.Lock)
+    # v06 §D — monthly envelope + back-pressure kill-switch state.
+    monthly_envelope_usd: float = 500.0
+    _throttled: bool = False
+    _kill_events: list[KillSwitchEvent] = field(default_factory=list)
 
     def record(self, tenant_id: str, product: str, action: str, units: int = 1) -> CostRow:
         if product not in UNIT_COST_USD:
             raise ValueError(f"unknown BD product: {product}")
+        if self._throttled:
+            raise EnvelopeThrottled(
+                f"BD spend throttled: kill-switch engaged at "
+                f"{int(KILL_SWITCH_THRESHOLD*100)}% of "
+                f"${self.monthly_envelope_usd:.2f} monthly envelope"
+            )
         usd = round(UNIT_COST_USD[product] * max(units, 1), 6)
         row = CostRow(
             tenant_id=tenant_id,
@@ -65,7 +90,33 @@ class CostTracker:
         with self._lock:
             self._rows.append(row)
             self._by_tenant_usd[tenant_id] += usd
+            total = sum(self._by_tenant_usd.values())
+            pct = total / self.monthly_envelope_usd if self.monthly_envelope_usd else 0.0
+            if not self._throttled and pct >= KILL_SWITCH_THRESHOLD:
+                self._throttled = True
+                self._kill_events.append(KillSwitchEvent(
+                    tenant_id=tenant_id,
+                    total_usd=round(total, 6),
+                    envelope_usd=self.monthly_envelope_usd,
+                    pct=round(pct, 4),
+                    ts=row.ts,
+                ))
         return row
+
+    @property
+    def throttled(self) -> bool:
+        return self._throttled
+
+    @property
+    def kill_switch_events(self) -> list[KillSwitchEvent]:
+        return list(self._kill_events)
+
+    def total_usd(self) -> float:
+        with self._lock:
+            return round(sum(self._by_tenant_usd.values()), 6)
+
+    def envelope_pct(self) -> float:
+        return round(self.total_usd() / self.monthly_envelope_usd, 4) if self.monthly_envelope_usd else 0.0
 
     def tenant_total(self, tenant_id: str) -> float:
         with self._lock:
@@ -92,6 +143,12 @@ class CostTracker:
         with self._lock:
             self._rows.clear()
             self._by_tenant_usd.clear()
+            self._throttled = False
+            self._kill_events.clear()
+
+
+class EnvelopeThrottled(RuntimeError):
+    """Raised when a BD call is attempted after the kill-switch engaged."""
 
 
 _TRACKER = CostTracker()

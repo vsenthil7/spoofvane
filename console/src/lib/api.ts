@@ -71,6 +71,10 @@ export const api = {
   audit: (q?: string) => withSeed("audit", () => rawGet<AuditRow[]>(`/audit${q ? `?q=${encodeURIComponent(q)}` : ""}`)),
   reviewQueue: () => withSeed("reviewQueue", () => rawGet<Alert[]>("/review")),
   cost: () => withSeed("cost", () => rawGet<CostRow[]>("/cost")),
+  costSummary: () => withSeed("costSummary", () => rawGet<{
+    rows: CostRow[]; totalUsd: number; envelopeUsd: number;
+    pct: number; throttled: boolean;
+  }>("/cost/summary")),
   submitVerdict: (id: string, verdict: Verdict) => rawPost(`/alerts/${id}/verdict`, { verdict }),
   killSwitch: (scope: string) => rawPost("/admin/agents/kill", { scope }),
 };
