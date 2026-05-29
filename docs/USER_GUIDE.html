@@ -1,195 +1,368 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SpoofVane — User Guide</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>SpoofVane — User Guide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#1a2230;--bg:#ffffff;--soft:#f4f6fa;--line:#dce3ee;--muted:#5a6b85;--brand:#b9791a;--accent:#1f7a8c;--ok:#15803d;--next:#1d4ed8;--mono:"JetBrains Mono",monospace;--sans:"IBM Plex Sans",system-ui,sans-serif;--disp:"Space Grotesk",Georgia,serif;}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:15px}
-.wrap{max-width:860px;margin:0 auto;padding:48px 28px 90px}
-.cover{border-bottom:3px solid var(--brand);padding-bottom:20px;margin-bottom:8px}
-.cover h1{font-family:var(--disp);font-size:34px;margin:0;color:var(--ink)}
-.cover .mark{color:var(--brand)}
-.cover p{color:var(--muted);margin:6px 0 0}
-.cover .meta{font-family:var(--mono);font-size:11.5px;color:#8a98ad;margin-top:10px}
-h2.sec{font-family:var(--disp);font-size:22px;margin:44px 0 16px;padding-bottom:6px;border-bottom:2px solid var(--line);color:var(--ink)}
-.lead{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:24px 0}
-.lead h3{font-family:var(--disp);margin:0 0 8px;font-size:17px}
-table.roles{width:100%;border-collapse:collapse;margin-top:6px}
-table.roles td{padding:7px 10px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:top}
-.toc{margin:8px 0 12px}
-.tocgroup{margin-bottom:14px}
-.tocg{font-family:var(--disp);font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);margin-bottom:4px}
-.toc ul{list-style:none;margin:0;padding:0}
-.toc li{margin:3px 0}
-.toc a{color:var(--accent);text-decoration:none;font-size:14px}
-.tcid,.tid{font-family:var(--mono);font-size:11px;background:#eef2f8;color:var(--brand);padding:1px 7px;border-radius:5px;margin-right:8px}
-.task{border:1px solid var(--line);border-radius:12px;padding:22px 24px;margin:0 0 22px;background:#fff;box-shadow:0 1px 2px rgba(20,30,50,.04)}
-.thead{display:flex;align-items:center;margin-bottom:6px}
-.thead h3{font-family:var(--disp);font-size:19px;margin:0}
-.tid{font-size:12px}
-.purpose{margin:6px 0 10px}
-.meta2{font-size:13px;color:var(--muted);margin-bottom:14px}
-.block{margin:14px 0}
-.blabel{font-family:var(--disp);font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:6px}
-ul.prereq{margin:0;padding-left:20px}ul.prereq li{margin:3px 0;font-size:14px}
-ol.steps{margin:0;padding-left:22px}
-ol.steps li{margin:8px 0}
-.stepwhat{font-weight:600}
-.result{background:#f0faf3;border-left:3px solid var(--ok);border-radius:0 8px 8px 0;padding:12px 16px}
-.result .blabel{color:var(--ok)}
-.next{background:#eef3ff;border-left:3px solid var(--next);border-radius:0 8px 8px 0;padding:12px 16px}
-.next .blabel{color:var(--next)}
-.behind{background:var(--soft);border-radius:8px;padding:12px 16px}
-.behind p{font-size:13px;color:var(--muted);margin:0}
-.result p,.next p{margin:0}
+:root{--ink:#1a2230;--muted:#5a6b85;--line:#dce3ee;--soft:#f4f6fa;--brand:#b9791a;--accent:#1f7a8c;--ok:#15803d;--next:#1d4ed8}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.6;font-size:15px}
+.wrap{max-width:1080px;margin:0 auto;padding:48px 30px 90px}
+.cover{border-bottom:3px solid var(--brand);padding-bottom:18px}
+.cover h1{font-family:"Space Grotesk",Georgia,serif;font-size:36px;margin:0}.mark{color:var(--brand)}
+.cover p{color:var(--muted);margin:6px 0 0}.cover .meta{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:#8a98ad;margin-top:8px}
+h2.sec{font-family:"Space Grotesk",Georgia,serif;font-size:23px;margin:46px 0 18px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+.lead{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:24px 0}
+.lead h3{font-family:"Space Grotesk",serif;margin:0 0 8px;font-size:16px}
+table.roles{width:100%;border-collapse:collapse}table.roles td{padding:6px 10px;border-bottom:1px solid var(--line);font-size:14px}
 .callout{border:1px solid var(--line);border-left:3px solid var(--brand);background:#fffdf6;border-radius:0 8px 8px 0;padding:14px 18px;margin:18px 0;font-size:14px}
-.foot{color:#8a98ad;font-size:12px;font-family:var(--mono);margin-top:40px;border-top:1px solid var(--line);padding-top:14px}
-@media print{.task{break-inside:avoid} body{font-size:12.5px}}
+.toc{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tgh{font-family:"Space Grotesk",serif;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);margin-bottom:4px}
+.toc ul{list-style:none;margin:0;padding:0}.toc li{margin:3px 0}.toc a{color:var(--accent);text-decoration:none;font-size:13.5px}
+.tcid,.tid{font-family:"JetBrains Mono",monospace;font-size:11px;background:#eef2f8;color:var(--brand);padding:1px 7px;border-radius:5px;margin-right:8px}
+.task{border:1px solid var(--line);border-radius:14px;padding:24px 26px;margin:0 0 26px;box-shadow:0 1px 3px rgba(20,30,50,.05);break-inside:avoid}
+.thead{display:flex;align-items:center}.thead h3{font-family:"Space Grotesk",serif;font-size:20px;margin:0}
+.purpose{margin:8px 0 16px;color:var(--ink)}.who{color:var(--muted);font-size:13px}
+.cols{display:grid;grid-template-columns:1fr 1.15fr;gap:26px;align-items:start}
+.blabel{font-family:"Space Grotesk",serif;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 6px}
+ul.prereq{margin:0 0 16px;padding-left:18px}ul.prereq li{font-size:13.5px;margin:2px 0}
+ol.steps{margin:0;padding-left:0;list-style:none;counter-reset:s}
+ol.steps li{position:relative;padding-left:30px;margin:9px 0;font-size:14px}
+ol.steps li:before{counter-increment:s;content:counter(s);position:absolute;left:0;top:1px;width:21px;height:21px;background:var(--brand);color:#1a1300;font-weight:700;font-size:12px;border-radius:50%;text-align:center;line-height:21px;font-family:"JetBrains Mono",monospace}
+.sw{display:none}
+.screenwrap{border-radius:14px;overflow:hidden}
+.caption{font-size:11.5px;color:#8a98ad;margin-top:6px;text-align:center}
+.rowboxes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+.rbox{border-radius:0 8px 8px 0;padding:12px 16px}.rbox p{margin:0;font-size:13.5px}
+.rbox .rl{font-family:"Space Grotesk",serif;font-size:12px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.result{background:#f0faf3;border-left:3px solid var(--ok)}.result .rl{color:var(--ok)}
+.next{background:#eef3ff;border-left:3px solid var(--next)}.next .rl{color:var(--next)}
+.behind{margin-top:14px;background:var(--soft);border-radius:8px;padding:10px 16px;font-size:12.5px;color:var(--muted)}
+.bl{font-weight:600;color:var(--ink)}
+.foot{color:#8a98ad;font-size:12px;font-family:"JetBrains Mono",monospace;margin-top:40px;border-top:1px solid var(--line);padding-top:14px}
+@media print{.task{break-inside:avoid}}
 </style></head><body><div class="wrap">
+<div class="cover"><h1><span class="mark">⬡</span> SpoofVane — User Guide</h1>
+<p>Task-based: each thing you want to do, with the steps and the screen side by side.</p>
+<p class="meta">v0.5.0 · 29 May 2026 · SOC analysts, reviewers, brand admins, auditors, administrators</p></div>
 
-<div class="cover">
-  <h1><span class="mark">⬡</span> SpoofVane — User Guide</h1>
-  <p>A task-based guide: for each thing you want to do, where to start, the steps, and what happens.</p>
-  <p class="meta">v0.5.0 · 29 May 2026 · Audience: SOC analysts, reviewers, brand admins, auditors, administrators</p>
-</div>
+<h2 class="sec">About this guide</h2>
+<p>This guide is organised by <b>task</b>. For each one you get: who can do it, what you need first, numbered steps, <b>the screen shown beside the steps</b> with matching ● markers, the result, and what to do next.</p>
+<div class="lead"><h3>Your role decides what you can do</h3><table class="roles"><tr><td><b>Viewer</b></td><td>Read dashboards and settings.</td></tr><tr><td><b>Auditor</b></td><td>+ Read audit & compliance.</td></tr><tr><td><b>Reviewer</b></td><td>+ Approve/deny HITL actions (≠ analyst).</td></tr><tr><td><b>Analyst</b></td><td>+ Triage, investigate, request takedowns, onboard brands.</td></tr><tr><td><b>Admin</b></td><td>+ Manage users, agents, cost, tenants.</td></tr><tr><td><b>Owner</b></td><td>+ Manage tenants and billing.</td></tr></table></div>
+<div class="callout"><b>The golden rule:</b> every takedown and sensitive action needs a second person's approval — you propose, a reviewer approves — and everything is recorded in a tamper-evident audit log.</div>
 
-<h2 class="sec">1. About this guide</h2>
-<p>This guide is organised by <b>task</b>, not by screen. Find what you want to accomplish in the contents below and jump to it. Each task tells you who can do it, what you need first, the exact steps (and which screen each step is on), the result, and what to do next. A short <i>Behind the scenes</i> note names the underlying capability if you want to go deeper.</p>
-
-<div class="lead">
-  <h3>Your role decides what you can do</h3>
-  <p>Navigation and permitted actions depend on your role. From least to most privileged:</p>
-  <table class="roles"><tr><td><b>Viewer</b></td><td>Read dashboards and settings.</td></tr><tr><td><b>Auditor</b></td><td>+ Read the audit log and compliance evidence.</td></tr><tr><td><b>Reviewer</b></td><td>+ Approve or deny human-in-the-loop actions (must differ from the analyst).</td></tr><tr><td><b>Analyst</b></td><td>+ Triage alerts, investigate, request takedowns, onboard brands.</td></tr><tr><td><b>Admin</b></td><td>+ Manage users, agents, cost and tenants.</td></tr><tr><td><b>Owner</b></td><td>+ Manage tenants and billing.</td></tr></table>
-</div>
-
-<div class="callout"><b>The golden rule:</b> every takedown and every sensitive action needs a second person's approval. You (the analyst) propose; a reviewer approves. This is by design and everything is recorded in a tamper-evident audit log.</div>
-
-<h2 class="sec">2. Contents — what do you want to do?</h2>
-<div class="toc"><div class="tocgroup"><div class="tocg">Getting started</div><ul><li><a href="#T1"><span class="tcid">T1</span> Sign in and find your way around</a></li></ul></div><div class="tocgroup"><div class="tocg">Set up protection</div><ul><li><a href="#T2"><span class="tcid">T2</span> Onboard a brand to monitor</a></li><li><a href="#T3"><span class="tcid">T3</span> Protect an executive from deepfakes & impersonation</a></li></ul></div><div class="tocgroup"><div class="tocg">Investigate</div><ul><li><a href="#T4"><span class="tcid">T4</span> Triage the alert queue</a></li><li><a href="#T5"><span class="tcid">T5</span> Review an alert's evidence and confirm the verdict</a></li><li><a href="#T6"><span class="tcid">T6</span> Review a suspected deepfake</a></li><li><a href="#T7"><span class="tcid">T7</span> See the campaign behind a single site</a></li></ul></div><div class="tocgroup"><div class="tocg">Act</div><ul><li><a href="#T8"><span class="tcid">T8</span> Approve (or deny) a takedown — reviewer task</a></li><li><a href="#T9"><span class="tcid">T9</span> Track takedown delivery</a></li></ul></div><div class="tocgroup"><div class="tocg">Oversee</div><ul><li><a href="#T10"><span class="tcid">T10</span> Search the audit trail</a></li><li><a href="#T11"><span class="tcid">T11</span> Watch Bright Data spend against budget</a></li></ul></div><div class="tocgroup"><div class="tocg">Administer</div><ul><li><a href="#T12"><span class="tcid">T12</span> Manage agents and use the kill-switch</a></li></ul></div></div>
-
+<h2 class="sec">Contents — what do you want to do?</h2>
+<div class="toc"><div class="tg"><div class="tgh">Getting started</div><ul><li><a href="#T1"><span class="tcid">T1</span> Sign in and find your way around</a></li></ul></div><div class="tg"><div class="tgh">Set up protection</div><ul><li><a href="#T2"><span class="tcid">T2</span> Onboard a brand to monitor</a></li><li><a href="#T3"><span class="tcid">T3</span> Protect an executive from deepfakes</a></li></ul></div><div class="tg"><div class="tgh">Investigate</div><ul><li><a href="#T4"><span class="tcid">T4</span> Triage the alert queue</a></li><li><a href="#T5"><span class="tcid">T5</span> Review an alert and confirm the verdict</a></li><li><a href="#T6"><span class="tcid">T6</span> Review a suspected deepfake</a></li><li><a href="#T7"><span class="tcid">T7</span> See the campaign behind a site</a></li></ul></div><div class="tg"><div class="tgh">Act</div><ul><li><a href="#T8"><span class="tcid">T8</span> Approve or deny a takedown (reviewer)</a></li><li><a href="#T9"><span class="tcid">T9</span> Track takedown delivery</a></li></ul></div><div class="tg"><div class="tgh">Oversee</div><ul><li><a href="#T10"><span class="tcid">T10</span> Search the audit trail</a></li><li><a href="#T11"><span class="tcid">T11</span> Watch Bright Data spend</a></li></ul></div><div class="tg"><div class="tgh">Administer</div><ul><li><a href="#T12"><span class="tcid">T12</span> Manage agents and the kill-switch</a></li></ul></div></div>
 <h2 class="sec">Getting started</h2>
 <article class="task" id="T1">
   <div class="thead"><span class="tid">T1</span><h3>Sign in and find your way around</h3></div>
-  <p class="purpose"><b>Purpose.</b> Access SpoofVane and understand the layout before you begin work.</p>
-  <div class="meta2"><span class="who"><b>Who can do this:</b> All roles</span></div>
-  <div class="block"><div class="blabel">Before you start</div><ul class="prereq"><li>A SpoofVane account from your administrator</li><li>Your organisation's SSO, or an email + password</li><li>An authenticator app if MFA is enabled</li></ul></div>
-  <div class="block"><div class="blabel">Steps</div><ol class="steps"><li><span class="stepwhat">Open the console</span> Go to your SpoofVane URL. The <b>Login</b> screen (P01) appears.</li><li><span class="stepwhat">Choose a sign-in method</span> Click <b>Continue with SSO (OIDC)</b> or <b>SAML</b>, or enter email and password.</li><li><span class="stepwhat">Complete MFA if prompted</span> Enter the 6-digit code from your authenticator app.</li><li><span class="stepwhat">Orient yourself</span> You land on the <b>Dashboard</b> (P02). The left rail is your navigation; what you see there depends on your role.</li></ol></div>
-  <div class="block result"><div class="blabel">✓ Result — what happens</div><p>You are signed in on the Dashboard, showing today's KPI tiles, the threat-family breakdown, and the live processing pipeline.</p></div>
-  <div class="block next"><div class="blabel">→ What to do next</div><p>Most analysts go straight to <b>Triage queue</b> (T4). If you are setting up a new brand first, see <b>Onboard a brand</b> (T2).</p></div>
-  <div class="block behind"><div class="blabel">Behind the scenes</div><p>Identity (G1) handles OIDC/SAML/MFA; RBAC (G2) decides which navigation items you can see.</p></div>
+  <p class="purpose">Access SpoofVane and learn the layout. &nbsp;<span class="who">Who: All roles</span></p>
+  <div class="cols">
+    <div class="left">
+      <div class="blabel">Before you start</div><ul class="prereq"><li>An account from your administrator</li><li>SSO, or email + password</li><li>An authenticator app if MFA is on</li></ul>
+      <div class="blabel">Steps</div><ol class="steps"><li><span class="sw">Open the console.</span> Go to your SpoofVane URL — the Login screen appears.</li><li><span class="sw">Choose a sign-in method.</span> Click SSO (OIDC) or SAML, or enter email + password.</li><li><span class="sw">Complete MFA.</span> Enter the 6-digit code if prompted.</li><li><span class="sw">Orient yourself.</span> You land on the Dashboard; the left rail is your nav.</li></ol>
+    </div>
+    <div class="right">
+      <div class="screenwrap"><svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block">
+    <rect x="0" y="0" width="760" height="520" rx="14" fill="#0b0f17" stroke="#2c3a52"/>
+    <rect x="0" y="0" width="760" height="34" rx="14" fill="#1b2433"/>
+    <rect x="0" y="20" width="760" height="14" fill="#1b2433"/>
+    <circle cx="20" cy="17" r="5" fill="#ff5f57"/><circle cx="38" cy="17" r="5" fill="#febc2e"/><circle cx="56" cy="17" r="5" fill="#28c840"/>
+    <rect x="80" y="9" width="320" height="17" rx="5" fill="#0b0f17"/>
+    <text x="92" y="21" font-family="monospace" font-size="11" fill="#93a1b8">app.spoofvane.io/login</text>
+    <g transform="translate(16,52)"><rect x="190" y="70" width="300" height="340" rx="10" fill="#131a26" stroke="#2c3a52"/><text x="340" y="120" font-family="Georgia,serif" font-size="22" fill="#ffb020" text-anchor="middle">⬡ SpoofVane</text><rect x="220" y="150" width="240" height="34" rx="6" fill="#1b2433" stroke="#3d4f6e"/><text x="340" y="172" font-family="sans-serif" font-size="12" fill="#e8edf5" text-anchor="middle">Continue with SSO (OIDC)</text><rect x="220" y="192" width="240" height="34" rx="6" fill="#1b2433" stroke="#3d4f6e"/><text x="340" y="214" font-family="sans-serif" font-size="12" fill="#e8edf5" text-anchor="middle">Continue with SAML</text><rect x="220" y="244" width="240" height="32" rx="6" fill="#0b0f17" stroke="#2c3a52"/><text x="232" y="264" font-family="sans-serif" font-size="12" fill="#5e6e88">email</text><rect x="220" y="284" width="240" height="32" rx="6" fill="#0b0f17" stroke="#2c3a52"/><text x="232" y="304" font-family="sans-serif" font-size="12" fill="#5e6e88">password</text><rect x="220" y="326" width="67" height="28" rx="6" fill="#ffb020"/><text x="229" y="344" font-family="sans-serif" font-size="12" font-weight="700" fill="#1a1300">Sign in</text><text x="340" y="380" font-family="sans-serif" font-size="10" fill="#5e6e88" text-anchor="middle">🔐 MFA challenge appears when enabled</text><circle cx="330" cy="167" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="330" y="172" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">2</text><circle cx="340" cy="360" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="340" y="365" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">3</text></g></svg></div>
+      <div class="caption">The numbered markers ● on the screen match the steps.</div>
+    </div>
+  </div>
+  <div class="rowboxes">
+    <div class="rbox result"><div class="rl">✓ Result — what happens</div><p>You're signed in on the Dashboard with today's KPIs and live pipeline.</p></div>
+    <div class="rbox next"><div class="rl">→ Next</div><p>Analysts go to <b>Triage</b> (T4); to add a brand first see <b>Onboard a brand</b> (T2).</p></div>
+  </div>
+  <div class="behind"><span class="bl">Behind the scenes:</span> Identity (G1) handles SSO/MFA; RBAC (G2) controls what you see.</div>
 </article><h2 class="sec">Set up protection</h2>
 <article class="task" id="T2">
   <div class="thead"><span class="tid">T2</span><h3>Onboard a brand to monitor</h3></div>
-  <p class="purpose"><b>Purpose.</b> Tell SpoofVane which brand to protect so discovery can begin finding impersonation.</p>
-  <div class="meta2"><span class="who"><b>Who can do this:</b> Analyst, Admin, Owner</span></div>
-  <div class="block"><div class="blabel">Before you start</div><ul class="prereq"><li>You are signed in</li><li>You know the brand's canonical login URL</li><li>(Optional) a reference logo image</li></ul></div>
-  <div class="block"><div class="blabel">Steps</div><ol class="steps"><li><span class="stepwhat">Open Brands</span> In the left rail, click <b>Brands</b> (P03). You see the list of brands already protected.</li><li><span class="stepwhat">Launch the wizard</span> Click <b>+ New brand (wizard)</b>. The Brand Wizard opens.</li><li><span class="stepwhat">Enter the brand basics</span> Type the brand name and canonical login URL. The wizard <i>suggests</i> keywords, permutation TLDs and monitoring regions — accept or edit them.</li><li><span class="stepwhat">Set the escalation threshold</span> Choose the score threshold (default 0.65) above which a suspect is escalated for a verdict.</li><li><span class="stepwhat">Save</span> Click <b>Save</b>. You are taken to the <b>Brand detail</b> screen (P04) for the new brand.</li></ol></div>
-  <div class="block result"><div class="blabel">✓ Result — what happens</div><p>The brand is registered. Discovery sources immediately begin searching for impersonation; within minutes the Triage queue starts filling with suspects for this brand.</p></div>
-  <div class="block next"><div class="blabel">→ What to do next</div><p>Watch results arrive in the <b>Triage queue</b> (T4). To adjust assets or thresholds later, return to <b>Brand detail</b> (P04).</p></div>
-  <div class="block behind"><div class="blabel">Behind the scenes</div><p>The Brand Wizard is module H3; saving the brand activates the Discovery group (A1–A10), which use Bright Data SERP, Residential Proxies, Datasets and more.</p></div>
+  <p class="purpose">Register a brand so discovery starts finding impersonation. &nbsp;<span class="who">Who: Analyst, Admin, Owner</span></p>
+  <div class="cols">
+    <div class="left">
+      <div class="blabel">Before you start</div><ul class="prereq"><li>Signed in</li><li>The brand's canonical login URL</li><li>(Optional) a reference logo</li></ul>
+      <div class="blabel">Steps</div><ol class="steps"><li><span class="sw">Open Brands.</span> Click Brands in the left rail.</li><li><span class="sw">Launch the wizard.</span> Click + New brand (wizard).</li><li><span class="sw">Enter basics.</span> Brand name + login URL; accept the suggested keywords, TLDs and regions.</li><li><span class="sw">Set threshold.</span> Pick the escalation score threshold (default 0.65).</li><li><span class="sw">Save.</span> You're taken to the Brand detail screen.</li></ol>
+    </div>
+    <div class="right">
+      <div class="screenwrap"><svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block">
+    <rect x="0" y="0" width="760" height="520" rx="14" fill="#0b0f17" stroke="#2c3a52"/>
+    <rect x="0" y="0" width="760" height="34" rx="14" fill="#1b2433"/>
+    <rect x="0" y="20" width="760" height="14" fill="#1b2433"/>
+    <circle cx="20" cy="17" r="5" fill="#ff5f57"/><circle cx="38" cy="17" r="5" fill="#febc2e"/><circle cx="56" cy="17" r="5" fill="#28c840"/>
+    <rect x="80" y="9" width="320" height="17" rx="5" fill="#0b0f17"/>
+    <text x="92" y="21" font-family="monospace" font-size="11" fill="#93a1b8">app.spoofvane.io/brands</text>
+    <rect x="0" y="34" width="150" height="486" fill="#131a26" stroke="#2c3a52"/><text x="16" y="62" font-family="Georgia,serif" font-size="15" fill="#ffb020">⬡ SpoofVane</text><text x="16" y="89" font-family="sans-serif" font-size="12" fill="#93a1b8">Dashboard</text><rect x="8" y="102" width="134" height="22" rx="5" fill="#232f42"/><text x="16" y="117" font-family="sans-serif" font-size="12" fill="#e8edf5">Brands</text><text x="16" y="145" font-family="sans-serif" font-size="12" fill="#93a1b8">Triage</text><text x="16" y="173" font-family="sans-serif" font-size="12" fill="#93a1b8">Clusters</text><text x="16" y="201" font-family="sans-serif" font-size="12" fill="#93a1b8">Deepfakes</text><text x="16" y="229" font-family="sans-serif" font-size="12" fill="#93a1b8">Exec</text><text x="16" y="257" font-family="sans-serif" font-size="12" fill="#93a1b8">Takedowns</text><text x="16" y="285" font-family="sans-serif" font-size="12" fill="#93a1b8">Audit</text><text x="16" y="313" font-family="sans-serif" font-size="12" fill="#93a1b8">Review</text><text x="16" y="341" font-family="sans-serif" font-size="12" fill="#93a1b8">Cost</text><text x="16" y="369" font-family="sans-serif" font-size="12" fill="#93a1b8">Agents</text><g transform="translate(168,52)"><text x="0" y="18" font-family="Georgia,serif" font-size="20" fill="#e8edf5" font-weight="700">Protected brands</text><rect x="430" y="2" width="158" height="28" rx="6" fill="#ffb020"/><text x="439" y="20" font-family="sans-serif" font-size="12" font-weight="700" fill="#1a1300">+ New brand (wizard)</text><text x="0" y="82" font-family="sans-serif" font-size="10" fill="#5e6e88">BRAND</text><text x="150" y="82" font-family="sans-serif" font-size="10" fill="#5e6e88">DOMAIN</text><text x="330" y="82" font-family="sans-serif" font-size="10" fill="#5e6e88">REGIONS</text><text x="440" y="82" font-family="sans-serif" font-size="10" fill="#5e6e88">WORST</text><text x="0" y="120" font-family="sans-serif" font-size="12" fill="#e8edf5">Acme Bank</text><text x="150" y="120" font-family="monospace" font-size="11" fill="#93a1b8">acmebank.com</text><text x="330" y="120" font-family="sans-serif" font-size="11" fill="#93a1b8">US, EU</text><rect x="440" y="108" width="50" height="18" rx="9" fill="#0f2419"/><text x="446" y="121" font-family="monospace" font-size="10" fill="#3ddc84">benign</text><line x1="0" y1="132" x2="560" y2="132" stroke="#2c3a52"/><text x="0" y="160" font-family="sans-serif" font-size="12" fill="#e8edf5">Globex</text><text x="150" y="160" font-family="monospace" font-size="11" fill="#93a1b8">globex.com</text><text x="330" y="160" font-family="sans-serif" font-size="11" fill="#93a1b8">US</text><rect x="440" y="148" width="78" height="18" rx="9" fill="#2a2310"/><text x="446" y="161" font-family="monospace" font-size="10" fill="#ffb020">suspicious</text><line x1="0" y1="172" x2="560" y2="172" stroke="#2c3a52"/><text x="0" y="200" font-family="sans-serif" font-size="12" fill="#e8edf5">Initech</text><text x="150" y="200" font-family="monospace" font-size="11" fill="#93a1b8">initech.io</text><text x="330" y="200" font-family="sans-serif" font-size="11" fill="#93a1b8">APAC</text><rect x="440" y="188" width="43" height="18" rx="9" fill="#2a1316"/><text x="446" y="201" font-family="monospace" font-size="10" fill="#ff4d57">phish</text><line x1="0" y1="212" x2="560" y2="212" stroke="#2c3a52"/><circle cx="540" cy="16" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="540" y="21" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">2</text></g></svg></div>
+      <div class="caption">The numbered markers ● on the screen match the steps.</div>
+    </div>
+  </div>
+  <div class="rowboxes">
+    <div class="rbox result"><div class="rl">✓ Result — what happens</div><p>The brand is live; within minutes the Triage queue fills with suspects.</p></div>
+    <div class="rbox next"><div class="rl">→ Next</div><p>Watch results in <b>Triage</b> (T4).</p></div>
+  </div>
+  <div class="behind"><span class="bl">Behind the scenes:</span> Brand Wizard is H3; saving activates Discovery (A1–A10) over Bright Data SERP, Proxies & Datasets.</div>
 </article>
 <article class="task" id="T3">
-  <div class="thead"><span class="tid">T3</span><h3>Protect an executive from deepfakes & impersonation</h3></div>
-  <p class="purpose"><b>Purpose.</b> Monitor a named executive's likeness and voice across the web and social media.</p>
-  <div class="meta2"><span class="who"><b>Who can do this:</b> Analyst (with a recorded lawful basis), Admin</span></div>
-  <div class="block"><div class="blabel">Before you start</div><ul class="prereq"><li>The brand is onboarded (T2)</li><li>A recorded lawful basis for processing the executive's likeness/voice</li><li>(Recommended) an enrolled reference voice sample</li></ul></div>
-  <div class="block"><div class="blabel">Steps</div><ol class="steps"><li><span class="stepwhat">Open Exec protection</span> Click <b>Exec protection</b> (P09) in the left rail.</li><li><span class="stepwhat">Add the executive</span> Enter the executive's name and the social platforms to watch.</li><li><span class="stepwhat">Record the lawful basis</span> You will be required to enter a named lawful basis. <b>Until you do, monitoring will not start</b> — this is a deliberate privacy gate.</li><li><span class="stepwhat">Enrol a voiceprint (optional)</span> Upload a clean reference voice clip so cloned-voice media can be matched.</li><li><span class="stepwhat">Activate</span> Confirm. The exec surface monitor begins scanning.</li></ol></div>
-  <div class="block result"><div class="blabel">✓ Result — what happens</div><p>SpoofVane reports impersonating handles, likeness assets, and any cloned-voice or deepfake media targeting the executive, with a risk score.</p></div>
-  <div class="block next"><div class="blabel">→ What to do next</div><p>Suspect media appears in the <b>Deepfakes</b> queue (T6). Any takedown still flows through review (T8).</p></div>
-  <div class="block behind"><div class="blabel">Behind the scenes</div><p>Exec attack surface is module H5; it is a 'sensitive agent' so module E8 (governance) enforces the lawful-basis gate (review §V8-5). Voiceprint matching is C9; deepfake scoring is C10.</p></div>
+  <div class="thead"><span class="tid">T3</span><h3>Protect an executive from deepfakes</h3></div>
+  <p class="purpose">Monitor an executive's likeness and voice. &nbsp;<span class="who">Who: Analyst (with lawful basis), Admin</span></p>
+  <div class="cols">
+    <div class="left">
+      <div class="blabel">Before you start</div><ul class="prereq"><li>A brand is onboarded</li><li>A named lawful basis</li><li>(Recommended) a reference voice clip</li></ul>
+      <div class="blabel">Steps</div><ol class="steps"><li><span class="sw">Open Exec protection.</span> Click Exec protection in the rail.</li><li><span class="sw">Add the executive.</span> Enter the name and platforms to watch.</li><li><span class="sw">Record the lawful basis.</span> Required — monitoring will not start until you enter it.</li><li><span class="sw">Enrol a voiceprint.</span> Optionally upload a clean voice sample for cloned-voice matching.</li><li><span class="sw">Activate.</span> Confirm to begin scanning.</li></ol>
+    </div>
+    <div class="right">
+      <div class="screenwrap"><svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block">
+    <rect x="0" y="0" width="760" height="520" rx="14" fill="#0b0f17" stroke="#2c3a52"/>
+    <rect x="0" y="0" width="760" height="34" rx="14" fill="#1b2433"/>
+    <rect x="0" y="20" width="760" height="14" fill="#1b2433"/>
+    <circle cx="20" cy="17" r="5" fill="#ff5f57"/><circle cx="38" cy="17" r="5" fill="#febc2e"/><circle cx="56" cy="17" r="5" fill="#28c840"/>
+    <rect x="80" y="9" width="320" height="17" rx="5" fill="#0b0f17"/>
+    <text x="92" y="21" font-family="monospace" font-size="11" fill="#93a1b8">app.spoofvane.io/exec-protection</text>
+    <rect x="0" y="34" width="150" height="486" fill="#131a26" stroke="#2c3a52"/><text x="16" y="62" font-family="Georgia,serif" font-size="15" fill="#ffb020">⬡ SpoofVane</text><text x="16" y="89" font-family="sans-serif" font-size="12" fill="#93a1b8">Dashboard</text><text x="16" y="117" font-family="sans-serif" font-size="12" fill="#93a1b8">Brands</text><text x="16" y="145" font-family="sans-serif" font-size="12" fill="#93a1b8">Triage</text><text x="16" y="173" font-family="sans-serif" font-size="12" fill="#93a1b8">Clusters</text><text x="16" y="201" font-family="sans-serif" font-size="12" fill="#93a1b8">Deepfakes</text><rect x="8" y="214" width="134" height="22" rx="5" fill="#232f42"/><text x="16" y="229" font-family="sans-serif" font-size="12" fill="#e8edf5">Exec</text><text x="16" y="257" font-family="sans-serif" font-size="12" fill="#93a1b8">Takedowns</text><text x="16" y="285" font-family="sans-serif" font-size="12" fill="#93a1b8">Audit</text><text x="16" y="313" font-family="sans-serif" font-size="12" fill="#93a1b8">Review</text><text x="16" y="341" font-family="sans-serif" font-size="12" fill="#93a1b8">Cost</text><text x="16" y="369" font-family="sans-serif" font-size="12" fill="#93a1b8">Agents</text><g transform="translate(168,52)"><text x="0" y="18" font-family="Georgia,serif" font-size="20" fill="#e8edf5" font-weight="700">Executive protection</text><rect x="240" y="4" width="170" height="20" rx="10" fill="#2a2310"/><text x="252" y="18" font-family="sans-serif" font-size="11" fill="#ffb020">🔒 lawful-basis gated</text><rect x="0" y="50" width="586" height="160" rx="10" fill="#131a26" stroke="#2c3a52"/><text x="14" y="72" font-family="Georgia,serif" font-size="13" fill="#e8edf5">Jane Doe, CEO</text><text x="16" y="100" font-family="sans-serif" font-size="13" fill="#93a1b8">Likeness assets: 3   ·   Voice assets: 1</text><text x="16" y="130" font-family="monospace" font-size="12" fill="#93a1b8">@jane_x_15   @jane_linkedin_57</text><rect x="16" y="150" width="300" height="34" rx="6" fill="#0b0f17" stroke="#3d4f6e"/><text x="28" y="172" font-family="sans-serif" font-size="11" fill="#5e6e88">Lawful basis (required before monitoring)</text><circle cx="30" cy="172" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="30" y="177" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">3</text></g></svg></div>
+      <div class="caption">The numbered markers ● on the screen match the steps.</div>
+    </div>
+  </div>
+  <div class="rowboxes">
+    <div class="rbox result"><div class="rl">✓ Result — what happens</div><p>Impersonating handles, likeness/voice assets and deepfake media are reported with a risk score.</p></div>
+    <div class="rbox next"><div class="rl">→ Next</div><p>Suspect media appears in <b>Deepfakes</b> (T6).</p></div>
+  </div>
+  <div class="behind"><span class="bl">Behind the scenes:</span> Exec surface is H5 (sensitive → governance gate E8, §V8-5); voiceprint C9; deepfake C10.</div>
 </article><h2 class="sec">Investigate</h2>
 <article class="task" id="T4">
   <div class="thead"><span class="tid">T4</span><h3>Triage the alert queue</h3></div>
-  <p class="purpose"><b>Purpose.</b> Work through suspected impersonation sites and decide which need action.</p>
-  <div class="meta2"><span class="who"><b>Who can do this:</b> Analyst</span></div>
-  <div class="block"><div class="blabel">Before you start</div><ul class="prereq"><li>At least one brand is onboarded and has produced suspects</li></ul></div>
-  <div class="block"><div class="blabel">Steps</div><ol class="steps"><li><span class="stepwhat">Open Triage queue</span> Click <b>Triage queue</b> (P05). Each row is one suspect with a verdict pill, score, source and an SLA timer.</li><li><span class="stepwhat">Sort by urgency</span> Red <b>phish</b> pills and 'hot' SLA timers are most urgent. Start at the top.</li><li><span class="stepwhat">Open a suspect</span> Click a row to open the <b>Alert detail</b> screen (P06).</li></ol></div>
-  <div class="block result"><div class="blabel">✓ Result — what happens</div><p>You have the most urgent suspect open in Alert detail, ready to review the evidence.</p></div>
-  <div class="block next"><div class="blabel">→ What to do next</div><p>Review the evidence — see <b>Review an alert's evidence</b> (T5).</p></div>
-  <div class="block behind"><div class="blabel">Behind the scenes</div><p>Suspects are scored by the Scoring group (C1–C8). The calibrated probability (C1) — not a raw sum — drives the verdict pill and ordering.</p></div>
+  <p class="purpose">Work through suspects and pick what needs action. &nbsp;<span class="who">Who: Analyst</span></p>
+  <div class="cols">
+    <div class="left">
+      <div class="blabel">Before you start</div><ul class="prereq"><li>A brand has produced suspects</li></ul>
+      <div class="blabel">Steps</div><ol class="steps"><li><span class="sw">Open Triage queue.</span> Each row is a suspect: verdict pill, score, source, SLA timer.</li><li><span class="sw">Sort by urgency.</span> Red phish pills and short SLA timers come first.</li><li><span class="sw">Open a suspect.</span> Click a row to open Alert detail.</li></ol>
+    </div>
+    <div class="right">
+      <div class="screenwrap"><svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block">
+    <rect x="0" y="0" width="760" height="520" rx="14" fill="#0b0f17" stroke="#2c3a52"/>
+    <rect x="0" y="0" width="760" height="34" rx="14" fill="#1b2433"/>
+    <rect x="0" y="20" width="760" height="14" fill="#1b2433"/>
+    <circle cx="20" cy="17" r="5" fill="#ff5f57"/><circle cx="38" cy="17" r="5" fill="#febc2e"/><circle cx="56" cy="17" r="5" fill="#28c840"/>
+    <rect x="80" y="9" width="320" height="17" rx="5" fill="#0b0f17"/>
+    <text x="92" y="21" font-family="monospace" font-size="11" fill="#93a1b8">app.spoofvane.io/triage</text>
+    <rect x="0" y="34" width="150" height="486" fill="#131a26" stroke="#2c3a52"/><text x="16" y="62" font-family="Georgia,serif" font-size="15" fill="#ffb020">⬡ SpoofVane</text><text x="16" y="89" font-family="sans-serif" font-size="12" fill="#93a1b8">Dashboard</text><text x="16" y="117" font-family="sans-serif" font-size="12" fill="#93a1b8">Brands</text><rect x="8" y="130" width="134" height="22" rx="5" fill="#232f42"/><text x="16" y="145" font-family="sans-serif" font-size="12" fill="#e8edf5">Triage</text><text x="16" y="173" font-family="sans-serif" font-size="12" fill="#93a1b8">Clusters</text><text x="16" y="201" font-family="sans-serif" font-size="12" fill="#93a1b8">Deepfakes</text><text x="16" y="229" font-family="sans-serif" font-size="12" fill="#93a1b8">Exec</text><text x="16" y="257" font-family="sans-serif" font-size="12" fill="#93a1b8">Takedowns</text><text x="16" y="285" font-family="sans-serif" font-size="12" fill="#93a1b8">Audit</text><text x="16" y="313" font-family="sans-serif" font-size="12" fill="#93a1b8">Review</text><text x="16" y="341" font-family="sans-serif" font-size="12" fill="#93a1b8">Cost</text><text x="16" y="369" font-family="sans-serif" font-size="12" fill="#93a1b8">Agents</text><g transform="translate(168,52)"><text x="0" y="18" font-family="Georgia,serif" font-size="20" fill="#e8edf5" font-weight="700">Triage queue</text><text x="160" y="18" font-family="monospace" font-size="13" fill="#ffb020">247</text><text x="0" y="84" font-family="sans-serif" font-size="10" fill="#5e6e88">VERDICT</text><text x="120" y="84" font-family="sans-serif" font-size="10" fill="#5e6e88">URL</text><text x="360" y="84" font-family="sans-serif" font-size="10" fill="#5e6e88">SCORE</text><text x="420" y="84" font-family="sans-serif" font-size="10" fill="#5e6e88">SOURCE</text><text x="520" y="84" font-family="sans-serif" font-size="10" fill="#5e6e88">SLA</text><rect x="0" y="108" width="43" height="18" rx="9" fill="#2a1316"/><text x="6" y="121" font-family="monospace" font-size="10" fill="#ff4d57">phish</text><text x="120" y="120" font-family="monospace" font-size="11" fill="#e8edf5">acme-secure-login.top</text><text x="360" y="120" font-family="monospace" font-size="11" fill="#93a1b8">0.91</text><text x="420" y="120" font-family="sans-serif" font-size="11" fill="#93a1b8">SERP</text><text x="520" y="120" font-family="monospace" font-size="11" fill="#ff4d57">2m</text><line x1="0" y1="134" x2="560" y2="134" stroke="#2c3a52"/><rect x="0" y="152" width="78" height="18" rx="9" fill="#2a2310"/><text x="6" y="165" font-family="monospace" font-size="10" fill="#ffb020">suspicious</text><text x="120" y="164" font-family="monospace" font-size="11" fill="#e8edf5">acmebank-verify.xyz</text><text x="360" y="164" font-family="monospace" font-size="11" fill="#93a1b8">0.58</text><text x="420" y="164" font-family="sans-serif" font-size="11" fill="#93a1b8">OpenPhish</text><text x="520" y="164" font-family="monospace" font-size="11" fill="#ffb020">14m</text><line x1="0" y1="178" x2="560" y2="178" stroke="#2c3a52"/><rect x="0" y="196" width="43" height="18" rx="9" fill="#2a1316"/><text x="6" y="209" font-family="monospace" font-size="10" fill="#ff4d57">phish</text><text x="120" y="208" font-family="monospace" font-size="11" fill="#e8edf5">my-acme.cc</text><text x="360" y="208" font-family="monospace" font-size="11" fill="#93a1b8">0.87</text><text x="420" y="208" font-family="sans-serif" font-size="11" fill="#93a1b8">Registrar</text><text x="520" y="208" font-family="monospace" font-size="11" fill="#ff4d57">5m</text><line x1="0" y1="222" x2="560" y2="222" stroke="#2c3a52"/><rect x="0" y="240" width="50" height="18" rx="9" fill="#0f2419"/><text x="6" y="253" font-family="monospace" font-size="10" fill="#3ddc84">benign</text><text x="120" y="252" font-family="monospace" font-size="11" fill="#e8edf5">acme-fanblog.net</text><text x="360" y="252" font-family="monospace" font-size="11" fill="#93a1b8">0.12</text><text x="420" y="252" font-family="sans-serif" font-size="11" fill="#93a1b8">CertStream</text><text x="520" y="252" font-family="monospace" font-size="11" fill="#3ddc84">1h</text><line x1="0" y1="266" x2="560" y2="266" stroke="#2c3a52"/><circle cx="300" cy="116" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="300" y="121" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">3</text></g></svg></div>
+      <div class="caption">The numbered markers ● on the screen match the steps.</div>
+    </div>
+  </div>
+  <div class="rowboxes">
+    <div class="rbox result"><div class="rl">✓ Result — what happens</div><p>The most urgent suspect is open, ready for evidence review.</p></div>
+    <div class="rbox next"><div class="rl">→ Next</div><p>Review the evidence — <b>Review an alert</b> (T5).</p></div>
+  </div>
+  <div class="behind"><span class="bl">Behind the scenes:</span> Ordering uses the calibrated probability C1 (not a raw sum), from Scoring C1–C8.</div>
 </article>
 <article class="task" id="T5">
-  <div class="thead"><span class="tid">T5</span><h3>Review an alert's evidence and confirm the verdict</h3></div>
-  <p class="purpose"><b>Purpose.</b> Decide whether a suspect is genuinely a phishing/impersonation site using the full evidence.</p>
-  <div class="meta2"><span class="who"><b>Who can do this:</b> Analyst</span></div>
-  <div class="block"><div class="blabel">Before you start</div><ul class="prereq"><li>A suspect open in Alert detail (T4)</li></ul></div>
-  <div class="block"><div class="blabel">Steps</div><ol class="steps"><li><span class="stepwhat">Read the Summary tab</span> The <b>Summary</b> tab shows the verdict, calibrated score, brand and when it was first seen.</li><li><span class="stepwhat">Inspect the visual & technical evidence</span> Open <b>Evidence</b> (screenshot/DOM), <b>Multi-region</b> (is it cloaking by country?), and <b>Kit</b> (which phishing kit matched, e.g. EvilProxy).</li><li><span class="stepwhat">Check the verdict trace</span> Open <b>Verdict trace</b> to see the model ensemble (Claude + GPT + Gemini). If the models disagreed, the confidence is discounted and the alert is flagged for human review.</li><li><span class="stepwhat">Review context tabs</span> <b>MITRE</b> shows mapped ATT&CK techniques; <b>Cluster</b> shows linked sites; <b>Deepfake</b> appears if media is involved.</li><li><span class="stepwhat">Decide</span> If it is malicious, click <b>Request takedown</b>. If not, mark it benign to dismiss.</li></ol></div>
-  <div class="block result"><div class="blabel">✓ Result — what happens</div><p>Your decision is recorded. A takedown request is queued for human approval; a dismissal closes the alert. Either way the action is written to the audit log.</p></div>
-  <div class="block next"><div class="blabel">→ What to do next</div><p>For a takedown, a reviewer approves it next — see <b>Approve a takedown</b> (T8). Track progress in <b>Takedowns</b> (T9).</p></div>
-  <div class="block behind"><div class="blabel">Behind the scenes</div><p>Verdict ensemble is D1–D5; dissent handling is D5; MITRE enrichment is D7; clustering is C8. Your decision feeds the active-learning loop (D8/E6) that re-tunes calibration.</p></div>
+  <div class="thead"><span class="tid">T5</span><h3>Review an alert and confirm the verdict</h3></div>
+  <p class="purpose">Decide if a suspect is genuinely malicious using the full evidence. &nbsp;<span class="who">Who: Analyst</span></p>
+  <div class="cols">
+    <div class="left">
+      <div class="blabel">Before you start</div><ul class="prereq"><li>A suspect open in Alert detail (T4)</li></ul>
+      <div class="blabel">Steps</div><ol class="steps"><li><span class="sw">Read Summary.</span> Verdict, calibrated score, brand, first-seen.</li><li><span class="sw">Inspect evidence.</span> Open Evidence, Multi-region (cloaking?) and Kit (which kit matched).</li><li><span class="sw">Check Verdict trace.</span> See the Claude+GPT+Gemini ensemble; dissent discounts confidence & flags for review.</li><li><span class="sw">Review context.</span> MITRE techniques, Cluster links, Deepfake signals.</li><li><span class="sw">Decide.</span> Click Request takedown, or mark benign to dismiss.</li></ol>
+    </div>
+    <div class="right">
+      <div class="screenwrap"><svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block">
+    <rect x="0" y="0" width="760" height="520" rx="14" fill="#0b0f17" stroke="#2c3a52"/>
+    <rect x="0" y="0" width="760" height="34" rx="14" fill="#1b2433"/>
+    <rect x="0" y="20" width="760" height="14" fill="#1b2433"/>
+    <circle cx="20" cy="17" r="5" fill="#ff5f57"/><circle cx="38" cy="17" r="5" fill="#febc2e"/><circle cx="56" cy="17" r="5" fill="#28c840"/>
+    <rect x="80" y="9" width="320" height="17" rx="5" fill="#0b0f17"/>
+    <text x="92" y="21" font-family="monospace" font-size="11" fill="#93a1b8">app.spoofvane.io/alerts/1182</text>
+    <rect x="0" y="34" width="150" height="486" fill="#131a26" stroke="#2c3a52"/><text x="16" y="62" font-family="Georgia,serif" font-size="15" fill="#ffb020">⬡ SpoofVane</text><text x="16" y="89" font-family="sans-serif" font-size="12" fill="#93a1b8">Dashboard</text><text x="16" y="117" font-family="sans-serif" font-size="12" fill="#93a1b8">Brands</text><rect x="8" y="130" width="134" height="22" rx="5" fill="#232f42"/><text x="16" y="145" font-family="sans-serif" font-size="12" fill="#e8edf5">Triage</text><text x="16" y="173" font-family="sans-serif" font-size="12" fill="#93a1b8">Clusters</text><text x="16" y="201" font-family="sans-serif" font-size="12" fill="#93a1b8">Deepfakes</text><text x="16" y="229" font-family="sans-serif" font-size="12" fill="#93a1b8">Exec</text><text x="16" y="257" font-family="sans-serif" font-size="12" fill="#93a1b8">Takedowns</text><text x="16" y="285" font-family="sans-serif" font-size="12" fill="#93a1b8">Audit</text><text x="16" y="313" font-family="sans-serif" font-size="12" fill="#93a1b8">Review</text><text x="16" y="341" font-family="sans-serif" font-size="12" fill="#93a1b8">Cost</text><text x="16" y="369" font-family="sans-serif" font-size="12" fill="#93a1b8">Agents</text><g transform="translate(168,52)"><text x="0" y="18" font-family="Georgia,serif" font-size="20" fill="#e8edf5" font-weight="700">acme-secure-login.top</text><rect x="250" y="6" width="43" height="18" rx="9" fill="#2a1316"/><text x="256" y="19" font-family="monospace" font-size="10" fill="#ff4d57">phish</text><rect x="440" y="2" width="130" height="28" rx="6" fill="#ff4d57"/><text x="449" y="20" font-family="sans-serif" font-size="12" font-weight="700" fill="#fff">Request takedown</text><rect x="0" y="44" width="59" height="22" rx="11" fill="#ffb020"/><text x="6" y="59" font-family="sans-serif" font-size="10" fill="#1a1300">Summary</text><rect x="65" y="44" width="66" height="22" rx="11" fill="#1b2433"/><text x="71" y="59" font-family="sans-serif" font-size="10" fill="#93a1b8">Evidence</text><rect x="137" y="44" width="94" height="22" rx="11" fill="#1b2433"/><text x="143" y="59" font-family="sans-serif" font-size="10" fill="#93a1b8">Multi-region</text><rect x="237" y="44" width="59" height="22" rx="11" fill="#1b2433"/><text x="243" y="59" font-family="sans-serif" font-size="10" fill="#93a1b8">Verdict</text><rect x="302" y="44" width="45" height="22" rx="11" fill="#1b2433"/><text x="308" y="59" font-family="sans-serif" font-size="10" fill="#93a1b8">MITRE</text><rect x="353" y="44" width="31" height="22" rx="11" fill="#1b2433"/><text x="359" y="59" font-family="sans-serif" font-size="10" fill="#93a1b8">Kit</text><rect x="390" y="44" width="59" height="22" rx="11" fill="#1b2433"/><text x="396" y="59" font-family="sans-serif" font-size="10" fill="#93a1b8">Cluster</text><rect x="455" y="44" width="66" height="22" rx="11" fill="#1b2433"/><text x="461" y="59" font-family="sans-serif" font-size="10" fill="#93a1b8">Deepfake</text><rect x="527" y="44" width="66" height="22" rx="11" fill="#1b2433"/><text x="533" y="59" font-family="sans-serif" font-size="10" fill="#93a1b8">Takedown</text><rect x="599" y="44" width="45" height="22" rx="11" fill="#1b2433"/><text x="605" y="59" font-family="sans-serif" font-size="10" fill="#93a1b8">Audit</text><rect x="0" y="82" width="280" height="180" rx="10" fill="#131a26" stroke="#2c3a52"/><text x="14" y="104" font-family="Georgia,serif" font-size="13" fill="#e8edf5">Screenshot · US-residential</text><rect x="14" y="108" width="252" height="120" fill="#1b2433"/><text x="140" y="172" font-family="monospace" font-size="10" fill="#93a1b8" text-anchor="middle">rendered via Bright Data</text><rect x="296" y="82" width="290" height="180" rx="10" fill="#131a26" stroke="#2c3a52"/><text x="310" y="104" font-family="Georgia,serif" font-size="13" fill="#e8edf5">Verdict trace</text><text x="312" y="130" font-family="monospace" font-size="11" fill="#3ddc84">claude: phish 0.92</text><text x="312" y="152" font-family="monospace" font-size="11" fill="#3ddc84">gpt-5: phish 0.89</text><text x="312" y="174" font-family="monospace" font-size="11" fill="#3ddc84">gemini: phish 0.90</text><text x="312" y="200" font-family="monospace" font-size="12" fill="#ff4d57">merge: PHISH · no dissent</text><circle cx="40" cy="55" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="40" y="60" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">2</text><circle cx="480" cy="16" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="480" y="21" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">5</text></g></svg></div>
+      <div class="caption">The numbered markers ● on the screen match the steps.</div>
+    </div>
+  </div>
+  <div class="rowboxes">
+    <div class="rbox result"><div class="rl">✓ Result — what happens</div><p>Your decision is recorded; a takedown is queued for approval, a dismissal closes the alert.</p></div>
+    <div class="rbox next"><div class="rl">→ Next</div><p>A reviewer approves the takedown next — <b>Approve a takedown</b> (T8).</p></div>
+  </div>
+  <div class="behind"><span class="bl">Behind the scenes:</span> Ensemble D1–D5, dissent D5, MITRE D7, clustering C8; your call feeds active-learning D8/E6.</div>
 </article>
 <article class="task" id="T6">
   <div class="thead"><span class="tid">T6</span><h3>Review a suspected deepfake</h3></div>
-  <p class="purpose"><b>Purpose.</b> Confirm or dismiss AI-generated video/voice impersonating your brand or executive.</p>
-  <div class="meta2"><span class="who"><b>Who can do this:</b> Analyst</span></div>
-  <div class="block"><div class="blabel">Before you start</div><ul class="prereq"><li>A deepfake suspect exists (from exec protection T3 or discovery)</li></ul></div>
-  <div class="block"><div class="blabel">Steps</div><ol class="steps"><li><span class="stepwhat">Open Deepfakes</span> Click <b>Deepfakes</b> (P08). Each item shows the multimodal score.</li><li><span class="stepwhat">Read the signal breakdown</span> Review face-embedding distance, lip-sync inconsistency, voiceprint match, and the C2PA provenance result. A valid provenance manifest <i>lowers</i> suspicion.</li><li><span class="stepwhat">Confirm the verdict</span> Accept the multimodal verdict (deepfake / suspicious / authentic) or override it.</li></ol></div>
-  <div class="block result"><div class="blabel">✓ Result — what happens</div><p>The deepfake is classified, with the per-signal reasoning retained for evidence.</p></div>
-  <div class="block next"><div class="blabel">→ What to do next</div><p>If action is needed, request a takedown; it flows through review (T8). A legal export carries a chain-of-custody pack.</p></div>
-  <div class="block behind"><div class="blabel">Behind the scenes</div><p>Voiceprint is C9, deepfake ensemble is C10, multimodal fusion is D6, and the legal chain-of-custody pack is G10.</p></div>
+  <p class="purpose">Confirm or dismiss AI-generated impersonation media. &nbsp;<span class="who">Who: Analyst</span></p>
+  <div class="cols">
+    <div class="left">
+      <div class="blabel">Before you start</div><ul class="prereq"><li>A deepfake suspect exists (from T3 or discovery)</li></ul>
+      <div class="blabel">Steps</div><ol class="steps"><li><span class="sw">Open Deepfakes.</span> Each item shows the multimodal score.</li><li><span class="sw">Read the signals.</span> Face distance, lip-sync, voiceprint match, C2PA provenance — valid provenance lowers suspicion.</li><li><span class="sw">Confirm.</span> Accept or override the multimodal verdict.</li></ol>
+    </div>
+    <div class="right">
+      <div class="screenwrap"><svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block">
+    <rect x="0" y="0" width="760" height="520" rx="14" fill="#0b0f17" stroke="#2c3a52"/>
+    <rect x="0" y="0" width="760" height="34" rx="14" fill="#1b2433"/>
+    <rect x="0" y="20" width="760" height="14" fill="#1b2433"/>
+    <circle cx="20" cy="17" r="5" fill="#ff5f57"/><circle cx="38" cy="17" r="5" fill="#febc2e"/><circle cx="56" cy="17" r="5" fill="#28c840"/>
+    <rect x="80" y="9" width="320" height="17" rx="5" fill="#0b0f17"/>
+    <text x="92" y="21" font-family="monospace" font-size="11" fill="#93a1b8">app.spoofvane.io/deepfakes</text>
+    <rect x="0" y="34" width="150" height="486" fill="#131a26" stroke="#2c3a52"/><text x="16" y="62" font-family="Georgia,serif" font-size="15" fill="#ffb020">⬡ SpoofVane</text><text x="16" y="89" font-family="sans-serif" font-size="12" fill="#93a1b8">Dashboard</text><text x="16" y="117" font-family="sans-serif" font-size="12" fill="#93a1b8">Brands</text><text x="16" y="145" font-family="sans-serif" font-size="12" fill="#93a1b8">Triage</text><text x="16" y="173" font-family="sans-serif" font-size="12" fill="#93a1b8">Clusters</text><rect x="8" y="186" width="134" height="22" rx="5" fill="#232f42"/><text x="16" y="201" font-family="sans-serif" font-size="12" fill="#e8edf5">Deepfakes</text><text x="16" y="229" font-family="sans-serif" font-size="12" fill="#93a1b8">Exec</text><text x="16" y="257" font-family="sans-serif" font-size="12" fill="#93a1b8">Takedowns</text><text x="16" y="285" font-family="sans-serif" font-size="12" fill="#93a1b8">Audit</text><text x="16" y="313" font-family="sans-serif" font-size="12" fill="#93a1b8">Review</text><text x="16" y="341" font-family="sans-serif" font-size="12" fill="#93a1b8">Cost</text><text x="16" y="369" font-family="sans-serif" font-size="12" fill="#93a1b8">Agents</text><g transform="translate(168,52)"><text x="0" y="18" font-family="Georgia,serif" font-size="20" fill="#e8edf5" font-weight="700">Deepfake review</text><rect x="0" y="50" width="586" height="150" rx="10" fill="#131a26" stroke="#2c3a52"/><text x="14" y="72" font-family="Georgia,serif" font-size="13" fill="#e8edf5">CEO impersonation clip #1182</text><rect x="250" y="60" width="43" height="18" rx="9" fill="#2a1316"/><text x="256" y="73" font-family="monospace" font-size="10" fill="#ff4d57">phish</text><text x="16" y="112" font-family="monospace" font-size="12" fill="#93a1b8">face dist 0.81 · lip-sync 0.74 · voiceprint match 0.03</text><text x="16" y="138" font-family="monospace" font-size="12" fill="#ff4d57">C2PA ✗ invalid</text><text x="16" y="170" font-family="monospace" font-size="14" fill="#ff4d57">multimodal verdict: DEEPFAKE 0.79</text><circle cx="560" cy="150" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="560" y="155" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">2</text></g></svg></div>
+      <div class="caption">The numbered markers ● on the screen match the steps.</div>
+    </div>
+  </div>
+  <div class="rowboxes">
+    <div class="rbox result"><div class="rl">✓ Result — what happens</div><p>The media is classified with per-signal reasoning kept for evidence.</p></div>
+    <div class="rbox next"><div class="rl">→ Next</div><p>Request a takedown (→ T8); legal export carries a chain-of-custody pack.</p></div>
+  </div>
+  <div class="behind"><span class="bl">Behind the scenes:</span> Voiceprint C9, ensemble C10, fusion D6, legal custody pack G10.</div>
 </article>
 <article class="task" id="T7">
-  <div class="thead"><span class="tid">T7</span><h3>See the campaign behind a single site</h3></div>
-  <p class="purpose"><b>Purpose.</b> Understand whether a suspect is part of a larger coordinated campaign.</p>
-  <div class="meta2"><span class="who"><b>Who can do this:</b> Analyst</span></div>
-  <div class="block"><div class="blabel">Before you start</div><ul class="prereq"><li>At least two related suspects have been discovered</li></ul></div>
-  <div class="block"><div class="blabel">Steps</div><ol class="steps"><li><span class="stepwhat">Open Clusters</span> Click <b>Clusters</b> (P07) to see the threat-network graph.</li><li><span class="stepwhat">Read the links</span> Nodes are connected when they share an ASN, registrar, phishing kit, favicon or TLS fingerprint.</li><li><span class="stepwhat">Jump to a node</span> Click any node to open that site's Alert detail.</li></ol></div>
-  <div class="block result"><div class="blabel">✓ Result — what happens</div><p>You can see the full campaign and act on it as a group rather than one site at a time.</p></div>
-  <div class="block next"><div class="blabel">→ What to do next</div><p>Take down the cluster's sites individually (each via T5 → T8).</p></div>
-  <div class="block behind"><div class="blabel">Behind the scenes</div><p>Clustering is module C8 (union-find over shared signals); the graph is maintained incrementally by the cluster agent (E5).</p></div>
+  <div class="thead"><span class="tid">T7</span><h3>See the campaign behind a site</h3></div>
+  <p class="purpose">Find whether a suspect is part of a larger campaign. &nbsp;<span class="who">Who: Analyst</span></p>
+  <div class="cols">
+    <div class="left">
+      <div class="blabel">Before you start</div><ul class="prereq"><li>Two or more related suspects exist</li></ul>
+      <div class="blabel">Steps</div><ol class="steps"><li><span class="sw">Open Clusters.</span> See the threat-network graph.</li><li><span class="sw">Read the links.</span> Nodes connect by shared ASN, registrar, kit, favicon or TLS fingerprint.</li><li><span class="sw">Jump to a node.</span> Click any node to open that site's Alert detail.</li></ol>
+    </div>
+    <div class="right">
+      <div class="screenwrap"><svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block">
+    <rect x="0" y="0" width="760" height="520" rx="14" fill="#0b0f17" stroke="#2c3a52"/>
+    <rect x="0" y="0" width="760" height="34" rx="14" fill="#1b2433"/>
+    <rect x="0" y="20" width="760" height="14" fill="#1b2433"/>
+    <circle cx="20" cy="17" r="5" fill="#ff5f57"/><circle cx="38" cy="17" r="5" fill="#febc2e"/><circle cx="56" cy="17" r="5" fill="#28c840"/>
+    <rect x="80" y="9" width="320" height="17" rx="5" fill="#0b0f17"/>
+    <text x="92" y="21" font-family="monospace" font-size="11" fill="#93a1b8">app.spoofvane.io/clusters</text>
+    <rect x="0" y="34" width="150" height="486" fill="#131a26" stroke="#2c3a52"/><text x="16" y="62" font-family="Georgia,serif" font-size="15" fill="#ffb020">⬡ SpoofVane</text><text x="16" y="89" font-family="sans-serif" font-size="12" fill="#93a1b8">Dashboard</text><text x="16" y="117" font-family="sans-serif" font-size="12" fill="#93a1b8">Brands</text><text x="16" y="145" font-family="sans-serif" font-size="12" fill="#93a1b8">Triage</text><rect x="8" y="158" width="134" height="22" rx="5" fill="#232f42"/><text x="16" y="173" font-family="sans-serif" font-size="12" fill="#e8edf5">Clusters</text><text x="16" y="201" font-family="sans-serif" font-size="12" fill="#93a1b8">Deepfakes</text><text x="16" y="229" font-family="sans-serif" font-size="12" fill="#93a1b8">Exec</text><text x="16" y="257" font-family="sans-serif" font-size="12" fill="#93a1b8">Takedowns</text><text x="16" y="285" font-family="sans-serif" font-size="12" fill="#93a1b8">Audit</text><text x="16" y="313" font-family="sans-serif" font-size="12" fill="#93a1b8">Review</text><text x="16" y="341" font-family="sans-serif" font-size="12" fill="#93a1b8">Cost</text><text x="16" y="369" font-family="sans-serif" font-size="12" fill="#93a1b8">Agents</text><g transform="translate(168,52)"><text x="0" y="18" font-family="Georgia,serif" font-size="20" fill="#e8edf5" font-weight="700">Threat-network graph</text><circle cx="120" cy="160" r="34" fill="#232f42" stroke="#ff4d57"/><text x="120" y="164" font-family="monospace" font-size="10" fill="#e8edf5" text-anchor="middle">acme-secure</text><circle cx="320" cy="100" r="34" fill="#232f42" stroke="#3d4f6e"/><text x="320" y="104" font-family="monospace" font-size="10" fill="#e8edf5" text-anchor="middle">my-acme</text><circle cx="340" cy="240" r="34" fill="#232f42" stroke="#3d4f6e"/><text x="340" y="244" font-family="monospace" font-size="9" fill="#e8edf5" text-anchor="middle">acme-verify</text><line x1="150" y1="150" x2="290" y2="110" stroke="#36c2ce" stroke-width="1.5"/><text x="200" y="118" font-family="monospace" font-size="9" fill="#5e6e88">ASN AS200651</text><line x1="145" y1="175" x2="312" y2="225" stroke="#36c2ce" stroke-width="1.5"/><text x="200" y="215" font-family="monospace" font-size="9" fill="#5e6e88">kit EvilProxy</text><circle cx="360" cy="90" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="360" y="95" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">2</text></g></svg></div>
+      <div class="caption">The numbered markers ● on the screen match the steps.</div>
+    </div>
+  </div>
+  <div class="rowboxes">
+    <div class="rbox result"><div class="rl">✓ Result — what happens</div><p>You see the whole campaign and can act on it as a group.</p></div>
+    <div class="rbox next"><div class="rl">→ Next</div><p>Take the sites down individually (each via T5 → T8).</p></div>
+  </div>
+  <div class="behind"><span class="bl">Behind the scenes:</span> Clustering C8 (union-find); graph maintained by cluster agent E5.</div>
 </article><h2 class="sec">Act</h2>
 <article class="task" id="T8">
-  <div class="thead"><span class="tid">T8</span><h3>Approve (or deny) a takedown — reviewer task</h3></div>
-  <p class="purpose"><b>Purpose.</b> Provide the mandatory human approval before SpoofVane submits a takedown.</p>
-  <div class="meta2"><span class="who"><b>Who can do this:</b> Reviewer (must be a different person from the analyst who raised it)</span></div>
-  <div class="block"><div class="blabel">Before you start</div><ul class="prereq"><li>An analyst has requested a takedown (T5)</li><li>You hold the Reviewer role</li></ul></div>
-  <div class="block"><div class="blabel">Steps</div><ol class="steps"><li><span class="stepwhat">Open Review queue</span> Click <b>Review queue</b> (P12). Pending actions are listed.</li><li><span class="stepwhat">Examine the request</span> Review the suspect, its verdict and the drafted takedown packet.</li><li><span class="stepwhat">Approve or deny</span> Click <b>Approve</b> to authorise submission, or <b>Deny</b> with a reason.</li><li><span class="stepwhat">(Sensitive actions only)</span> If the action egresses synthetic credentials or a honeypot, a <i>second</i> authoriser is also required before it proceeds.</li></ol></div>
-  <div class="block result"><div class="blabel">✓ Result — what happens</div><p>On approval, the takedown is submitted to the correct registrar or hosting-abuse channel and a reference ID is returned. Every step is audited.</p></div>
-  <div class="block next"><div class="blabel">→ What to do next</div><p>Track delivery in <b>Takedowns</b> (T9).</p></div>
-  <div class="block behind"><div class="blabel">Behind the scenes</div><p>HITL review is G4 (segregation of duties: reviewer ≠ analyst). The two-person rule for egress actions is enforced by governance (E8, review §V8-5).</p></div>
+  <div class="thead"><span class="tid">T8</span><h3>Approve or deny a takedown (reviewer)</h3></div>
+  <p class="purpose">Provide the mandatory human approval before submission. &nbsp;<span class="who">Who: Reviewer (≠ the analyst)</span></p>
+  <div class="cols">
+    <div class="left">
+      <div class="blabel">Before you start</div><ul class="prereq"><li>An analyst requested a takedown (T5)</li><li>You hold the Reviewer role</li></ul>
+      <div class="blabel">Steps</div><ol class="steps"><li><span class="sw">Open Review queue.</span> Pending actions are listed.</li><li><span class="sw">Examine the request.</span> Review the suspect, verdict and drafted packet.</li><li><span class="sw">Approve or deny.</span> Approve to authorise; deny with a reason.</li><li><span class="sw">Second authoriser.</span> Egress actions (canary creds / honeypot) need a second approver.</li></ol>
+    </div>
+    <div class="right">
+      <div class="screenwrap"><svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block">
+    <rect x="0" y="0" width="760" height="520" rx="14" fill="#0b0f17" stroke="#2c3a52"/>
+    <rect x="0" y="0" width="760" height="34" rx="14" fill="#1b2433"/>
+    <rect x="0" y="20" width="760" height="14" fill="#1b2433"/>
+    <circle cx="20" cy="17" r="5" fill="#ff5f57"/><circle cx="38" cy="17" r="5" fill="#febc2e"/><circle cx="56" cy="17" r="5" fill="#28c840"/>
+    <rect x="80" y="9" width="320" height="17" rx="5" fill="#0b0f17"/>
+    <text x="92" y="21" font-family="monospace" font-size="11" fill="#93a1b8">app.spoofvane.io/review</text>
+    <rect x="0" y="34" width="150" height="486" fill="#131a26" stroke="#2c3a52"/><text x="16" y="62" font-family="Georgia,serif" font-size="15" fill="#ffb020">⬡ SpoofVane</text><text x="16" y="89" font-family="sans-serif" font-size="12" fill="#93a1b8">Dashboard</text><text x="16" y="117" font-family="sans-serif" font-size="12" fill="#93a1b8">Brands</text><text x="16" y="145" font-family="sans-serif" font-size="12" fill="#93a1b8">Triage</text><text x="16" y="173" font-family="sans-serif" font-size="12" fill="#93a1b8">Clusters</text><text x="16" y="201" font-family="sans-serif" font-size="12" fill="#93a1b8">Deepfakes</text><text x="16" y="229" font-family="sans-serif" font-size="12" fill="#93a1b8">Exec</text><text x="16" y="257" font-family="sans-serif" font-size="12" fill="#93a1b8">Takedowns</text><text x="16" y="285" font-family="sans-serif" font-size="12" fill="#93a1b8">Audit</text><rect x="8" y="298" width="134" height="22" rx="5" fill="#232f42"/><text x="16" y="313" font-family="sans-serif" font-size="12" fill="#e8edf5">Review</text><text x="16" y="341" font-family="sans-serif" font-size="12" fill="#93a1b8">Cost</text><text x="16" y="369" font-family="sans-serif" font-size="12" fill="#93a1b8">Agents</text><g transform="translate(168,52)"><text x="0" y="18" font-family="Georgia,serif" font-size="20" fill="#e8edf5" font-weight="700">HITL review</text><rect x="160" y="4" width="150" height="20" rx="10" fill="#1b2433"/><text x="172" y="18" font-family="sans-serif" font-size="11" fill="#93a1b8">reviewer ≠ analyst</text><rect x="0" y="50" width="586" height="170" rx="10" fill="#131a26" stroke="#2c3a52"/><text x="14" y="72" font-family="Georgia,serif" font-size="13" fill="#e8edf5">Takedown: acme-secure.top</text><rect x="250" y="60" width="43" height="18" rx="9" fill="#2a1316"/><text x="256" y="73" font-family="monospace" font-size="10" fill="#ff4d57">phish</text><text x="16" y="110" font-family="sans-serif" font-size="12" fill="#93a1b8">Raised by analyst:kim · awaiting approval</text><rect x="16" y="140" width="67" height="28" rx="6" fill="#ffb020"/><text x="25" y="158" font-family="sans-serif" font-size="12" font-weight="700" fill="#1a1300">Approve</text><rect x="120" y="140" width="46" height="28" rx="6" fill="#ff4d57"/><text x="129" y="158" font-family="sans-serif" font-size="12" font-weight="700" fill="#fff">Deny</text><circle cx="40" cy="154" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="40" y="159" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">3</text><circle cx="150" cy="154" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="150" y="159" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">3</text></g></svg></div>
+      <div class="caption">The numbered markers ● on the screen match the steps.</div>
+    </div>
+  </div>
+  <div class="rowboxes">
+    <div class="rbox result"><div class="rl">✓ Result — what happens</div><p>On approval the takedown is submitted and a reference ID returns; all audited.</p></div>
+    <div class="rbox next"><div class="rl">→ Next</div><p>Track delivery in <b>Takedowns</b> (T9).</p></div>
+  </div>
+  <div class="behind"><span class="bl">Behind the scenes:</span> HITL G4 (reviewer ≠ analyst); two-person rule via governance E8 (§V8-5).</div>
 </article>
 <article class="task" id="T9">
   <div class="thead"><span class="tid">T9</span><h3>Track takedown delivery</h3></div>
-  <p class="purpose"><b>Purpose.</b> Monitor where each approved takedown is in the abuse-reporting pipeline.</p>
-  <div class="meta2"><span class="who"><b>Who can do this:</b> Analyst, Reviewer</span></div>
-  <div class="block"><div class="blabel">Before you start</div><ul class="prereq"><li>A takedown has been approved (T8)</li></ul></div>
-  <div class="block"><div class="blabel">Steps</div><ol class="steps"><li><span class="stepwhat">Open Takedowns</span> Click <b>Takedowns</b> (P10).</li><li><span class="stepwhat">Read the status</span> Each row shows the target URL, the channel (registrar or hosting provider), the status, and the reference ID.</li><li><span class="stepwhat">Override if needed</span> If a channel stalls, use the manual override to re-route or escalate.</li></ol></div>
-  <div class="block result"><div class="blabel">✓ Result — what happens</div><p>You have live visibility of every takedown and its reference for follow-up.</p></div>
-  <div class="block next"><div class="blabel">→ What to do next</div><p>Confirm resolution; the closed alert remains in <b>Audit</b> (T10) permanently.</p></div>
-  <div class="block behind"><div class="blabel">Behind the scenes</div><p>Registrar adapters are F1–F3; hosting-abuse routing is F4; alerts also fan out to your SIEM/SOAR via F5 (Splunk/Sentinel/ServiceNow/PagerDuty/Cortex XSOAR).</p></div>
+  <p class="purpose">Monitor where each approved takedown sits in the pipeline. &nbsp;<span class="who">Who: Analyst, Reviewer</span></p>
+  <div class="cols">
+    <div class="left">
+      <div class="blabel">Before you start</div><ul class="prereq"><li>A takedown was approved (T8)</li></ul>
+      <div class="blabel">Steps</div><ol class="steps"><li><span class="sw">Open Takedowns.</span> See URL, channel, status and reference ID per row.</li><li><span class="sw">Read the status.</span> Registrar or hosting-abuse channel and its state.</li><li><span class="sw">Override if stalled.</span> Re-route or escalate manually.</li></ol>
+    </div>
+    <div class="right">
+      <div class="screenwrap"><svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block">
+    <rect x="0" y="0" width="760" height="520" rx="14" fill="#0b0f17" stroke="#2c3a52"/>
+    <rect x="0" y="0" width="760" height="34" rx="14" fill="#1b2433"/>
+    <rect x="0" y="20" width="760" height="14" fill="#1b2433"/>
+    <circle cx="20" cy="17" r="5" fill="#ff5f57"/><circle cx="38" cy="17" r="5" fill="#febc2e"/><circle cx="56" cy="17" r="5" fill="#28c840"/>
+    <rect x="80" y="9" width="320" height="17" rx="5" fill="#0b0f17"/>
+    <text x="92" y="21" font-family="monospace" font-size="11" fill="#93a1b8">app.spoofvane.io/takedowns</text>
+    <rect x="0" y="34" width="150" height="486" fill="#131a26" stroke="#2c3a52"/><text x="16" y="62" font-family="Georgia,serif" font-size="15" fill="#ffb020">⬡ SpoofVane</text><text x="16" y="89" font-family="sans-serif" font-size="12" fill="#93a1b8">Dashboard</text><text x="16" y="117" font-family="sans-serif" font-size="12" fill="#93a1b8">Brands</text><text x="16" y="145" font-family="sans-serif" font-size="12" fill="#93a1b8">Triage</text><text x="16" y="173" font-family="sans-serif" font-size="12" fill="#93a1b8">Clusters</text><text x="16" y="201" font-family="sans-serif" font-size="12" fill="#93a1b8">Deepfakes</text><text x="16" y="229" font-family="sans-serif" font-size="12" fill="#93a1b8">Exec</text><rect x="8" y="242" width="134" height="22" rx="5" fill="#232f42"/><text x="16" y="257" font-family="sans-serif" font-size="12" fill="#e8edf5">Takedowns</text><text x="16" y="285" font-family="sans-serif" font-size="12" fill="#93a1b8">Audit</text><text x="16" y="313" font-family="sans-serif" font-size="12" fill="#93a1b8">Review</text><text x="16" y="341" font-family="sans-serif" font-size="12" fill="#93a1b8">Cost</text><text x="16" y="369" font-family="sans-serif" font-size="12" fill="#93a1b8">Agents</text><g transform="translate(168,52)"><text x="0" y="18" font-family="Georgia,serif" font-size="20" fill="#e8edf5" font-weight="700">Takedown status</text><text x="0" y="84" font-family="sans-serif" font-size="10" fill="#5e6e88">URL</text><text x="210" y="84" font-family="sans-serif" font-size="10" fill="#5e6e88">CHANNEL</text><text x="370" y="84" font-family="sans-serif" font-size="10" fill="#5e6e88">STATUS</text><text x="490" y="84" font-family="sans-serif" font-size="10" fill="#5e6e88">REF</text><text x="0" y="120" font-family="monospace" font-size="11" fill="#e8edf5">acme-secure.top</text><text x="210" y="120" font-family="sans-serif" font-size="11" fill="#93a1b8">Cloudflare</text><text x="370" y="120" font-family="sans-serif" font-size="11" fill="#3ddc84">submitted</text><text x="490" y="120" font-family="monospace" font-size="11" fill="#93a1b8">CF-6d8f</text><line x1="0" y1="132" x2="560" y2="132" stroke="#2c3a52"/><text x="0" y="162" font-family="monospace" font-size="11" fill="#e8edf5">my-acme.cc</text><text x="210" y="162" font-family="sans-serif" font-size="11" fill="#93a1b8">Hetzner abuse</text><text x="370" y="162" font-family="sans-serif" font-size="11" fill="#ffb020">HITL pending</text><text x="490" y="162" font-family="monospace" font-size="11" fill="#93a1b8">—</text><line x1="0" y1="174" x2="560" y2="174" stroke="#2c3a52"/><text x="0" y="204" font-family="monospace" font-size="11" fill="#e8edf5">acme-verify.xyz</text><text x="210" y="204" font-family="sans-serif" font-size="11" fill="#93a1b8">Namecheap</text><text x="370" y="204" font-family="sans-serif" font-size="11" fill="#3ddc84">acknowledged</text><text x="490" y="204" font-family="monospace" font-size="11" fill="#93a1b8">NC-44a1</text><line x1="0" y1="216" x2="560" y2="216" stroke="#2c3a52"/><circle cx="300" cy="116" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="300" y="121" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">2</text></g></svg></div>
+      <div class="caption">The numbered markers ● on the screen match the steps.</div>
+    </div>
+  </div>
+  <div class="rowboxes">
+    <div class="rbox result"><div class="rl">✓ Result — what happens</div><p>Live visibility of every takedown and its reference.</p></div>
+    <div class="rbox next"><div class="rl">→ Next</div><p>Closed alerts remain in <b>Audit</b> (T10) permanently.</p></div>
+  </div>
+  <div class="behind"><span class="bl">Behind the scenes:</span> Registrar adapters F1–F3, hosting-abuse F4; alerts also fan out to SIEM/SOAR via F5.</div>
 </article><h2 class="sec">Oversee</h2>
 <article class="task" id="T10">
   <div class="thead"><span class="tid">T10</span><h3>Search the audit trail</h3></div>
-  <p class="purpose"><b>Purpose.</b> Find exactly who did what, when — for an investigation or an audit.</p>
-  <div class="meta2"><span class="who"><b>Who can do this:</b> Auditor, Reviewer, Admin</span></div>
-  <div class="block"><div class="blabel">Before you start</div><ul class="prereq"><li>You hold a role with audit access</li></ul></div>
-  <div class="block"><div class="blabel">Steps</div><ol class="steps"><li><span class="stepwhat">Open Audit</span> Click <b>Audit</b> (P11).</li><li><span class="stepwhat">Ask in plain language</span> Type a natural-language query such as <i>'analyst takedown actions for tenant acme'</i>. SpoofVane parses it into filters.</li><li><span class="stepwhat">Read the chained log</span> Each entry shows the actor, action, outcome and a hash linking it to the previous entry.</li></ol></div>
-  <div class="block result"><div class="blabel">✓ Result — what happens</div><p>You have a filtered, tamper-evident view of the relevant actions.</p></div>
-  <div class="block next"><div class="blabel">→ What to do next</div><p>For compliance reporting, continue to <b>Compliance</b> (P14) to export an auditor pack.</p></div>
-  <div class="block behind"><div class="blabel">Behind the scenes</div><p>Natural-language search is H2; the log itself is the hash-chained audit (G3), which self-verifies and detects tampering.</p></div>
+  <p class="purpose">Find who did what, when — for investigation or audit. &nbsp;<span class="who">Who: Auditor, Reviewer, Admin</span></p>
+  <div class="cols">
+    <div class="left">
+      <div class="blabel">Before you start</div><ul class="prereq"><li>A role with audit access</li></ul>
+      <div class="blabel">Steps</div><ol class="steps"><li><span class="sw">Open Audit.</span> The hash-chained log opens.</li><li><span class="sw">Ask in plain language.</span> Type e.g. 'analyst takedown actions for tenant acme'.</li><li><span class="sw">Read the chained log.</span> Actor, action, outcome and a hash linking each entry.</li></ol>
+    </div>
+    <div class="right">
+      <div class="screenwrap"><svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block">
+    <rect x="0" y="0" width="760" height="520" rx="14" fill="#0b0f17" stroke="#2c3a52"/>
+    <rect x="0" y="0" width="760" height="34" rx="14" fill="#1b2433"/>
+    <rect x="0" y="20" width="760" height="14" fill="#1b2433"/>
+    <circle cx="20" cy="17" r="5" fill="#ff5f57"/><circle cx="38" cy="17" r="5" fill="#febc2e"/><circle cx="56" cy="17" r="5" fill="#28c840"/>
+    <rect x="80" y="9" width="320" height="17" rx="5" fill="#0b0f17"/>
+    <text x="92" y="21" font-family="monospace" font-size="11" fill="#93a1b8">app.spoofvane.io/audit</text>
+    <rect x="0" y="34" width="150" height="486" fill="#131a26" stroke="#2c3a52"/><text x="16" y="62" font-family="Georgia,serif" font-size="15" fill="#ffb020">⬡ SpoofVane</text><text x="16" y="89" font-family="sans-serif" font-size="12" fill="#93a1b8">Dashboard</text><text x="16" y="117" font-family="sans-serif" font-size="12" fill="#93a1b8">Brands</text><text x="16" y="145" font-family="sans-serif" font-size="12" fill="#93a1b8">Triage</text><text x="16" y="173" font-family="sans-serif" font-size="12" fill="#93a1b8">Clusters</text><text x="16" y="201" font-family="sans-serif" font-size="12" fill="#93a1b8">Deepfakes</text><text x="16" y="229" font-family="sans-serif" font-size="12" fill="#93a1b8">Exec</text><text x="16" y="257" font-family="sans-serif" font-size="12" fill="#93a1b8">Takedowns</text><rect x="8" y="270" width="134" height="22" rx="5" fill="#232f42"/><text x="16" y="285" font-family="sans-serif" font-size="12" fill="#e8edf5">Audit</text><text x="16" y="313" font-family="sans-serif" font-size="12" fill="#93a1b8">Review</text><text x="16" y="341" font-family="sans-serif" font-size="12" fill="#93a1b8">Cost</text><text x="16" y="369" font-family="sans-serif" font-size="12" fill="#93a1b8">Agents</text><g transform="translate(168,52)"><text x="0" y="18" font-family="Georgia,serif" font-size="20" fill="#e8edf5" font-weight="700">Audit log</text><rect x="0" y="40" width="586" height="36" rx="6" fill="#0b0f17" stroke="#2c3a52"/><text x="14" y="63" font-family="monospace" font-size="11" fill="#5e6e88">Ask: analyst takedown actions for tenant acme</text><text x="0" y="108" font-family="sans-serif" font-size="10" fill="#5e6e88">#</text><text x="60" y="108" font-family="sans-serif" font-size="10" fill="#5e6e88">ACTOR</text><text x="220" y="108" font-family="sans-serif" font-size="10" fill="#5e6e88">ACTION</text><text x="400" y="108" font-family="sans-serif" font-size="10" fill="#5e6e88">HASH</text><text x="0" y="136" font-family="monospace" font-size="11" fill="#e8edf5">1182</text><text x="60" y="136" font-family="monospace" font-size="11" fill="#93a1b8">analyst:kim</text><text x="220" y="136" font-family="monospace" font-size="11" fill="#93a1b8">takedown_request</text><text x="400" y="136" font-family="monospace" font-size="11" fill="#5e6e88">a3f9…</text><text x="0" y="160" font-family="monospace" font-size="11" fill="#e8edf5">1183</text><text x="60" y="160" font-family="monospace" font-size="11" fill="#93a1b8">reviewer:lee</text><text x="220" y="160" font-family="monospace" font-size="11" fill="#93a1b8">takedown_approve</text><text x="400" y="160" font-family="monospace" font-size="11" fill="#5e6e88">b2c1…</text><circle cx="300" cy="58" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="300" y="63" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">2</text></g></svg></div>
+      <div class="caption">The numbered markers ● on the screen match the steps.</div>
+    </div>
+  </div>
+  <div class="rowboxes">
+    <div class="rbox result"><div class="rl">✓ Result — what happens</div><p>A filtered, tamper-evident view of the relevant actions.</p></div>
+    <div class="rbox next"><div class="rl">→ Next</div><p>For reporting, export an auditor pack from <b>Compliance</b> (P14).</p></div>
+  </div>
+  <div class="behind"><span class="bl">Behind the scenes:</span> NL search H2; hash-chained audit G3 self-verifies and detects tampering.</div>
 </article>
 <article class="task" id="T11">
-  <div class="thead"><span class="tid">T11</span><h3>Watch Bright Data spend against budget</h3></div>
-  <p class="purpose"><b>Purpose.</b> Keep data-collection costs within the tenant's envelope.</p>
-  <div class="meta2"><span class="who"><b>Who can do this:</b> Admin, Owner</span></div>
-  <div class="block"><div class="blabel">Before you start</div><ul class="prereq"><li>You hold the Admin or Owner role</li></ul></div>
-  <div class="block"><div class="blabel">Steps</div><ol class="steps"><li><span class="stepwhat">Open Cost</span> Click <b>Cost</b> (P13).</li><li><span class="stepwhat">Read spend vs envelope</span> See current spend against the tier cap (free $5 / pro $100 / business $1,000 / enterprise $25,000) and the share handled by the cheap SLM path.</li><li><span class="stepwhat">Set or adjust alerts</span> Configure a budget alert threshold if needed.</li></ol></div>
-  <div class="block result"><div class="blabel">✓ Result — what happens</div><p>You can see and control data-collection cost before it exceeds the envelope.</p></div>
-  <div class="block next"><div class="blabel">→ What to do next</div><p>If spend is high, review which sources are most active in Brand detail (P04).</p></div>
-  <div class="block behind"><div class="blabel">Behind the scenes</div><p>Cost tracking is G9; every Bright Data call records a cost row automatically. SLM-first routing (D4) keeps most low-severity verdicts on the cheap path.</p></div>
+  <div class="thead"><span class="tid">T11</span><h3>Watch Bright Data spend</h3></div>
+  <p class="purpose">Keep data-collection cost within the envelope. &nbsp;<span class="who">Who: Admin, Owner</span></p>
+  <div class="cols">
+    <div class="left">
+      <div class="blabel">Before you start</div><ul class="prereq"><li>Admin or Owner role</li></ul>
+      <div class="blabel">Steps</div><ol class="steps"><li><span class="sw">Open Cost.</span> See spend vs the tier cap.</li><li><span class="sw">Read the bar.</span> Current spend, envelope, and SLM cheap-path share.</li><li><span class="sw">Set alerts.</span> Configure a budget alert threshold.</li></ol>
+    </div>
+    <div class="right">
+      <div class="screenwrap"><svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block">
+    <rect x="0" y="0" width="760" height="520" rx="14" fill="#0b0f17" stroke="#2c3a52"/>
+    <rect x="0" y="0" width="760" height="34" rx="14" fill="#1b2433"/>
+    <rect x="0" y="20" width="760" height="14" fill="#1b2433"/>
+    <circle cx="20" cy="17" r="5" fill="#ff5f57"/><circle cx="38" cy="17" r="5" fill="#febc2e"/><circle cx="56" cy="17" r="5" fill="#28c840"/>
+    <rect x="80" y="9" width="320" height="17" rx="5" fill="#0b0f17"/>
+    <text x="92" y="21" font-family="monospace" font-size="11" fill="#93a1b8">app.spoofvane.io/cost</text>
+    <rect x="0" y="34" width="150" height="486" fill="#131a26" stroke="#2c3a52"/><text x="16" y="62" font-family="Georgia,serif" font-size="15" fill="#ffb020">⬡ SpoofVane</text><text x="16" y="89" font-family="sans-serif" font-size="12" fill="#93a1b8">Dashboard</text><text x="16" y="117" font-family="sans-serif" font-size="12" fill="#93a1b8">Brands</text><text x="16" y="145" font-family="sans-serif" font-size="12" fill="#93a1b8">Triage</text><text x="16" y="173" font-family="sans-serif" font-size="12" fill="#93a1b8">Clusters</text><text x="16" y="201" font-family="sans-serif" font-size="12" fill="#93a1b8">Deepfakes</text><text x="16" y="229" font-family="sans-serif" font-size="12" fill="#93a1b8">Exec</text><text x="16" y="257" font-family="sans-serif" font-size="12" fill="#93a1b8">Takedowns</text><text x="16" y="285" font-family="sans-serif" font-size="12" fill="#93a1b8">Audit</text><text x="16" y="313" font-family="sans-serif" font-size="12" fill="#93a1b8">Review</text><rect x="8" y="326" width="134" height="22" rx="5" fill="#232f42"/><text x="16" y="341" font-family="sans-serif" font-size="12" fill="#e8edf5">Cost</text><text x="16" y="369" font-family="sans-serif" font-size="12" fill="#93a1b8">Agents</text><g transform="translate(168,52)"><text x="0" y="18" font-family="Georgia,serif" font-size="20" fill="#e8edf5" font-weight="700">Bright Data spend</text><rect x="0" y="50" width="586" height="150" rx="10" fill="#131a26" stroke="#2c3a52"/><text x="14" y="72" font-family="Georgia,serif" font-size="13" fill="#e8edf5">Tenant: acme · tier: business</text><rect x="16" y="100" width="540" height="18" rx="9" fill="#1b2433"/><rect x="16" y="100" width="221" height="18" rx="9" fill="#ffb020"/><text x="16" y="146" font-family="monospace" font-size="12" fill="#93a1b8">$412 / $1000 envelope   ·   SLM cheap-path 73%</text><circle cx="300" cy="109" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="300" y="114" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">2</text></g></svg></div>
+      <div class="caption">The numbered markers ● on the screen match the steps.</div>
+    </div>
+  </div>
+  <div class="rowboxes">
+    <div class="rbox result"><div class="rl">✓ Result — what happens</div><p>You can see and control cost before it exceeds the envelope.</p></div>
+    <div class="rbox next"><div class="rl">→ Next</div><p>If high, review active sources in Brand detail (P04).</p></div>
+  </div>
+  <div class="behind"><span class="bl">Behind the scenes:</span> Cost tracking G9; every BD call records a cost row; SLM-first routing D4 keeps costs down.</div>
 </article><h2 class="sec">Administer</h2>
 <article class="task" id="T12">
-  <div class="thead"><span class="tid">T12</span><h3>Manage agents and use the kill-switch</h3></div>
-  <p class="purpose"><b>Purpose.</b> Govern the autonomous agents and halt them instantly if anything looks wrong.</p>
-  <div class="meta2"><span class="who"><b>Who can do this:</b> Admin</span></div>
-  <div class="block"><div class="blabel">Before you start</div><ul class="prereq"><li>You hold the Admin role</li></ul></div>
-  <div class="block"><div class="blabel">Steps</div><ol class="steps"><li><span class="stepwhat">Open Admin · Agents</span> Click <b>Agents</b> (P15). You see each agent, its state and its blast-radius budget.</li><li><span class="stepwhat">Set governance budgets</span> Adjust the cost/risk envelope per agent if required.</li><li><span class="stepwhat">Use the kill-switch</span> To stop everything immediately, click <b>Global kill-switch</b>. To stop one tenant's agents only, use the per-tenant control.</li></ol></div>
-  <div class="block result"><div class="blabel">✓ Result — what happens</div><p>Agents run within their budgets; if you fire the kill-switch, every running agent halts and returns a halted state, recorded in the audit.</p></div>
-  <div class="block next"><div class="blabel">→ What to do next</div><p>Resume agents from the same screen when it is safe.</p></div>
-  <div class="block behind"><div class="blabel">Behind the scenes</div><p>The kill-switch is E7 (global or per-tenant); governance is E8; every agent action is written to the hash-chained agent audit (E9).</p></div>
+  <div class="thead"><span class="tid">T12</span><h3>Manage agents and the kill-switch</h3></div>
+  <p class="purpose">Govern autonomous agents and halt them instantly if needed. &nbsp;<span class="who">Who: Admin</span></p>
+  <div class="cols">
+    <div class="left">
+      <div class="blabel">Before you start</div><ul class="prereq"><li>Admin role</li></ul>
+      <div class="blabel">Steps</div><ol class="steps"><li><span class="sw">Open Admin · Agents.</span> See each agent, its state and blast-radius budget.</li><li><span class="sw">Set budgets.</span> Adjust the cost/risk envelope per agent.</li><li><span class="sw">Use the kill-switch.</span> Global to stop everything, or per-tenant to scope it.</li></ol>
+    </div>
+    <div class="right">
+      <div class="screenwrap"><svg viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block">
+    <rect x="0" y="0" width="760" height="520" rx="14" fill="#0b0f17" stroke="#2c3a52"/>
+    <rect x="0" y="0" width="760" height="34" rx="14" fill="#1b2433"/>
+    <rect x="0" y="20" width="760" height="14" fill="#1b2433"/>
+    <circle cx="20" cy="17" r="5" fill="#ff5f57"/><circle cx="38" cy="17" r="5" fill="#febc2e"/><circle cx="56" cy="17" r="5" fill="#28c840"/>
+    <rect x="80" y="9" width="320" height="17" rx="5" fill="#0b0f17"/>
+    <text x="92" y="21" font-family="monospace" font-size="11" fill="#93a1b8">app.spoofvane.io/admin/agents</text>
+    <rect x="0" y="34" width="150" height="486" fill="#131a26" stroke="#2c3a52"/><text x="16" y="62" font-family="Georgia,serif" font-size="15" fill="#ffb020">⬡ SpoofVane</text><text x="16" y="89" font-family="sans-serif" font-size="12" fill="#93a1b8">Dashboard</text><text x="16" y="117" font-family="sans-serif" font-size="12" fill="#93a1b8">Brands</text><text x="16" y="145" font-family="sans-serif" font-size="12" fill="#93a1b8">Triage</text><text x="16" y="173" font-family="sans-serif" font-size="12" fill="#93a1b8">Clusters</text><text x="16" y="201" font-family="sans-serif" font-size="12" fill="#93a1b8">Deepfakes</text><text x="16" y="229" font-family="sans-serif" font-size="12" fill="#93a1b8">Exec</text><text x="16" y="257" font-family="sans-serif" font-size="12" fill="#93a1b8">Takedowns</text><text x="16" y="285" font-family="sans-serif" font-size="12" fill="#93a1b8">Audit</text><text x="16" y="313" font-family="sans-serif" font-size="12" fill="#93a1b8">Review</text><text x="16" y="341" font-family="sans-serif" font-size="12" fill="#93a1b8">Cost</text><rect x="8" y="354" width="134" height="22" rx="5" fill="#232f42"/><text x="16" y="369" font-family="sans-serif" font-size="12" fill="#e8edf5">Agents</text><g transform="translate(168,52)"><text x="0" y="18" font-family="Georgia,serif" font-size="20" fill="#e8edf5" font-weight="700">Agents</text><rect x="420" y="2" width="158" height="28" rx="6" fill="#ff4d57"/><text x="429" y="20" font-family="sans-serif" font-size="12" font-weight="700" fill="#fff">⨯ Global kill-switch</text><text x="0" y="84" font-family="sans-serif" font-size="10" fill="#5e6e88">AGENT</text><text x="260" y="84" font-family="sans-serif" font-size="10" fill="#5e6e88">STATE</text><text x="460" y="84" font-family="sans-serif" font-size="10" fill="#5e6e88">BLAST</text><text x="0" y="116" font-family="monospace" font-size="12" fill="#e8edf5">takedown_agent</text><text x="260" y="116" font-family="sans-serif" font-size="11" fill="#3ddc84">idle</text><text x="460" y="116" font-family="monospace" font-size="11" fill="#93a1b8">0.6</text><text x="0" y="144" font-family="monospace" font-size="12" fill="#e8edf5">cred_poison_agent</text><text x="260" y="144" font-family="sans-serif" font-size="11" fill="#ffb020">blocked (2-person)</text><text x="460" y="144" font-family="monospace" font-size="11" fill="#93a1b8">0.85</text><circle cx="500" cy="16" r="13" fill="#ffb020" stroke="#0b0f17" stroke-width="2"/><text x="500" y="21" font-family="sans-serif" font-size="14" font-weight="700" fill="#1a1300" text-anchor="middle">3</text></g></svg></div>
+      <div class="caption">The numbered markers ● on the screen match the steps.</div>
+    </div>
+  </div>
+  <div class="rowboxes">
+    <div class="rbox result"><div class="rl">✓ Result — what happens</div><p>Agents run within budget; firing the kill-switch halts them all (audited).</p></div>
+    <div class="rbox next"><div class="rl">→ Next</div><p>Resume agents from the same screen when safe.</p></div>
+  </div>
+  <div class="behind"><span class="bl">Behind the scenes:</span> Kill-switch E7, governance E8, hash-chained agent audit E9.</div>
 </article>
-
-<p class="foot">SpoofVane User Guide · built by Claude (Opus 4.8) in Claude Code · 29 May 2026, 10:08 BST · Screens referenced (P01–P21) match the console page registry; capabilities referenced (A–H module IDs) match docs/TRACEABILITY_MASTER.md.</p>
+<p class="foot">SpoofVane User Guide · Claude (Opus 4.8) in Claude Code · 29 May 2026, 10:15 BST · screens P01–P21, capabilities A–H per docs/TRACEABILITY_MASTER.md.</p>
 </div></body></html>
