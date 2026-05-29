@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { PAGES } from "../lib/pages";
 import type { Role } from "../lib/types";
+import { getLastSource, onSourceChange, type DataSource } from "../lib/api";
 import {
   SidebarProvider,
   useSidebar,
@@ -21,6 +22,32 @@ import {
 const ROLE_RANK: Record<Role, number> = {
   viewer: 0, auditor: 1, reviewer: 2, analyst: 3, admin: 4, owner: 5,
 };
+
+// v06 §C — Demo Health pill: LIVE (green) when last fetch hit the backend,
+// SEED (amber) when it fell back to the offline seed lane.
+function DemoHealthPill() {
+  const [src, setSrc] = useState<DataSource>(getLastSource());
+  useEffect(() => onSourceChange(setSrc), []);
+  const isLive = src === "live";
+  return (
+    <span
+      data-testid="demo-health-pill"
+      data-source={src}
+      title={isLive ? "Backend reachable" : "Backend down \u2014 rendering offline seed data"}
+      style={{
+        borderRadius: "var(--sv-r-pill)",
+        padding: "2px 10px",
+        fontSize: "var(--sv-fs-xs)",
+        fontFamily: "var(--sv-font-mono)",
+        letterSpacing: ".06em",
+        color: isLive ? "var(--sv-benign)" : "var(--sv-suspicious)",
+        background: isLive ? "var(--sv-benign-bg)" : "var(--sv-suspicious-bg)",
+      }}
+    >
+      {isLive ? "LIVE" : "SEED"}
+    </span>
+  );
+}
 
 function Shell({ role, children }: { role: Role; children: React.ReactNode }) {
   const { isCollapsed, toggle, setCollapsed } = useSidebar();
@@ -138,7 +165,22 @@ function Shell({ role, children }: { role: Role; children: React.ReactNode }) {
           ))}
         </nav>
       </aside>
-      <main style={{ padding: "var(--sv-s6)" }}>{children}</main>
+      <main style={{ display: "flex", flexDirection: "column" }}>
+        <header
+          data-testid="top-bar"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: "var(--sv-s3)",
+            padding: "var(--sv-s3) var(--sv-s6)",
+            borderBottom: "1px solid var(--sv-border)",
+          }}
+        >
+          <DemoHealthPill />
+        </header>
+        <div style={{ padding: "var(--sv-s6)" }}>{children}</div>
+      </main>
     </div>
   );
 }
