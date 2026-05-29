@@ -1,0 +1,142 @@
+{
+  "demo": "SpoofVane v0.5 end-to-end SOC walkthrough",
+  "issued": "2026-05-29T08:45:00+01:00",
+  "coder": "Claude (Opus 4.8) via Claude Code",
+  "bd_mode": "replay",
+  "steps": [
+    {
+      "seq": "01",
+      "action": "Sign in via SSO (OIDC) to the demo tenant",
+      "page": "P01",
+      "step_hash": "0a057a91cd291802",
+      "prev": "0000000000000000",
+      "chain": "833a1d98b097802c"
+    },
+    {
+      "seq": "02",
+      "action": "Dashboard shows live KPI tiles + family pie",
+      "page": "P02",
+      "step_hash": "e4e5da520a902fc5",
+      "prev": "833a1d98b097802c",
+      "chain": "c40455f861b39cad"
+    },
+    {
+      "seq": "03",
+      "action": "Brand wizard onboards 'Acme Bank' (H3)",
+      "page": "P03",
+      "step_hash": "304ea73b065d3c0a",
+      "prev": "c40455f861b39cad",
+      "chain": "b2c32b285a20d4e6"
+    },
+    {
+      "seq": "04",
+      "action": "Discovery sweep: SERP + cert-stream + OpenPhish + registrar-feed fills triage",
+      "page": "P05",
+      "step_hash": "01fa84c95dcaa5c6",
+      "prev": "b2c32b285a20d4e6",
+      "chain": "1f3e81ba21e49c4c"
+    },
+    {
+      "seq": "05",
+      "action": "Open an alert: Scraping-Browser render badge 'US-residential' (B1)",
+      "page": "P06",
+      "step_hash": "3581363f66f943d7",
+      "prev": "1f3e81ba21e49c4c",
+      "chain": "3aab9bfd2fd95aa6"
+    },
+    {
+      "seq": "06",
+      "action": "Evidence tabs: HAR, TLS/JA3, WHOIS/ASN, kit match (EvilProxy)",
+      "page": "P06",
+      "step_hash": "0ea1af8c903d1d7f",
+      "prev": "3aab9bfd2fd95aa6",
+      "chain": "199efdd691e7f57e"
+    },
+    {
+      "seq": "07",
+      "action": "Verdict trace: ensemble (Claude+GPT+Gemini) with dissent escalation (D5)",
+      "page": "P06",
+      "step_hash": "a811472fccb62c9f",
+      "prev": "199efdd691e7f57e",
+      "chain": "ef79614c58e3f4ee"
+    },
+    {
+      "seq": "08",
+      "action": "MITRE tab shows T1566.002 + T1557 (D7)",
+      "page": "P06",
+      "step_hash": "ab222471dc009d2c",
+      "prev": "ef79614c58e3f4ee",
+      "chain": "63ac3f8d7f2333b0"
+    },
+    {
+      "seq": "09",
+      "action": "Cluster view links 3 domains by shared ASN+kit (C8)",
+      "page": "P07",
+      "step_hash": "ecaae3e6d689a5ae",
+      "prev": "63ac3f8d7f2333b0",
+      "chain": "f57420c0fbedb0cb"
+    },
+    {
+      "seq": "10",
+      "action": "Deepfake queue: voiceprint mismatch + C2PA fail (C9/C10/D6)",
+      "page": "P08",
+      "step_hash": "501156dcb4c190d3",
+      "prev": "f57420c0fbedb0cb",
+      "chain": "2730f18a106785a5"
+    },
+    {
+      "seq": "11",
+      "action": "Takedown agent drafts registrar packet, blocked on HITL (E1)",
+      "page": "P10",
+      "step_hash": "aeaa4efe5f29b887",
+      "prev": "2730f18a106785a5",
+      "chain": "1e64b9083a86f4c1"
+    },
+    {
+      "seq": "12",
+      "action": "Reviewer (\u2260 analyst) approves; hosting-abuse routed to Hetzner (F4)",
+      "page": "P12",
+      "step_hash": "ec98edfece743639",
+      "prev": "1e64b9083a86f4c1",
+      "chain": "6f9f9c25a6acfcea"
+    },
+    {
+      "seq": "13",
+      "action": "Cred-poison agent requires lawful basis + two-person + US region (E3/\u00a7V8-5)",
+      "page": "P15",
+      "step_hash": "eefaa579f1d58fac",
+      "prev": "6f9f9c25a6acfcea",
+      "chain": "9322b39f4e9bb7ae"
+    },
+    {
+      "seq": "14",
+      "action": "Global kill-switch halts all agents (E7)",
+      "page": "P15",
+      "step_hash": "b6503164fa27961a",
+      "prev": "9322b39f4e9bb7ae",
+      "chain": "a3eeb5e67531ccdd"
+    },
+    {
+      "seq": "15",
+      "action": "Cost page: BD spend vs envelope; XSOAR incident created (F5/G9)",
+      "page": "P13",
+      "step_hash": "879071a9f023eda8",
+      "prev": "a3eeb5e67531ccdd",
+      "chain": "54b44744844bb487"
+    },
+    {
+      "seq": "16",
+      "action": "Audit page NL search 'analyst takedown actions' (H2); chain verifies (G3)",
+      "page": "P11",
+      "step_hash": "49336c8b3973344f",
+      "prev": "54b44744844bb487",
+      "chain": "7df3fe0d6a53baf5"
+    }
+  ],
+  "manifest_root": "7df3fe0d6a53baf5",
+  "recording": {
+    "status": "BLOCKED-ENV",
+    "reason": "screen recorder + RFC-3161 TSA not available in build sandbox",
+    "note": "manifest + per-step chain are real; CI attaches the signed .mp4 + RFC-3161 token"
+  }
+}

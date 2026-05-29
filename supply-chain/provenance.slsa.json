@@ -1,0 +1,30 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "subject": [
+    {
+      "name": "spoofvane-0.5.0",
+      "digest": {
+        "sha256": "<computed-at-build>"
+      }
+    }
+  ],
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://spoofvane/build/reproducible-replay",
+      "externalParameters": {
+        "SPOOFVANE_BD_MODE": "replay"
+      }
+    },
+    "runDetails": {
+      "builder": {
+        "id": "BLOCKED-ENV: requires CI builder + cosign keyless signing"
+      },
+      "metadata": {
+        "invocationId": "local-sandbox",
+        "startedOn": "2026-05-29T08:45:00+01:00"
+      }
+    }
+  },
+  "_note": "SLSA-L3 attestation + cosign signature are BLOCKED-ENV (no CI/registry in sandbox). This predicate is the real shape the CI builder emits."
+}

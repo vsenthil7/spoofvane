@@ -1,0 +1,31 @@
+/* SpoofVane SOC Console — canonical design tokens (review §9 design system).
+ * Single source of truth for color, type, spacing, elevation. Every page and
+ * component consumes these variables; no hard-coded colors elsewhere.
+ * Aesthetic: "command deck" — deep slate canvas, signal-amber + threat-red
+ * accents, monospace for evidence/IOCs, humanist sans for chrome. */
+:root {
+  --sv-bg: #0b0f17; --sv-surface: #131a26; --sv-surface-2: #1b2433;
+  --sv-surface-3: #232f42; --sv-border: #2c3a52; --sv-border-strong: #3d4f6e;
+  --sv-text: #e8edf5; --sv-text-muted: #93a1b8; --sv-text-faint: #5e6e88;
+  --sv-brand: #ffb020; --sv-brand-dim: #c9871a; --sv-accent: #36c2ce;
+  --sv-phish: #ff4d57; --sv-phish-bg: #2a1316;
+  --sv-suspicious: #ffb020; --sv-suspicious-bg: #2a2310;
+  --sv-benign: #3ddc84; --sv-benign-bg: #0f2419; --sv-info: #4d9fff;
+  --sv-font-display: "Space Grotesk", Georgia, serif;
+  --sv-font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --sv-font-mono: "JetBrains Mono", "SF Mono", monospace;
+  --sv-fs-xs: 11px; --sv-fs-sm: 13px; --sv-fs-md: 15px;
+  --sv-fs-lg: 19px; --sv-fs-xl: 26px; --sv-fs-2xl: 38px;
+  --sv-s1: 4px; --sv-s2: 8px; --sv-s3: 12px; --sv-s4: 16px;
+  --sv-s5: 24px; --sv-s6: 32px; --sv-s7: 48px; --sv-s8: 64px;
+  --sv-r-sm: 6px; --sv-r-md: 10px; --sv-r-lg: 16px; --sv-r-pill: 999px;
+  --sv-shadow-1: 0 1px 2px rgba(0,0,0,.4);
+  --sv-shadow-2: 0 8px 24px rgba(0,0,0,.45);
+  --sv-shadow-glow: 0 0 0 1px var(--sv-brand), 0 0 24px rgba(255,176,32,.15);
+  --sv-ease: cubic-bezier(.2,.7,.2,1);
+  --sv-dur-fast: 120ms; --sv-dur: 220ms; --sv-dur-slow: 420ms;
+}
+.sv-pill { border-radius: var(--sv-r-pill); padding: 2px 10px; font: 600 var(--sv-fs-xs)/1.6 var(--sv-font-mono); letter-spacing:.04em; text-transform:uppercase; }
+.sv-pill--phish { color: var(--sv-phish); background: var(--sv-phish-bg); }
+.sv-pill--suspicious { color: var(--sv-suspicious); background: var(--sv-suspicious-bg); }
+.sv-pill--benign { color: var(--sv-benign); background: var(--sv-benign-bg); }

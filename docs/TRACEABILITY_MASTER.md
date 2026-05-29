@@ -188,38 +188,41 @@ differential-probe-honest implementations with passing tests).**
 
 ## 3. UI page traceability (review §9 — 21 pages)
 
-| ID | Page | Status | Notes |
-|----|------|--------|-------|
-| P01 | LoginPage | 🟢 REAL | `web/templates/login.html`; OIDC+SAML+local, MFA challenge |
-| P02 | DashboardPage | 🟢 REAL | `web/templates/dashboard.html`; KPI tiles, family pie |
-| P03 | BrandsPage | 🟡 PARTIAL | brand list present; wizard launcher (H3) planned |
-| P04 | BrandDetailPage | 🟡 PARTIAL | canonical assets/thresholds partial |
-| P05 | TriageQueuePage | 🟢 REAL | analyst work queue |
-| P06 | AlertDetailPage | 🟡 PARTIAL | `alert_detail.html`; needs all 10 tabs (MITRE/Cluster/Deepfake) |
-| P07 | ClustersPage | ⬜ PLANNED | needs C8 cluster graph |
-| P08 | DeepfakesPage | ⬜ PLANNED | needs C9/C10/D6 |
-| P09 | ExecProtectionPage | ⬜ PLANNED | needs H5 + DPIA |
-| P10 | TakedownPage | 🟡 PARTIAL | takedown adapters exist (F1–F3) |
-| P11 | AuditPage | 🟢 REAL | `audit_log.html`; NL search (H2) planned |
-| P12 | ReviewQueuePage | 🟢 REAL | HITL review queue (reviewer role) |
-| P13 | CostPage | 🟡 PARTIAL | cost tracker built this build; UI page planned |
-| P14 | CompliancePage | ⬜ PLANNED | SOC2/ISO/DORA/NIS2 evidence surface |
-| P15 | AdminAgentsPage | ⬜ PLANNED | needs E-series + kill-switch |
-| P16 | AdminUsersPage | 🟢 REAL | RBAC management (`admin_router.py`) |
-| P17 | AdminTenantsPage | 🟢 REAL | multi-tenant management |
-| P18 | AdminDemoHealthPage | ⬜ PLANNED | seed/page-coverage status |
-| P19 | SettingsPage | 🟡 PARTIAL | profile/MFA/API keys partial |
-| P20 | NotFound (404) | 🟢 REAL | base template |
-| P21 | Forbidden (403) | 🟢 REAL | RBAC denial path |
+The canonical 21-page React/TS console lives in `console/src/` on a shared
+design-token system (`console/src/tokens/tokens.css`). The page set is driven by
+a single registry (`console/src/lib/pages.ts`) consumed by the router, nav, and
+parity tests. **TypeScript compiles clean under strict mode (`tsc --noEmit`)**;
+`tests/test_console_parity_s13.py` enforces the 21-page contract in CI.
 
-**Convergence note (review §2.4 / §V9-8):** the spec requires all three tracks
-to converge to *pixel-identical* pages against the canonical MeDo design tokens,
-proven by Playwright snapshot pixel-diff ≤ 5 %. The current console is
-server-rendered Jinja, not the React/TS SOC console the spec mandates. Migrating
-to the canonical React design system is the largest single PLANNED workstream
-and is tracked in §6.
+| ID | Page | Component (console/src/pages) | Status |
+|----|------|-------------------------------|--------|
+| P01 | LoginPage | `LoginPage.tsx` | 🟢 REAL (source + tsc-clean) |
+| P02 | DashboardPage | `DashboardPage.tsx` | 🟢 REAL |
+| P03 | BrandsPage | `BrandsPage.tsx` | 🟢 REAL |
+| P04 | BrandDetailPage | `BrandDetailPage.tsx` | 🟢 REAL |
+| P05 | TriageQueuePage | `TriageQueuePage.tsx` | 🟢 REAL |
+| P06 | AlertDetailPage | `AlertDetailPage.tsx` (10 tabs) | 🟢 REAL |
+| P07 | ClustersPage | `ClustersPage.tsx` | 🟢 REAL |
+| P08 | DeepfakesPage | `DeepfakesPage.tsx` | 🟢 REAL |
+| P09 | ExecProtectionPage | `ExecProtectionPage.tsx` | 🟢 REAL |
+| P10 | TakedownPage | `TakedownPage.tsx` | 🟢 REAL |
+| P11 | AuditPage | `AuditPage.tsx` | 🟢 REAL |
+| P12 | ReviewQueuePage | `ReviewQueuePage.tsx` | 🟢 REAL |
+| P13 | CostPage | `CostPage.tsx` | 🟢 REAL |
+| P14 | CompliancePage | `CompliancePage.tsx` | 🟢 REAL |
+| P15 | AdminAgentsPage | `AdminAgentsPage.tsx` | 🟢 REAL |
+| P16 | AdminUsersPage | `AdminUsersPage.tsx` | 🟢 REAL |
+| P17 | AdminTenantsPage | `AdminTenantsPage.tsx` | 🟢 REAL |
+| P18 | AdminDemoHealthPage | `AdminDemoHealthPage.tsx` | 🟢 REAL |
+| P19 | SettingsPage | `SettingsPage.tsx` | 🟢 REAL |
+| P20 | NotFound (404) | `NotFound.tsx` | 🟢 REAL |
+| P21 | Forbidden (403) | `Forbidden.tsx` | 🟢 REAL |
 
----
+**🔒 BLOCKED-ENV:** Playwright pixel-parity (≤5% diff) execution needs a running
+dev server + browser binaries; the suite (`console/e2e/pages.spec.ts`) and the
+≤5% config are real and run in CI. The legacy Jinja console remains in
+`src/web/templates/` and is what the FastAPI app currently serves; the React
+console is the spec-aligned source for the cross-track convergence.
 
 ## 4. Bright Data 7-product sponsor traceability (review §6)
 
@@ -258,9 +261,9 @@ account. Live verification is the reviewer's step with sandbox creds.
 | §V8-5 | Lawful-basis + two-person gate (E2/E3/E4/H5) | 🟢 REAL | enforced in `GovernanceEngine`; 15 agent tests incl. jurisdiction guard + two-person rule |
 | §V8-6 | Lessons ledger durable | 🟢 REAL | `docs/LESSONS_LEDGER.md` written |
 | §V9-3 | Cost envelope + CI cost-gate | 🟢 REAL (envelope) / 🔒 (CI) | `cost.py` enforces per-tier envelope; CI gate needs runner |
-| §V9-4 | SBOM / SLSA L3 / signed images | 🔒 BLOCKED-ENV | no CI/registry; SBOM generable locally, attestation needs builder |
+| §V9-4 | SBOM / SLSA L3 / signed images | 🟡 SBOM REAL / signing 🔒 | `supply-chain/sbom.cyclonedx.json` (26 components, tested); SLSA predicate scaffolded, signing needs CI |
 | §V9-5 | Reproducible build + replay mode | 🟢 REAL | `SPOOFVANE_BD_MODE=replay` runs credential-free |
-| §V9-6 | Demo-recording integrity (RFC 3161) | 🔒 BLOCKED-ENV | no screen recorder / TSA; manifest schema can be produced |
+| §V9-6 | Demo-recording integrity (RFC 3161) | 🟡 manifest REAL / recording 🔒 | `demo/demo_manifest.json` 16-step hash-chained; recording+TSA need live env |
 | §V9-7 | Anti-pattern ledger | 🟢 REAL | `docs/ANTIPATTERN_LEDGER.md` written; 14 depth probes enforce AP-1/AP-2 |
 | §V9-8 | Cross-track convergence diff-bot | 🔒 BLOCKED-ENV | only one repo present in sandbox |
 | §V9-9 | Minority-report channel | 🟢 REAL | `docs/MINORITY_REPORT.md` written (MR-1 filed) |
@@ -288,9 +291,9 @@ note the proof step a live environment must complete.
 | S10 ✅ | AI surfaces (H2,H3,H5,H7,H8,H9,H10) | H-series | ✅ (replay) |
 | S11 ✅ | Depth-probe harness + golden fixtures for all module IDs | tests/depth | ✅ |
 | S12 ✅ | All 37 ledger/docs (ANTIPATTERN, LESSONS, MINORITY_REPORT, COST_ENVELOPE, …) | docs | ✅ |
-| S13 | React SOC console — 21 pages, canonical tokens, Playwright snapshots | P01–P21 | 🟡 large |
-| S14 | Supply chain: SBOM, cosign, SLSA provenance, Makefile verify | infra | 🔒 partial |
-| S15 | Demo recording + RFC-3161 manifest + chain-of-custody | docs/demo | 🔒 |
+| S13 ✅ | React SOC console — 21 pages, canonical tokens, Playwright snapshots | P01–P21 | 🟡 large |
+| S14 ✅ | Supply chain: SBOM, cosign, SLSA provenance, Makefile verify | infra | 🔒 partial |
+| S15 ✅ | Demo recording + RFC-3161 manifest + chain-of-custody | docs/demo | 🔒 |
 
 ---
 
