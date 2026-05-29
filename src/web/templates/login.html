@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Sign in · DoppelDomain{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-head">
+      <span class="brand-mark" style="font-size:2.2rem">🛡️</span>
+      <h1>Sign in to DoppelDomain</h1>
+      <p class="muted">Brand-impersonation detection &amp; takedown</p>
+    </div>
+
+    <div id="err" class="auth-err" style="display:none"></div>
+
+    <!-- Step 1: credentials -->
+    <form id="login-form" class="auth-form">
+      <label>Email
+        <input type="email" id="email" autocomplete="username" required placeholder="you@company.com">
+      </label>
+      <label>Password
+        <input type="password" id="password" autocomplete="current-password" required placeholder="••••••••">
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+    </form>
+
+    <!-- Step 2: MFA (hidden until required) -->
+    <form id="mfa-form" class="auth-form" style="display:none">
+      <p class="muted">Enter the 6-digit code from your authenticator app.</p>
+      <label>Authentication code
+        <input type="text" id="mfa-code" inputmode="numeric" autocomplete="one-time-code"
+               pattern="[0-9 ]*" placeholder="123 456">
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Verify</button>
+      <button type="button" id="mfa-back" class="btn btn-ghost btn-block">Back</button>
+    </form>
+
+    {% if oidc_enabled %}
+    <div class="auth-divider"><span>or</span></div>
+    <a href="#" id="sso-btn" class="btn btn-ghost btn-block">Sign in with SSO</a>
+    {% endif %}
+
+    {% if demo_users %}
+    <div class="auth-demo">
+      <details>
+        <summary>Demo logins ({{ demo_users|length }} seeded — click to fill)</summary>
+        <table class="demo-table">
+          <thead><tr><th>Role</th><th>Tier</th><th>Email</th></tr></thead>
+          <tbody>
+          {% for u in demo_users %}
+            <tr class="demo-row" data-email="{{ u.email }}" data-pw="{{ u.password }}">
+              <td><span class="pill pill-{{ u.role }}">{{ u.role }}</span></td>
+              <td>{{ u.tier }}</td>
+              <td><code>{{ u.email }}</code></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <p class="muted tiny">All demo passwords: <code>{{ demo_password }}</code>. MFA-enabled demo
+          accounts show their current code on the server console.</p>
+      </details>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+.auth-wrap{display:flex;justify-content:center;padding:3rem 1rem}
+.auth-card{width:100%;max-width:420px;background:var(--card,#11161f);border:1px solid var(--border,#222b39);
+  border-radius:14px;padding:2rem;box-shadow:0 8px 40px rgba(0,0,0,.35)}
+.auth-head{text-align:center;margin-bottom:1.4rem}
+.auth-head h1{font-size:1.3rem;margin:.5rem 0 .2rem}
+.auth-form label{display:block;font-size:.85rem;margin-bottom:.9rem;color:var(--muted,#9aa6b6)}
+.auth-form input{width:100%;margin-top:.3rem;padding:.6rem .7rem;border-radius:8px;
+  border:1px solid var(--border,#2a3445);background:var(--bg,#0b0f16);color:#e8edf4;font-size:1rem}
+.btn-block{width:100%;margin-top:.4rem}
+.btn-primary{background:#3b82f6;color:#fff;border:none;padding:.65rem;border-radius:8px;font-weight:600;cursor:pointer}
+.btn-ghost{background:transparent;border:1px solid var(--border,#2a3445);color:#cbd5e1;padding:.6rem;border-radius:8px;cursor:pointer;text-decoration:none;display:block;text-align:center}
+.auth-err{background:#3b1419;border:1px solid #7f1d1d;color:#fca5a5;padding:.6rem .8rem;border-radius:8px;margin-bottom:1rem;font-size:.88rem}
+.auth-divider{display:flex;align-items:center;text-align:center;color:var(--muted,#9aa6b6);margin:1.1rem 0;font-size:.8rem}
+.auth-divider::before,.auth-divider::after{content:"";flex:1;border-top:1px solid var(--border,#2a3445)}
+.auth-divider span{padding:0 .7rem}
+.auth-demo{margin-top:1.3rem;font-size:.82rem}
+.demo-table{width:100%;border-collapse:collapse;margin-top:.6rem}
+.demo-table th,.demo-table td{text-align:left;padding:.3rem .4rem;border-bottom:1px solid var(--border,#1c2433)}
+.demo-row{cursor:pointer}.demo-row:hover{background:rgba(59,130,246,.08)}
+.pill{font-size:.7rem;padding:.1rem .45rem;border-radius:999px;background:#1e293b;color:#cbd5e1}
+.pill-owner{background:#4c1d95;color:#ddd6fe}.pill-admin{background:#1e3a8a;color:#bfdbfe}
+.pill-reviewer{background:#064e3b;color:#a7f3d0}.pill-analyst{background:#78350f;color:#fde68a}
+.pill-viewer{background:#334155;color:#cbd5e1}
+.tiny{font-size:.72rem}.muted{color:var(--muted,#9aa6b6)}
+</style>
+
+<script>
+(function(){
+  const errBox=document.getElementById('err');
+  const loginForm=document.getElementById('login-form');
+  const mfaForm=document.getElementById('mfa-form');
+  let pendingUserId=null;
+  function showErr(m){errBox.textContent=m;errBox.style.display='block';}
+  function clearErr(){errBox.style.display='none';}
+
+  async function post(url,body){
+    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(data.detail||('HTTP '+r.status));
+    return data;
+  }
+
+  loginForm.addEventListener('submit',async e=>{
+    e.preventDefault();clearErr();
+    try{
+      const data=await post('/auth/login',{
+        email:document.getElementById('email').value.trim(),
+        password:document.getElementById('password').value});
+      if(data.mfa_required){pendingUserId=data.user_id;loginForm.style.display='none';mfaForm.style.display='block';return;}
+      window.location.href='/';
+    }catch(err){showErr(err.message);}
+  });
+
+  mfaForm.addEventListener('submit',async e=>{
+    e.preventDefault();clearErr();
+    try{
+      await post('/auth/mfa/verify',{user_id:pendingUserId,code:document.getElementById('mfa-code').value});
+      window.location.href='/';
+    }catch(err){showErr(err.message);}
+  });
+  const back=document.getElementById('mfa-back');
+  if(back) back.addEventListener('click',()=>{mfaForm.style.display='none';loginForm.style.display='block';clearErr();});
+
+  document.querySelectorAll('.demo-row').forEach(row=>{
+    row.addEventListener('click',()=>{
+      document.getElementById('email').value=row.dataset.email;
+      document.getElementById('password').value=row.dataset.pw;
+    });
+  });
+
+  const sso=document.getElementById('sso-btn');
+  if(sso) sso.addEventListener('click',async e=>{
+    e.preventDefault();clearErr();
+    try{const d=await fetch('/auth/oidc/login').then(r=>r.json());window.location.href=d.authorization_url;}
+    catch(err){showErr('SSO not available: '+err.message);}
+  });
+})();
+</script>
+{% endblock %}

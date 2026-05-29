@@ -8,7 +8,36 @@ The scoring is deliberately conservative. Any "✓" claim here has to survive a 
 
 ---
 
-## 1. Overall readiness score: **24 / 100**
+## 1. Overall readiness score: **24 / 100** (v0.2 baseline)
+
+> **v0.3 re-score: ~52 / 100.** The IAM, multi-tenancy, audit, and core-product
+> categories moved substantially with the v0.3 build (see `docs/11-v03-changelog.md`).
+> The remaining gap to a passing 70 is almost entirely *non-code*: third-party
+> audits (SOC 2 / ISO), penetration testing, takedown partner relationships, and
+> 24×7 staffing — none of which can be closed by writing software. The table
+> below shows v0.2 → v0.3 movement.
+
+| Category | Weight | v0.2 | v0.3 | Note |
+|---|---|---|---|---|
+| Core product capability | 20% | 6/10 | 7/10 | HITL review + gated takedown added |
+| Security & compliance | 20% | 1/10 | 4/10 | bcrypt, JWT, MFA, lockout, session revoke; SOC2/ISO still pending |
+| Multi-tenancy & data isolation | 15% | 1/10 | 6/10 | account scoping + cross-tenant isolation tested |
+| Identity & access management | 10% | 1/10 | 8/10 | RBAC (6 roles), MFA, OIDC SSO, API-key scopes |
+| Reliability & operations | 10% | 2/10 | 3/10 | structured audit + metrics; HA/DR still pending |
+| Integrations & ecosystem | 10% | 2/10 | 5/10 | takedown providers tested; STIX/TAXII; webhooks |
+| Audit & observability | 5% | 3/10 | 9/10 | hash-chained audit of every action + export |
+| Documentation & support | 5% | 4/10 | 6/10 | RTM + v0.3 changelog + per-module coverage |
+| Commercial / contractual | 5% | 0/10 | 1/10 | tiers/quotas modelled; legal docs still pending |
+| **Total** | **100%** | **24** | **~52** | |
+
+Anything under 70 doesn't pass a serious enterprise procurement gate. v0.3
+closes the buildable engineering gaps; the residual is process/time/legal.
+
+---
+
+### Original v0.2 detail (retained below for reference)
+
+## 1b. v0.2 overall readiness score: **24 / 100**
 
 | Category | Weight | Score | Weighted |
 |---|---|---|---|

@@ -137,7 +137,7 @@ class ScoringResult(BaseModel):
 
 
 class VerdictResult(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, protected_namespaces=())
 
     id: str
     inspection_id: str

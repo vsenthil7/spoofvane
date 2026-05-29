@@ -94,6 +94,35 @@ class Settings(BaseSettings):
     # ─── Auth (v0.2) ───────────────────────────────────────────────────
     require_auth: bool = False  # when True, every API call requires an API key
 
+    # ─── Identity & sessions (v0.3) ────────────────────────────────────
+    # secret_key signs JWTs and session cookies. MUST be overridden in prod.
+    secret_key: str = "dev-only-insecure-key-change-me-in-production-0123456789"
+    session_cookie_name: str = "dd_session"
+    session_max_age_hours: int = 12
+    password_min_length: int = 8
+    # When True, unauthenticated browser hits redirect to /login. Off in dev
+    # so the existing demo dashboard still works without a login.
+    web_login_required: bool = False
+
+    # ─── OIDC / SSO (v0.3) ─────────────────────────────────────────────
+    # Generic OIDC; works with Okta, Entra ID, Auth0, Google Workspace, etc.
+    oidc_enabled: bool = False
+    oidc_issuer: str = ""              # e.g. https://accounts.google.com
+    oidc_client_id: str = ""
+    oidc_client_secret: str = ""
+    oidc_redirect_url: str = "http://127.0.0.1:8000/auth/oidc/callback"
+    oidc_scopes: str = "openid email profile"
+
+    # ─── Email / SMTP (v0.3) ───────────────────────────────────────────
+    email_enabled: bool = False        # when False, emails are logged not sent
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_use_tls: bool = True
+    email_from: str = "DoppelDomain Alerts <alerts@doppeldomain.example>"
+    app_base_url: str = "http://127.0.0.1:8000"
+
     # ─── Active learning (v0.2) ────────────────────────────────────────
     active_learning_enabled: bool = True
     active_learning_min_samples: int = 20  # need this many triage outcomes before adjusting

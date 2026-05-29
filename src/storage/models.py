@@ -136,6 +136,12 @@ class AuditLogRow(Base):
     after_json: Mapped[dict | None] = mapped_column(JSON)
     request_ip: Mapped[str | None] = mapped_column(String(64))
     user_agent: Mapped[str | None] = mapped_column(String(500))
+    # Outcome / extra detail
+    status_code: Mapped[int | None] = mapped_column(Integer)
+    detail: Mapped[str | None] = mapped_column(Text)
+    # Tamper-evident hash chain (each row hashes the previous row_hash)
+    prev_hash: Mapped[str | None] = mapped_column(String(64))
+    row_hash: Mapped[str | None] = mapped_column(String(64), index=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=_utcnow, index=True
     )

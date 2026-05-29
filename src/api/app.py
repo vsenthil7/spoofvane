@@ -107,7 +107,7 @@ class AlertNoteCreate(BaseModel):
 
 app = FastAPI(
     title="DoppelDomain",
-    version="0.2.0",
+    version="0.3.0",
     description=(
         "Brand-impersonation detection — Bright Data Hackathon Track 3. "
         "Catches phishing infrastructure by fingerprinting the rendered page, "
@@ -118,6 +118,18 @@ app = FastAPI(
 # Tenant + API key + cost-attribution admin endpoints
 from .admin_router import router as admin_router  # noqa: E402
 app.include_router(admin_router)
+
+# Identity, login, MFA, OIDC (v0.3)
+from .auth_router import router as auth_router  # noqa: E402
+app.include_router(auth_router)
+
+# Human-in-the-loop review, notifications, reports, audit (v0.3 Phases 2–5)
+from .ops_router import router as ops_router  # noqa: E402
+app.include_router(ops_router)
+
+# Audit middleware — records every mutating request (hash-chained)
+from .audit_middleware import AuditMiddleware  # noqa: E402
+app.add_middleware(AuditMiddleware)
 
 # Static + templates
 if _STATIC_DIR.exists():
@@ -572,6 +584,29 @@ def evidence_pdf(
 # --------------------------------------------------------------------------- #
 # HTML dashboard
 # --------------------------------------------------------------------------- #
+
+
+@app.get("/login", response_class=HTMLResponse, tags=["dashboard"])
+def login_page(request: Request) -> HTMLResponse:
+    """Server-rendered login page. Lists seeded demo users when present."""
+    settings = get_settings()
+    demo_users: list[dict] = []
+    try:
+        from src.common.demo_users import DEMO_USERS, DEMO_PASSWORD
+        demo_users = DEMO_USERS
+        demo_password = DEMO_PASSWORD
+    except Exception:
+        demo_password = ""
+    return templates.TemplateResponse(
+        request,
+        "login.html",
+        {
+            "mock_mode": settings.mock_mode,
+            "oidc_enabled": settings.oidc_enabled,
+            "demo_users": demo_users,
+            "demo_password": demo_password,
+        },
+    )
 
 
 @app.get("/", response_class=HTMLResponse, tags=["dashboard"])
