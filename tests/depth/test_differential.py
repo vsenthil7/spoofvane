@@ -29,10 +29,49 @@ PROBES = [
 ]
 
 
-@pytest.mark.parametrize("name,probe", PROBES, ids=[p[0] for p in PROBES])
+def _scoring_probes():
+    from src.scoring.url_risk import UrlRiskScorer
+    from src.scoring.calibration import calibrate
+    from src.deepfake.voiceprint import VoiceprintScorer
+    from src.deepfake.deepfake_score import DeepfakeScorer
+    s = UrlRiskScorer()
+    vp = VoiceprintScorer(); enr = vp.enroll(b"exec")
+    df = DeepfakeScorer()
+    return [
+        ("C2 url_risk", lambda: [s.score(u).__dict__ for u in
+            ("https://acme.com/login", "https://acme-secure.top/verify",
+             "http://192.168.1.1/login", "https://xn--80ak.com/x")]),
+        ("C1 calibration", lambda: [calibrate(r, {"a": r}).__dict__ for r in
+            (0.1, 0.4, 0.7, 0.95)]),
+        ("C9 voiceprint", lambda: [vp.score(f"clip{i}".encode(), enr).__dict__ for i in range(4)]),
+        ("C10 deepfake", lambda: [df.score(f"v{i}".encode(), b"a", b"face").__dict__ for i in range(4)]),
+    ]
+
+
+def _verdict_agent_probes():
+    from src.verdict.ensemble import GptVerdict, VerdictMerger
+    from src.ai_surfaces.surfaces import ExecAttackSurface, IntelNarrator
+    g = GptVerdict()
+    return [
+        ("D2 gpt_verdict", lambda: [g.decide({"composite": c}).__dict__ for c in (0.1, 0.5, 0.8, 0.95)]),
+        ("H5 exec_surface", lambda: [ExecAttackSurface().scan(n, ["x"]).__dict__ for n in
+            ("Jane A", "John B", "Sara C", "Mike D")]),
+        ("H7 narrator", lambda: [{"n": IntelNarrator().narrate({"verdict": v, "url": "u"})} for v in
+            ("phish", "suspicious", "benign", "phish")]),
+    ]
+
+
+ALL_PROBES = PROBES + _scoring_probes() + _verdict_agent_probes()
+
+
+@pytest.mark.parametrize("name,probe", ALL_PROBES, ids=[p[0] for p in ALL_PROBES])
 def test_module_is_input_dependent(name, probe):
     outputs = probe()
-    # Serialize each output to a comparable signature; require >=3 distinct.
     import json
-    sigs = {json.dumps(o, sort_keys=True) for o in outputs}
+    def _ser(o):
+        try:
+            return json.dumps(o, sort_keys=True, default=str)
+        except TypeError:
+            return str(o)
+    sigs = {_ser(o) for o in outputs}
     assert len(sigs) >= 3, f"{name} failed differential probe: only {len(sigs)} distinct outputs"

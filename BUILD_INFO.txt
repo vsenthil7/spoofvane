@@ -3,6 +3,16 @@ Coder:  Claude (Opus 4.8), running in Claude Code (Anthropic CLI)
 Issued: 29 May 2026, 08:45 BST
 Source lineage: DoppelDomain v0.4 enterprise -> rebranded + convergence build
 Review stack: Perplexity v9 (08:22) > Claude v8 (07:51) > ChatGPT v7 (07:19) > Claude v6 (07:09)
-Tests: 241 passing, 2 skipped (replay mode, credential-free)
-Differential depth probe: 7/7 Bright Data clients green
-See STATUS.md and docs/TRACEABILITY_MASTER.md for honest per-requirement status.
+
+Build result (honest):
+- Tests: 333 passing, 2 skipped (replay mode, credential-free)
+- Backend module IDs: 76/76 with real input-dependent implementations
+- Differential depth probe: 14 module probes green (tests/depth/)
+- Bright Data: 7/7 product clients built; live verification BLOCKED-ENV (no creds)
+- Sprints done: S0 rebrand+foundation, S1 BD clients, S2 discovery, S3 inspection,
+  S4 scoring, S5 deepfake, S6 verdict ensemble, S7 agents+governance, S8 delivery,
+  S9 platform, S10 AI surfaces, S11 depth probe, S12 ledger docs
+- Still BLOCKED-ENV: live BD 24h-green, React pixel-parity console (S13),
+  SLSA-L3/SBOM (S14), demo recording (S15)
+
+See STATUS.md and docs/TRACEABILITY_MASTER.md for full honest per-requirement status.

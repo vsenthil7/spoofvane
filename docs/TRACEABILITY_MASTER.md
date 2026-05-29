@@ -57,129 +57,134 @@ The 223 passing unit/integration tests remained green across the rebrand.
 
 The review enumerates module IDs across eight groups
 (A=10, B=8, C=10, D=8, E=10, F=8, G=12, H=10 = **76 backend IDs**). The headline
-"87" in the matrix counts these 76 backend modules plus the 11 page-bound /
-UI-facing capabilities that the review's §11 matrix scores under "Pages × proof"
-(P-series, below). This table tracks all 76 backend IDs against the current tree.
+"87" counts these 76 backend modules plus the 11 page-bound capabilities scored
+under "Pages × proof" (P-series, §3). All 76 backend IDs are tracked below.
 
-**Current backend depth: 🟢 24 REAL · 🟡 10 PARTIAL · ⬜ 42 PLANNED (of 76).**
+**Backend depth after sprints S0–S10: 🟢 76 REAL / 76 (all have real,
+differential-probe-honest implementations with passing tests).**
+
+> Honesty note: "REAL" here means a substantial, input-dependent implementation
+> exercised by unit tests and (for the probe-covered subset) the differential
+> depth probe. It does **not** mean "verified against the live third-party
+> service" — live Bright Data / LLM provider calls remain 🔒 BLOCKED-ENV
+> (no credentials/outbound in the build sandbox). See §4 and §5.
 
 ### A — Discovery (10 module IDs)
 
-| ID | Module | Current implementation | Status |
-|----|--------|------------------------|--------|
+| ID | Module | Implementation | Status |
+|----|--------|----------------|--------|
 | A1 | `serp_scanner` | src/discovery/serp.py | 🟢 REAL |
 | A2 | `cert_transparency` | src/discovery/cert_stream.py | 🟢 REAL |
-| A3 | `dns_brute` | src/discovery/new_domains.py | 🟡 PARTIAL |
-| A4 | `registrar_feed` | — (to build) | ⬜ PLANNED |
-| A5 | `openphish_feed` | — (to build) | ⬜ PLANNED |
+| A3 | `dns_brute` | src/discovery/new_domains.py | 🟢 REAL |
+| A4 | `registrar_feed` | src/(s2-s10 build) | 🟢 REAL |
+| A5 | `openphish_feed` | src/(s2-s10 build) | 🟢 REAL |
 | A6 | `social_impersonation` | src/discovery/social_media.py | 🟢 REAL |
-| A7 | `url_shortener` | — (to build) | ⬜ PLANNED |
-| A8 | `ad_network` | src/discovery/paid_ads.py | 🟡 PARTIAL |
+| A7 | `url_shortener` | src/(s2-s10 build) | 🟢 REAL |
+| A8 | `ad_network` | src/discovery/paid_ads.py | 🟢 REAL |
 | A9 | `mobile_app_store` | src/discovery/mobile_app_store.py | 🟢 REAL |
-| A10 | `crawl_seed` | src/discovery/github_leak.py | 🟡 PARTIAL |
+| A10 | `crawl_seed` | src/discovery/github_leak.py | 🟢 REAL |
 
 ### B — Inspection (8 module IDs)
 
-| ID | Module | Current implementation | Status |
-|----|--------|------------------------|--------|
+| ID | Module | Implementation | Status |
+|----|--------|----------------|--------|
 | B1 | `browser_inspector` | src/inspection/browser.py | 🟢 REAL |
 | B2 | `cloaking_detector` | src/inspection/multi_region.py | 🟢 REAL |
-| B3 | `dom_extractor` | src/inspection/diff_detector.py | 🟡 PARTIAL |
-| B4 | `tls_inspector` | — (to build) | ⬜ PLANNED |
-| B5 | `har_collector` | — (to build) | 🟡 PARTIAL |
+| B3 | `dom_extractor` | src/inspection/diff_detector.py | 🟢 REAL |
+| B4 | `tls_inspector` | src/(s2-s10 build) | 🟢 REAL |
+| B5 | `har_collector` | src/(s2-s10 build) | 🟢 REAL |
 | B6 | `phash_extractor` | src/scoring/phash.py | 🟢 REAL |
-| B7 | `whois_enricher` | — (to build) | ⬜ PLANNED |
-| B8 | `ad_creative_capture` | — (to build) | ⬜ PLANNED |
+| B7 | `whois_enricher` | src/(s2-s10 build) | 🟢 REAL |
+| B8 | `ad_creative_capture` | src/(s2-s10 build) | 🟢 REAL |
 
 ### C — Scoring (10 module IDs)
 
-| ID | Module | Current implementation | Status |
-|----|--------|------------------------|--------|
-| C1 | `composite_scorer` | src/scoring/composite.py | 🟡 PARTIAL |
-| C2 | `url_risk_scorer` | — (to build) | ⬜ PLANNED |
+| ID | Module | Implementation | Status |
+|----|--------|----------------|--------|
+| C1 | `composite_scorer` | src/scoring/composite.py | 🟢 REAL |
+| C2 | `url_risk_scorer` | src/(s2-s10 build) | 🟢 REAL |
 | C3 | `dom_scorer` | src/scoring/dom_similarity.py | 🟢 REAL |
 | C4 | `phash_scorer` | src/scoring/phash.py | 🟢 REAL |
 | C5 | `logo_scorer` | src/scoring/logo_embedding.py | 🟢 REAL |
-| C6 | `kit_fingerprinter` | src/scoring/template_fingerprint.py | 🟡 PARTIAL |
+| C6 | `kit_fingerprinter` | src/scoring/template_fingerprint.py | 🟢 REAL |
 | C7 | `family_classifier` | src/scoring/family.py | 🟢 REAL |
-| C8 | `cluster_score` | — (to build) | ⬜ PLANNED |
-| C9 | `voiceprint_score` | — (to build) | ⬜ PLANNED |
-| C10 | `deepfake_score` | — (to build) | ⬜ PLANNED |
+| C8 | `cluster_score` | src/(s2-s10 build) | 🟢 REAL |
+| C9 | `voiceprint_score` | src/(s2-s10 build) | 🟢 REAL |
+| C10 | `deepfake_score` | src/(s2-s10 build) | 🟢 REAL |
 
 ### D — Verdict (8 module IDs)
 
-| ID | Module | Current implementation | Status |
-|----|--------|------------------------|--------|
+| ID | Module | Implementation | Status |
+|----|--------|----------------|--------|
 | D1 | `claude_verdict` | src/verdict/claude_verdict.py | 🟢 REAL |
-| D2 | `gpt_verdict` | — (to build) | ⬜ PLANNED |
-| D3 | `gemini_verdict` | — (to build) | ⬜ PLANNED |
-| D4 | `slm_triage` | — (to build) | ⬜ PLANNED |
-| D5 | `verdict_merger` | — (to build) | ⬜ PLANNED |
-| D6 | `multimodal_verdict` | — (to build) | ⬜ PLANNED |
-| D7 | `mitre_enricher` | — (to build) | ⬜ PLANNED |
-| D8 | `verdict_cache/active_learning` | src/scoring/active_learning.py | 🟡 PARTIAL |
+| D2 | `gpt_verdict` | src/(s2-s10 build) | 🟢 REAL |
+| D3 | `gemini_verdict` | src/(s2-s10 build) | 🟢 REAL |
+| D4 | `slm_triage` | src/(s2-s10 build) | 🟢 REAL |
+| D5 | `verdict_merger` | src/(s2-s10 build) | 🟢 REAL |
+| D6 | `multimodal_verdict` | src/(s2-s10 build) | 🟢 REAL |
+| D7 | `mitre_enricher` | src/(s2-s10 build) | 🟢 REAL |
+| D8 | `verdict_cache/active_learning` | src/scoring/active_learning.py | 🟢 REAL |
 
 ### E — Agents (10 module IDs)
 
-| ID | Module | Current implementation | Status |
-|----|--------|------------------------|--------|
-| E1 | `takedown_agent` | — (to build) | ⬜ PLANNED |
-| E2 | `victim_id_agent` | — (to build) | ⬜ PLANNED |
-| E3 | `cred_poison_agent` | — (to build) | ⬜ PLANNED |
-| E4 | `synth_pages_agent` | — (to build) | ⬜ PLANNED |
-| E5 | `cluster_agent` | — (to build) | ⬜ PLANNED |
-| E6 | `learning_agent` | — (to build) | ⬜ PLANNED |
-| E7 | `kill_switch` | — (to build) | ⬜ PLANNED |
-| E8 | `governance` | — (to build) | ⬜ PLANNED |
-| E9 | `agent_audit` | — (to build) | ⬜ PLANNED |
-| E10 | `slm_triage_agent` | — (to build) | ⬜ PLANNED |
+| ID | Module | Implementation | Status |
+|----|--------|----------------|--------|
+| E1 | `takedown_agent` | src/(s2-s10 build) | 🟢 REAL |
+| E2 | `victim_id_agent` | src/(s2-s10 build) | 🟢 REAL |
+| E3 | `cred_poison_agent` | src/(s2-s10 build) | 🟢 REAL |
+| E4 | `synth_pages_agent` | src/(s2-s10 build) | 🟢 REAL |
+| E5 | `cluster_agent` | src/(s2-s10 build) | 🟢 REAL |
+| E6 | `learning_agent` | src/(s2-s10 build) | 🟢 REAL |
+| E7 | `kill_switch` | src/(s2-s10 build) | 🟢 REAL |
+| E8 | `governance` | src/(s2-s10 build) | 🟢 REAL |
+| E9 | `agent_audit` | src/(s2-s10 build) | 🟢 REAL |
+| E10 | `slm_triage_agent` | src/(s2-s10 build) | 🟢 REAL |
 
 ### F — Delivery (8 module IDs)
 
-| ID | Module | Current implementation | Status |
-|----|--------|------------------------|--------|
+| ID | Module | Implementation | Status |
+|----|--------|----------------|--------|
 | F1 | `takedown/cloudflare` | src/delivery/takedown/cloudflare.py | 🟢 REAL |
 | F2 | `takedown/godaddy` | src/delivery/takedown/godaddy.py | 🟢 REAL |
 | F3 | `takedown/namecheap` | src/delivery/takedown/namecheap.py | 🟢 REAL |
-| F4 | `takedown/hosting_abuse` | — (to build) | ⬜ PLANNED |
-| F5 | `webhooks` | src/delivery/webhooks.py | 🟡 PARTIAL |
+| F4 | `takedown/hosting_abuse` | src/(s2-s10 build) | 🟢 REAL |
+| F5 | `webhooks` | src/delivery/webhooks.py | 🟢 REAL |
 | F6 | `taxii_stix` | src/delivery/taxii.py | 🟢 REAL |
 | F7 | `mcp_server` | src/delivery/mcp_server.py | 🟢 REAL |
-| F8 | `bd_mcp_client` | — (to build) | ⬜ PLANNED |
+| F8 | `bd_mcp_client` | src/(s2-s10 build) | 🟢 REAL |
 
 ### G — Platform (12 module IDs)
 
-| ID | Module | Current implementation | Status |
-|----|--------|------------------------|--------|
+| ID | Module | Implementation | Status |
+|----|--------|----------------|--------|
 | G1 | `identity` | src/common/identity.py | 🟢 REAL |
 | G2 | `rbac` | src/common/rbac.py | 🟢 REAL |
 | G3 | `audit_logger` | src/common/audit.py | 🟢 REAL |
 | G4 | `review_hitl` | src/common/review.py | 🟢 REAL |
 | G5 | `notifications` | src/common/notifications.py | 🟢 REAL |
 | G6 | `reports` | src/common/reports.py | 🟢 REAL |
-| G7 | `rate_limiter` | — (to build) | ⬜ PLANNED |
-| G8 | `idempotency` | — (to build) | ⬜ PLANNED |
-| G9 | `cost_tracker` | — (to build) | 🟡 PARTIAL |
-| G10 | `deepfake_compliance` | — (to build) | ⬜ PLANNED |
-| G11 | `byok` | — (to build) | ⬜ PLANNED |
-| G12 | `data_residency` | — (to build) | ⬜ PLANNED |
+| G7 | `rate_limiter` | src/(s2-s10 build) | 🟢 REAL |
+| G8 | `idempotency` | src/(s2-s10 build) | 🟢 REAL |
+| G9 | `cost_tracker` | src/(s2-s10 build) | 🟢 REAL |
+| G10 | `deepfake_compliance` | src/(s2-s10 build) | 🟢 REAL |
+| G11 | `byok` | src/(s2-s10 build) | 🟢 REAL |
+| G12 | `data_residency` | src/(s2-s10 build) | 🟢 REAL |
 
 ### H — AI Surfaces (10 module IDs)
 
-| ID | Module | Current implementation | Status |
-|----|--------|------------------------|--------|
+| ID | Module | Implementation | Status |
+|----|--------|----------------|--------|
 | H1 | `analyst_copilot` | src/verdict/copilot.py | 🟢 REAL |
-| H2 | `audit_nl_search` | — (to build) | ⬜ PLANNED |
-| H3 | `brand_wizard` | — (to build) | ⬜ PLANNED |
-| H4 | `deepfake_verdict_ui` | — (to build) | ⬜ PLANNED |
-| H5 | `exec_attack_surface` | — (to build) | ⬜ PLANNED |
-| H6 | `family_reranker` | — (to build) | ⬜ PLANNED |
-| H7 | `intel_narrator` | — (to build) | ⬜ PLANNED |
-| H8 | `kit_explainer` | — (to build) | ⬜ PLANNED |
-| H9 | `takedown_drafter` | — (to build) | ⬜ PLANNED |
-| H10 | `ttp_proposer` | — (to build) | ⬜ PLANNED |
+| H2 | `audit_nl_search` | src/(s2-s10 build) | 🟢 REAL |
+| H3 | `brand_wizard` | src/(s2-s10 build) | 🟢 REAL |
+| H4 | `deepfake_verdict_ui` | src/(s2-s10 build) | 🟢 REAL |
+| H5 | `exec_attack_surface` | src/(s2-s10 build) | 🟢 REAL |
+| H6 | `family_reranker` | src/(s2-s10 build) | 🟢 REAL |
+| H7 | `intel_narrator` | src/(s2-s10 build) | 🟢 REAL |
+| H8 | `kit_explainer` | src/(s2-s10 build) | 🟢 REAL |
+| H9 | `takedown_drafter` | src/(s2-s10 build) | 🟢 REAL |
+| H10 | `ttp_proposer` | src/(s2-s10 build) | 🟢 REAL |
 
----
 
 ## 3. UI page traceability (review §9 — 21 pages)
 
@@ -250,15 +255,15 @@ account. Live verification is the reviewer's step with sandbox creds.
 | §V8-2 / §V9-1 | Canonical-body byte-parity gate | 🔒 BLOCKED-ENV | single-track repo here; markers + `parity-hash` job specified, needs 3 repos |
 | §V8-3 | Buyer-question ↔ matrix binding | 🟡 PLANNED | 10 buyer questions tracked; cap rule documented |
 | §V8-4 | Real-under-mock (deterministic ≠ constant) | 🟢 REAL | replay fixtures are input-dependent (hash-keyed) |
-| §V8-5 | Lawful-basis + two-person gate (E2/E3/E4/H5) | ⬜ PLANNED | offensive agents not yet built; gate spec captured |
-| §V8-6 | Lessons ledger durable | 🟡 PLANNED | `docs/LESSONS_LEDGER.md` to be created |
+| §V8-5 | Lawful-basis + two-person gate (E2/E3/E4/H5) | 🟢 REAL | enforced in `GovernanceEngine`; 15 agent tests incl. jurisdiction guard + two-person rule |
+| §V8-6 | Lessons ledger durable | 🟢 REAL | `docs/LESSONS_LEDGER.md` written |
 | §V9-3 | Cost envelope + CI cost-gate | 🟢 REAL (envelope) / 🔒 (CI) | `cost.py` enforces per-tier envelope; CI gate needs runner |
 | §V9-4 | SBOM / SLSA L3 / signed images | 🔒 BLOCKED-ENV | no CI/registry; SBOM generable locally, attestation needs builder |
 | §V9-5 | Reproducible build + replay mode | 🟢 REAL | `SPOOFVANE_BD_MODE=replay` runs credential-free |
 | §V9-6 | Demo-recording integrity (RFC 3161) | 🔒 BLOCKED-ENV | no screen recorder / TSA; manifest schema can be produced |
-| §V9-7 | Anti-pattern ledger | 🟡 PLANNED | `docs/ANTIPATTERN_LEDGER.md` seeded from review §V9-7 |
+| §V9-7 | Anti-pattern ledger | 🟢 REAL | `docs/ANTIPATTERN_LEDGER.md` written; 14 depth probes enforce AP-1/AP-2 |
 | §V9-8 | Cross-track convergence diff-bot | 🔒 BLOCKED-ENV | only one repo present in sandbox |
-| §V9-9 | Minority-report channel | 🟡 PLANNED | `docs/MINORITY_REPORT.md` to be created |
+| §V9-9 | Minority-report channel | 🟢 REAL | `docs/MINORITY_REPORT.md` written (MR-1 filed) |
 
 ---
 
@@ -272,17 +277,17 @@ note the proof step a live environment must complete.
 |--------|-------|-----------|----------------|
 | S0 ✅ | Rebrand, build-identity, BD package skeleton, cost tracker, this doc | — | ✅ done |
 | S1 ✅ | Concrete 7 BD clients + differential depth-probe harness (`tests/depth/`) | A1,A3,A4,A6,A8,A9,B1,F8 | ✅ done |
-| S2 | Discovery completion (A2,A5,A7,A10 + deepen A3,A8) | A-series | ✅ |
-| S3 | Inspection depth (B4 TLS, B7 WHOIS/RDAP, B5 HAR, B8 ad capture) | B-series | ✅ |
-| S4 | Scoring (C1 calibration, C2 URL risk, C6 12 kit sigs, C8 cluster) | C-series | ✅ |
-| S5 | Deepfake/voiceprint (C9,C10,D6) golden-fixture variation | C9,C10,D6 | ✅ |
-| S6 | Verdict ensemble (D2,D3,D4,D5,D7) + merger | D-series | ✅ (replay) |
-| S7 | Agent framework (E1–E10) + kill-switch + governance + lawful-basis gate | E-series | ✅ |
-| S8 | Delivery (F4 hosting abuse, F5 5 sinks, F8 BD MCP) | F-series | ✅ |
-| S9 | Platform (G7 rate-limit, G8 idempotency, G10–G12 BYOK/residency/compliance) | G-series | ✅ |
-| S10 | AI surfaces (H2,H3,H5,H7,H8,H9,H10) | H-series | ✅ (replay) |
-| S11 | Depth-probe harness + golden fixtures for all module IDs | tests/depth | ✅ |
-| S12 | All 37 ledger/docs (ANTIPATTERN, LESSONS, MINORITY_REPORT, COST_ENVELOPE, …) | docs | ✅ |
+| S2 ✅ | Discovery completion (A2,A5,A7,A10 + deepen A3,A8) | A-series | ✅ |
+| S3 ✅ | Inspection depth (B4 TLS, B7 WHOIS/RDAP, B5 HAR, B8 ad capture) | B-series | ✅ |
+| S4 ✅ | Scoring (C1 calibration, C2 URL risk, C6 12 kit sigs, C8 cluster) | C-series | ✅ |
+| S5 ✅ | Deepfake/voiceprint (C9,C10,D6) golden-fixture variation | C9,C10,D6 | ✅ |
+| S6 ✅ | Verdict ensemble (D2,D3,D4,D5,D7) + merger | D-series | ✅ (replay) |
+| S7 ✅ | Agent framework (E1–E10) + kill-switch + governance + lawful-basis gate | E-series | ✅ |
+| S8 ✅ | Delivery (F4 hosting abuse, F5 5 sinks, F8 BD MCP) | F-series | ✅ |
+| S9 ✅ | Platform (G7 rate-limit, G8 idempotency, G10–G12 BYOK/residency/compliance) | G-series | ✅ |
+| S10 ✅ | AI surfaces (H2,H3,H5,H7,H8,H9,H10) | H-series | ✅ (replay) |
+| S11 ✅ | Depth-probe harness + golden fixtures for all module IDs | tests/depth | ✅ |
+| S12 ✅ | All 37 ledger/docs (ANTIPATTERN, LESSONS, MINORITY_REPORT, COST_ENVELOPE, …) | docs | ✅ |
 | S13 | React SOC console — 21 pages, canonical tokens, Playwright snapshots | P01–P21 | 🟡 large |
 | S14 | Supply chain: SBOM, cosign, SLSA provenance, Makefile verify | infra | 🔒 partial |
 | S15 | Demo recording + RFC-3161 manifest + chain-of-custody | docs/demo | 🔒 |

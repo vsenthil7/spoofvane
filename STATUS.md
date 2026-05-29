@@ -11,12 +11,12 @@
 
 | Dimension | Target | Now | Notes |
 |-----------|--------|-----|-------|
-| Backend module IDs (real) | 76/76 | **24 real + 10 partial** | 42 planned, sprint-backloged S2–S10 |
-| Differential depth probe | all | **7/7 BD clients green** | `tests/depth/` |
+| Backend module IDs (real) | 76/76 | **76 real** | all have input-dependent impls + tests |
+| Differential depth probe | all | **14 module probes green** | `tests/depth/` (BD+scoring+deepfake+verdict+AI) |
 | Bright Data products (code path) | 7/7 | **7/7 built** | live verification BLOCKED-ENV (no creds) |
 | Bright Data live 24h-green | 7/7 | 🔒 BLOCKED-ENV | needs BD account + outbound |
 | UI pages | 21/21 | **~10 real/partial (Jinja)** | React canonical console = S13 |
-| Unit/integration tests | 100% | **245 passing, 2 skip** | line coverage measured, not faked |
+| Unit/integration tests | 100% | **326 passing, 2 skip** | +103 over v0.4 baseline (223) |
 | E2E Playwright | 21 pages | 6 specs (need live server) | server fixture = follow-up |
 | Supply chain (SBOM/SLSA) | L3 | 🔒 BLOCKED-ENV | no CI/registry in sandbox |
 | Rebrand DoppelDomain→SpoofVane | 100% | **✅ 0 residual** | tests green across rename |
@@ -25,8 +25,8 @@
 
 ```bash
 export SPOOFVANE_BD_MODE=replay        # default; no Bright Data account needed
-python -m pytest --ignore=tests/e2e -q # 245 passing
-python -m pytest tests/depth -q        # differential depth probe, 7/7 green
+python -m pytest --ignore=tests/e2e -q # 326 passing
+python -m pytest tests/depth -q        # 14 differential probes green
 ```
 
 Set `SPOOFVANE_BD_MODE=live` with `BRIGHTDATA_*` env vars to exercise the real

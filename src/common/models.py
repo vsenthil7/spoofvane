@@ -30,6 +30,10 @@ class Source(str, Enum):
     GITHUB_LEAK = "github_leak"
     TELEGRAM_KIT = "telegram_kit"
     SOCIAL_MEDIA = "social_media"  # v0.4 — impersonation profiles/pages on social platforms
+    OPENPHISH_FEED = "openphish_feed"  # v0.5 — A5: OpenPhish/PhishTank/URLhaus/UrlAbuse ingest
+    URL_SHORTENER = "url_shortener"    # v0.5 — A7: shortener expansion + chain trace
+    REGISTRAR_FEED = "registrar_feed"  # v0.5 — A4: BD Datasets WHOIS feed
+    CRAWL_SEED = "crawl_seed"          # v0.5 — A10: customer seed + dark-web mention ingest
 
 
 class Verdict(str, Enum):

@@ -25,6 +25,10 @@ from .paid_ads import PaidAdSource
 from .serp import SERPSource
 from .social_media import SocialMediaSource
 from .telegram_kit import TelegramKitSource
+from .openphish_feed import OpenPhishFeedSource
+from .url_shortener import UrlShortenerSource
+from .registrar_feed import RegistrarFeedSource
+from .crawl_seed import CrawlSeedSource
 
 log = get_logger(__name__)
 
@@ -38,6 +42,10 @@ DEFAULT_SOURCES: dict[str, type[DiscoverySource]] = {
     "github_leak": GitHubLeakSource,
     "telegram_kit": TelegramKitSource,
     "social_media": SocialMediaSource,
+    "openphish_feed": OpenPhishFeedSource,
+    "url_shortener": UrlShortenerSource,
+    "registrar_feed": RegistrarFeedSource,
+    "crawl_seed": CrawlSeedSource,
 }
 
 
