@@ -65,20 +65,32 @@ class _BaseModelVerdict:
 
 
 class GptVerdict(_BaseModelVerdict):
-    """D2 — GPT-5 verdict for the ensemble."""
+    """D2 — GPT verdict for the ensemble."""
     model = "gpt-5"
 
-    def _live(self, evidence):  # pragma: no cover
-        import httpx  # real OpenAI call wired in deployment
-        raise NotImplementedError("live GPT verdict wired via provider SDK")
+    def _live(self, evidence):  # pragma: no cover - live lane (BLOCKED-ENV)
+        from ..common.settings import get_settings
+        s = get_settings()
+        if not s.openai_api_key:
+            raise NotImplementedError(
+                "live GPT verdict needs OPENAI_API_KEY (BLOCKED-ENV without it)")
+        # Real OpenAI call wired in deployment using s.openai_model.
+        raise NotImplementedError(
+            f"live GPT verdict via OpenAI SDK (model={s.openai_model})")
 
 
 class GeminiVerdict(_BaseModelVerdict):
-    """D3 — Gemini 3 verdict for the ensemble."""
+    """D3 — Gemini verdict for the ensemble."""
     model = "gemini-3"
 
-    def _live(self, evidence):  # pragma: no cover
-        raise NotImplementedError("live Gemini verdict wired via provider SDK")
+    def _live(self, evidence):  # pragma: no cover - live lane (BLOCKED-ENV)
+        from ..common.settings import get_settings
+        s = get_settings()
+        if not s.gemini_api_key:
+            raise NotImplementedError(
+                "live Gemini verdict needs GEMINI_API_KEY (BLOCKED-ENV without it)")
+        raise NotImplementedError(
+            f"live Gemini verdict via provider SDK (model={s.gemini_model})")
 
 
 class SlmTriage(_BaseModelVerdict):

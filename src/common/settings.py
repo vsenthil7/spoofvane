@@ -42,6 +42,15 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-sonnet-4-6"
 
+    # ─── LLM ensemble providers (v07 D4 — GPT + Gemini diversity) ──────
+    # Naming mirrors the sibling projects (Verixa/Forensa/ATRIO) so one dev
+    # .env can back several repos. Blank key => that provider's verdict stays
+    # on the deterministic replay/mock lane (live call is BLOCKED-ENV).
+    openai_api_key: str = ""
+    openai_model: str = "gpt-4o"
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-1.5-pro-latest"
+
     # ─── Bright Data ───────────────────────────────────────────────────
     brightdata_api_key: str = ""
     brightdata_cdp_endpoint: str = "wss://brd.superproxy.io:9222"
@@ -51,6 +60,8 @@ class Settings(BaseSettings):
     brightdata_proxy_pass: str = ""
     brightdata_serp_host: str = "brd.superproxy.io:33335"
     brightdata_unlocker_zone: str = "unlocker"
+    # v06 §D — monthly spend envelope; back-pressure kill-switch trips at 80%.
+    brightdata_monthly_usd: float = Field(default=500.0, gt=0.0)
 
     # ─── Webhooks ──────────────────────────────────────────────────────
     slack_webhook_url: str = ""
