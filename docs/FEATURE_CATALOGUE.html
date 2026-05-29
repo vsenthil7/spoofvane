@@ -1,0 +1,317 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SpoofVane — Complete Feature Catalogue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0f17;--surface:#131a26;--s2:#1b2433;--s3:#232f42;--border:#2c3a52;--text:#e8edf5;--muted:#93a1b8;--faint:#5e6e88;--brand:#ffb020;--mono:"JetBrains Mono",monospace;--sans:"IBM Plex Sans",system-ui,sans-serif;--disp:"Space Grotesk",Georgia,serif;}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding:48px 24px 96px}
+.title{font-family:var(--disp);font-size:40px;color:var(--brand);margin:0}
+.sub{color:var(--muted);margin:6px 0}
+.meta{color:var(--faint);font-size:12px;font-family:var(--mono);margin-bottom:28px}
+.statbar{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:0 0 44px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.stat .n{font-family:var(--mono);font-size:26px;color:var(--brand)}.stat .l{font-size:11px;color:var(--muted)}
+section{margin:0 0 40px}
+.ghead{margin-bottom:14px}.ghead h2{font-family:var(--disp);font-size:23px;margin:0;display:inline-flex;align-items:center;gap:8px}
+.gdot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:4px}
+.gcount{font-family:var(--mono);font-size:12px;color:var(--faint);font-weight:400}
+.gtag{color:var(--muted);font-size:13px;margin:2px 0 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.fcard{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;transition:transform .15s}
+.fcard.bd{border-color:#3d3214}
+.badge{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 35%,transparent);padding:1px 8px;border-radius:999px}
+.ftitle{font-family:var(--disp);font-size:15px;margin:8px 0 4px}
+.fdesc{color:var(--muted);font-size:12.5px}
+.uses{margin-top:8px;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+h2.sec{font-family:var(--disp);font-size:26px;border-bottom:1px solid var(--border);padding-bottom:8px;margin:48px 0 22px}
+.foot{color:var(--faint);font-size:12px;font-family:var(--mono);margin-top:40px}
+</style></head><body><div class="wrap">
+<h1 class="title">⬡ SpoofVane — Complete Feature Catalogue</h1>
+<p class="sub">Everything in the product: 76 backend capability modules, 7 Bright Data products, the platform & governance layer, and 21 console screens.</p>
+<p class="meta">v0.5.0 · built by Claude (Opus 4.8) in Claude Code · 29 May 2026, 09:57 BST</p>
+
+<div class="statbar">
+  <div class="stat"><div class="n">76</div><div class="l">capability modules</div></div>
+  <div class="stat"><div class="n">7</div><div class="l">Bright Data products</div></div>
+  <div class="stat"><div class="n">21</div><div class="l">console screens</div></div>
+  <div class="stat"><div class="n">350</div><div class="l">tests passing</div></div>
+  <div class="stat"><div class="n">15k+</div><div class="l">lines of code</div></div>
+</div>
+
+<h2 class="sec">Capability modules — 8 groups, 76 features</h2>
+<section><div class="ghead"><span class="gdot" style="background:#4d9fff"></span>
+      <h2>Discovery <span class="gcount">10 modules</span></h2><p class="gtag">How SpoofVane finds impersonation</p></div>
+      <div class="grid"><div class="fcard">
+      <span class="badge" style="--c:#4d9fff">A1</span>
+      <div class="ftitle">SERP scanner</div>
+      <div class="fdesc">Bright Data SERP API (Google/Bing/Brave/DuckDuckGo, brd_json=1); paginates & dedupes.</div></div><div class="fcard">
+      <span class="badge" style="--c:#4d9fff">A2</span>
+      <div class="ftitle">Cert transparency</div>
+      <div class="fdesc">Tails CT logs (Calidog certstream) + Web Scraper API fallback for new lookalike certs.</div></div><div class="fcard">
+      <span class="badge" style="--c:#4d9fff">A3</span>
+      <div class="ftitle">DNS brute</div>
+      <div class="fdesc">Permutation + bitsquatting + homoglyph + IDN; resolves via residential proxies.</div></div><div class="fcard">
+      <span class="badge" style="--c:#4d9fff">A4</span>
+      <div class="ftitle">Registrar feed</div>
+      <div class="fdesc">Bright Data Datasets WHOIS feed; flags newly-registered & risky-country domains.</div></div><div class="fcard">
+      <span class="badge" style="--c:#4d9fff">A5</span>
+      <div class="ftitle">Phishing feeds</div>
+      <div class="fdesc">OpenPhish + PhishTank + URLhaus + UrlAbuse ingest, normalised to one IOC schema.</div></div><div class="fcard">
+      <span class="badge" style="--c:#4d9fff">A6</span>
+      <div class="ftitle">Social impersonation</div>
+      <div class="fdesc">X / IG / TikTok / LinkedIn / YouTube via SERP + Web Unlocker.</div></div><div class="fcard">
+      <span class="badge" style="--c:#4d9fff">A7</span>
+      <div class="ftitle">URL shortener</div>
+      <div class="fdesc">Expands bit.ly/t.co/lnkd.in chains, recording every redirect hop to the terminal URL.</div></div><div class="fcard">
+      <span class="badge" style="--c:#4d9fff">A8</span>
+      <div class="ftitle">Ad network</div>
+      <div class="fdesc">Google/Meta/TikTok ad libraries via Web Scraper API; captures creative+advertiser+landing.</div></div><div class="fcard">
+      <span class="badge" style="--c:#4d9fff">A9</span>
+      <div class="ftitle">Mobile app store</div>
+      <div class="fdesc">iOS App Store + Google Play scraping for fake apps; matches name + icon pHash.</div></div><div class="fcard">
+      <span class="badge" style="--c:#4d9fff">A10</span>
+      <div class="ftitle">Crawl seed</div>
+      <div class="fdesc">Customer seed lists + dark-web mention adapters (HudsonRock/SpyCloud pattern), idempotent.</div></div></div></section><section><div class="ghead"><span class="gdot" style="background:#36c2ce"></span>
+      <h2>Inspection <span class="gcount">8 modules</span></h2><p class="gtag">How each suspect is captured & analysed</p></div>
+      <div class="grid"><div class="fcard">
+      <span class="badge" style="--c:#36c2ce">B1</span>
+      <div class="ftitle">Browser inspector</div>
+      <div class="fdesc">Bright Data Scraping Browser over CDP, country-pinned; DOM+screenshot+HAR+final URL.</div></div><div class="fcard">
+      <span class="badge" style="--c:#36c2ce">B2</span>
+      <div class="ftitle">Cloaking detector</div>
+      <div class="fdesc">Renders ≥2 geos and diffs DOM+pHash+content to catch geo-cloaking.</div></div><div class="fcard">
+      <span class="badge" style="--c:#36c2ce">B3</span>
+      <div class="ftitle">DOM extractor</div>
+      <div class="fdesc">Classifies forms — login / payment / iframe — from the real parsed DOM.</div></div><div class="fcard">
+      <span class="badge" style="--c:#36c2ce">B4</span>
+      <div class="ftitle">TLS inspector</div>
+      <div class="fdesc">Cert chain + JA3/JA4 fingerprint + SCT; flags self-signed.</div></div><div class="fcard">
+      <span class="badge" style="--c:#36c2ce">B5</span>
+      <div class="ftitle">HAR collector</div>
+      <div class="fdesc">Full HAR with per-resource SHA-256, waterfall timing, external-origin tagging.</div></div><div class="fcard">
+      <span class="badge" style="--c:#36c2ce">B6</span>
+      <div class="ftitle">pHash extractor</div>
+      <div class="fdesc">Perceptual + difference hashes on screenshots and logo crops.</div></div><div class="fcard">
+      <span class="badge" style="--c:#36c2ce">B7</span>
+      <div class="ftitle">WHOIS enricher</div>
+      <div class="fdesc">WHOIS/RDAP + hosting ASN + rDNS; flags bulletproof hosts.</div></div><div class="fcard">
+      <span class="badge" style="--c:#36c2ce">B8</span>
+      <div class="ftitle">Ad creative capture</div>
+      <div class="fdesc">Screenshot + OCR of an ad creative paired with its landing page.</div></div></div></section><section><div class="ghead"><span class="gdot" style="background:#ffb020"></span>
+      <h2>Scoring <span class="gcount">10 modules</span></h2><p class="gtag">How similarity & risk are quantified</p></div>
+      <div class="grid"><div class="fcard">
+      <span class="badge" style="--c:#ffb020">C1</span>
+      <div class="ftitle">Composite scorer</div>
+      <div class="fdesc">Platt-calibrated probability (not a raw sum) with per-signal contribution breakdown.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ffb020">C2</span>
+      <div class="ftitle">URL risk scorer</div>
+      <div class="fdesc">Entropy + suspicious tokens + TLD + punycode + IP + age → risk with contributions.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ffb020">C3</span>
+      <div class="ftitle">DOM scorer</div>
+      <div class="fdesc">Structural tree-edit distance vs known-good login pages.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ffb020">C4</span>
+      <div class="ftitle">pHash scorer</div>
+      <div class="fdesc">Hamming distance over perceptual hashes vs brand assets.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ffb020">C5</span>
+      <div class="ftitle">Logo scorer</div>
+      <div class="fdesc">CLIP/MobileCLIP logo detection (feature-flagged, never 0% from missing weights).</div></div><div class="fcard">
+      <span class="badge" style="--c:#ffb020">C6</span>
+      <div class="ftitle">Kit fingerprinter</div>
+      <div class="fdesc">13 kit signatures (EvilProxy, Tycoon-2FA, Greatness, Mamba2FA…) via DOM + JS-bundle hash.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ffb020">C7</span>
+      <div class="ftitle">Family classifier</div>
+      <div class="fdesc">ML classifier mapping kit features → threat family.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ffb020">C8</span>
+      <div class="ftitle">Cluster score</div>
+      <div class="fdesc">Union-find threat-network clustering by shared ASN/registrar/kit/favicon/JA3.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ffb020">C9</span>
+      <div class="ftitle">Voiceprint score</div>
+      <div class="fdesc">192-dim speaker embedding; cosine match against an enrolled executive voiceprint.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ffb020">C10</span>
+      <div class="ftitle">Deepfake score</div>
+      <div class="fdesc">Ensemble: face embedding + lip-sync + C2PA provenance → deepfake probability.</div></div></div></section><section><div class="ghead"><span class="gdot" style="background:#a78bfa"></span>
+      <h2>Verdict <span class="gcount">8 modules</span></h2><p class="gtag">How the final call is made</p></div>
+      <div class="grid"><div class="fcard">
+      <span class="badge" style="--c:#a78bfa">D1</span>
+      <div class="ftitle">Claude verdict</div>
+      <div class="fdesc">Claude structured-output verdict with prompt-guard and recorded rationale.</div></div><div class="fcard">
+      <span class="badge" style="--c:#a78bfa">D2</span>
+      <div class="ftitle">GPT verdict</div>
+      <div class="fdesc">GPT verdict for the ensemble, same schema.</div></div><div class="fcard">
+      <span class="badge" style="--c:#a78bfa">D3</span>
+      <div class="ftitle">Gemini verdict</div>
+      <div class="fdesc">Gemini verdict for the ensemble, same schema.</div></div><div class="fcard">
+      <span class="badge" style="--c:#a78bfa">D4</span>
+      <div class="ftitle">SLM triage</div>
+      <div class="fdesc">Small open-weight model — the cheap path for low-severity triage.</div></div><div class="fcard">
+      <span class="badge" style="--c:#a78bfa">D5</span>
+      <div class="ftitle">Verdict merger</div>
+      <div class="fdesc">Disagreement-aware merge; discounts confidence and escalates to a human on dissent.</div></div><div class="fcard">
+      <span class="badge" style="--c:#a78bfa">D6</span>
+      <div class="ftitle">Multimodal verdict</div>
+      <div class="fdesc">Fuses text + image + audio for deepfake verdicts.</div></div><div class="fcard">
+      <span class="badge" style="--c:#a78bfa">D7</span>
+      <div class="ftitle">MITRE enricher</div>
+      <div class="fdesc">Maps every alert to real ATT&CK technique IDs + D3FEND countermeasures.</div></div><div class="fcard">
+      <span class="badge" style="--c:#a78bfa">D8</span>
+      <div class="ftitle">Cache + active learning</div>
+      <div class="fdesc">Verdict cache keyed on evidence hash; analyst overrides retune calibration.</div></div></div></section><section><div class="ghead"><span class="gdot" style="background:#ff8a5c"></span>
+      <h2>Agents <span class="gcount">10 modules</span></h2><p class="gtag">Autonomous, governed actions</p></div>
+      <div class="grid"><div class="fcard">
+      <span class="badge" style="--c:#ff8a5c">E1</span>
+      <div class="ftitle">Takedown agent</div>
+      <div class="fdesc">Researches → drafts → HITL gate → submits registrar packets.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff8a5c">E2</span>
+      <div class="ftitle">Victim-id agent</div>
+      <div class="fdesc">Identifies victims from session telemetry (consent + lawful-basis gated).</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff8a5c">E3</span>
+      <div class="ftitle">Cred-poison agent</div>
+      <div class="fdesc">Submits unique canary credentials per URL and tracks dark-web reuse.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff8a5c">E4</span>
+      <div class="ftitle">Synth-pages agent</div>
+      <div class="fdesc">Deploys honeypot pages back at the attacker in an isolated namespace.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff8a5c">E5</span>
+      <div class="ftitle">Cluster agent</div>
+      <div class="fdesc">Maintains the threat-network graph incrementally.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff8a5c">E6</span>
+      <div class="ftitle">Learning agent</div>
+      <div class="fdesc">Wires analyst overrides into the C1 calibration loop.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff8a5c">E7</span>
+      <div class="ftitle">Kill switch</div>
+      <div class="fdesc">Admin hard-halt for every running agent (global or per-tenant) + audit.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff8a5c">E8</span>
+      <div class="ftitle">Governance</div>
+      <div class="fdesc">Scores blast-radius; enforces budget/cost/risk envelope + HITL above threshold.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff8a5c">E9</span>
+      <div class="ftitle">Agent audit</div>
+      <div class="fdesc">Hash-chained, tamper-evident entry for every agent action.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff8a5c">E10</span>
+      <div class="ftitle">SLM triage agent</div>
+      <div class="fdesc">Agentic wrapper around the D4 cheap-path model.</div></div></div></section><section><div class="ghead"><span class="gdot" style="background:#3ddc84"></span>
+      <h2>Delivery <span class="gcount">8 modules</span></h2><p class="gtag">Takedown & integrations out</p></div>
+      <div class="grid"><div class="fcard">
+      <span class="badge" style="--c:#3ddc84">F1</span>
+      <div class="ftitle">Cloudflare takedown</div>
+      <div class="fdesc">Real Cloudflare abuse-form POST behind HITL; returns a reference id.</div></div><div class="fcard">
+      <span class="badge" style="--c:#3ddc84">F2</span>
+      <div class="ftitle">GoDaddy takedown</div>
+      <div class="fdesc">GoDaddy abuse API submission.</div></div><div class="fcard">
+      <span class="badge" style="--c:#3ddc84">F3</span>
+      <div class="ftitle">Namecheap takedown</div>
+      <div class="fdesc">Namecheap abuse API submission.</div></div><div class="fcard">
+      <span class="badge" style="--c:#3ddc84">F4</span>
+      <div class="ftitle">Hosting abuse</div>
+      <div class="fdesc">AWS/GCP/Hetzner/OVH/Hostinger/Cloudflare per-host abuse channel routing.</div></div><div class="fcard">
+      <span class="badge" style="--c:#3ddc84">F5</span>
+      <div class="ftitle">SIEM/SOAR sinks</div>
+      <div class="fdesc">Splunk + Sentinel + ServiceNow + PagerDuty + Cortex XSOAR, with retry/backoff.</div></div><div class="fcard">
+      <span class="badge" style="--c:#3ddc84">F6</span>
+      <div class="ftitle">TAXII / STIX</div>
+      <div class="fdesc">Schema-valid STIX 2.1 bundle export over TAXII 2.1.</div></div><div class="fcard">
+      <span class="badge" style="--c:#3ddc84">F7</span>
+      <div class="ftitle">Own MCP server</div>
+      <div class="fdesc">SpoofVane's MCP server — analyst-in-Claude-Desktop with 14+ tools.</div></div><div class="fcard">
+      <span class="badge" style="--c:#3ddc84">F8</span>
+      <div class="ftitle">BD MCP client</div>
+      <div class="fdesc">Calls Bright Data's MCP server for ad-hoc BD-routed rendering.</div></div></div></section><section><div class="ghead"><span class="gdot" style="background:#93a1b8"></span>
+      <h2>Platform <span class="gcount">12 modules</span></h2><p class="gtag">Enterprise foundations</p></div>
+      <div class="grid"><div class="fcard">
+      <span class="badge" style="--c:#93a1b8">G1</span>
+      <div class="ftitle">Identity</div>
+      <div class="fdesc">OIDC + SAML + JWT + signed cookies + MFA + SCIM 2.0.</div></div><div class="fcard">
+      <span class="badge" style="--c:#93a1b8">G2</span>
+      <div class="ftitle">RBAC</div>
+      <div class="fdesc">6 roles with explicit segregation of duties.</div></div><div class="fcard">
+      <span class="badge" style="--c:#93a1b8">G3</span>
+      <div class="ftitle">Audit logger</div>
+      <div class="fdesc">SHA-256/Blake2b hash-chained audit, Ed25519-signed.</div></div><div class="fcard">
+      <span class="badge" style="--c:#93a1b8">G4</span>
+      <div class="ftitle">HITL review</div>
+      <div class="fdesc">Mandatory review queue; reviewer ≠ analyst.</div></div><div class="fcard">
+      <span class="badge" style="--c:#93a1b8">G5</span>
+      <div class="ftitle">Notifications</div>
+      <div class="fdesc">Email + Slack + Teams + WhatsApp + push + voice (Twilio/Plivo/Telnyx).</div></div><div class="fcard">
+      <span class="badge" style="--c:#93a1b8">G6</span>
+      <div class="ftitle">Reports</div>
+      <div class="fdesc">Executive PDF + board pack + auditor pack, PKCS#7/PyHanko-signed.</div></div><div class="fcard">
+      <span class="badge" style="--c:#93a1b8">G7</span>
+      <div class="ftitle">Rate limiter</div>
+      <div class="fdesc">Per-tenant token bucket.</div></div><div class="fcard">
+      <span class="badge" style="--c:#93a1b8">G8</span>
+      <div class="ftitle">Idempotency</div>
+      <div class="fdesc">Idempotency-key middleware to make retried side-effects safe.</div></div><div class="fcard">
+      <span class="badge" style="--c:#93a1b8">G9</span>
+      <div class="ftitle">Cost tracker</div>
+      <div class="fdesc">Per-tenant Bright Data + LLM spend telemetry vs envelope.</div></div><div class="fcard">
+      <span class="badge" style="--c:#93a1b8">G10</span>
+      <div class="ftitle">Deepfake compliance</div>
+      <div class="fdesc">Chain-of-custody pack for legal discovery.</div></div><div class="fcard">
+      <span class="badge" style="--c:#93a1b8">G11</span>
+      <div class="ftitle">BYOK</div>
+      <div class="fdesc">Customer-managed keys (AWS KMS / Azure KV / GCP KMS) via envelope encryption.</div></div><div class="fcard">
+      <span class="badge" style="--c:#93a1b8">G12</span>
+      <div class="ftitle">Data residency</div>
+      <div class="fdesc">EU/US/APAC/IN routing + provable non-egress.</div></div></div></section><section><div class="ghead"><span class="gdot" style="background:#ff4d57"></span>
+      <h2>AI Surfaces <span class="gcount">10 modules</span></h2><p class="gtag">Analyst-facing intelligence</p></div>
+      <div class="grid"><div class="fcard">
+      <span class="badge" style="--c:#ff4d57">H1</span>
+      <div class="ftitle">Analyst copilot</div>
+      <div class="fdesc">Conversational verdict / triage assistant.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff4d57">H2</span>
+      <div class="ftitle">Audit NL search</div>
+      <div class="fdesc">Natural-language search over the audit log → structured filters.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff4d57">H3</span>
+      <div class="ftitle">Brand wizard</div>
+      <div class="fdesc">Conversational brand onboarding (keywords, TLDs, regions).</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff4d57">H4</span>
+      <div class="ftitle">Deepfake verdict UI</div>
+      <div class="fdesc">Analyst-facing deepfake verdict surface.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff4d57">H5</span>
+      <div class="ftitle">Exec attack surface</div>
+      <div class="fdesc">Executive likeness + voice surface monitor (sensitive, gated).</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff4d57">H6</span>
+      <div class="ftitle">Family reranker</div>
+      <div class="fdesc">Re-ranks family classification with analyst feedback.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff4d57">H7</span>
+      <div class="ftitle">Intel narrator</div>
+      <div class="fdesc">Auto-generates the human-readable alert narrative.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff4d57">H8</span>
+      <div class="ftitle">Kit explainer</div>
+      <div class="fdesc">RAG over the phishing-kit knowledge base (prompt-cached).</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff4d57">H9</span>
+      <div class="ftitle">Takedown drafter</div>
+      <div class="fdesc">Drafts the registrar packet for analyst review.</div></div><div class="fcard">
+      <span class="badge" style="--c:#ff4d57">H10</span>
+      <div class="ftitle">TTP proposer</div>
+      <div class="fdesc">Suggests MITRE TTPs for the alert.</div></div></div></section>
+
+<h2 class="sec">Bright Data — 7 sponsor products</h2>
+<div class="grid"><div class="fcard bd"><span class="badge" style="--c:#ffb020">BD 1</span>
+  <div class="ftitle">Scraping Browser (CDP)</div><div class="fdesc">Country-pinned residential rendering of suspect pages</div>
+  <div class="uses">used by B1, B8, F1</div></div><div class="fcard bd"><span class="badge" style="--c:#ffb020">BD 2</span>
+  <div class="ftitle">Residential Proxies</div><div class="fdesc">Geo-distributed HTTP + DNS from real residential exits</div>
+  <div class="uses">used by A3, A6, B1</div></div><div class="fcard bd"><span class="badge" style="--c:#ffb020">BD 3</span>
+  <div class="ftitle">SERP API</div><div class="fdesc">brd_json=1 structured search across 4 engines</div>
+  <div class="uses">used by A1</div></div><div class="fcard bd"><span class="badge" style="--c:#ffb020">BD 4</span>
+  <div class="ftitle">Web Unlocker</div><div class="fdesc">Bypasses JS challenges / 403s on protected targets</div>
+  <div class="uses">used by A6, A9, B1</div></div><div class="fcard bd"><span class="badge" style="--c:#ffb020">BD 5</span>
+  <div class="ftitle">Web Scraper API</div><div class="fdesc">Structured extraction of ads & fallback pages</div>
+  <div class="uses">used by A2, A8, B8</div></div><div class="fcard bd"><span class="badge" style="--c:#ffb020">BD 6</span>
+  <div class="ftitle">Datasets / Marketplace</div><div class="fdesc">WHOIS dataset feed for registration intelligence</div>
+  <div class="uses">used by A4, B7</div></div><div class="fcard bd"><span class="badge" style="--c:#ffb020">BD 7</span>
+  <div class="ftitle">Bright Data MCP Server</div><div class="fdesc">Ad-hoc BD-routed rendering from inside the copilot</div>
+  <div class="uses">used by F8</div></div></div>
+
+<h2 class="sec">Platform & governance highlights</h2>
+<div class="grid"><div class="fcard"><span class="badge" style="--c:#36c2ce">✦</span>
+  <div class="ftitle">Replay mode</div><div class="fdesc">Every Bright Data path runs credential-free against input-dependent fixtures (reproducible build).</div></div><div class="fcard"><span class="badge" style="--c:#36c2ce">✦</span>
+  <div class="ftitle">Differential depth probe</div><div class="fdesc">14 module probes assert output varies with input — stubs can't pass.</div></div><div class="fcard"><span class="badge" style="--c:#36c2ce">✦</span>
+  <div class="ftitle">Two-person rule</div><div class="fdesc">Egress agents (cred-poison, synth-pages) need a second authoriser + permitted region.</div></div><div class="fcard"><span class="badge" style="--c:#36c2ce">✦</span>
+  <div class="ftitle">Tamper-evident chains</div><div class="fdesc">Audit, agent-audit and chain-of-custody each hash-chain and self-verify.</div></div><div class="fcard"><span class="badge" style="--c:#36c2ce">✦</span>
+  <div class="ftitle">Cost envelope</div><div class="fdesc">Per-tier caps (free $5 / pro $100 / business $1k / enterprise $25k) with SLM-first routing.</div></div><div class="fcard"><span class="badge" style="--c:#36c2ce">✦</span>
+  <div class="ftitle">CycloneDX SBOM</div><div class="fdesc">26-component software bill of materials generated from the real dependency tree.</div></div></div>
+
+<p class="foot">Modules map to the review's §8 catalogue (A1–H10) and the canonical page registry. Every feature has real, tested, input-dependent code — see docs/TRACEABILITY_MASTER.md and docs/DEPTH_LEDGER.md.</p>
+</div></body></html>
