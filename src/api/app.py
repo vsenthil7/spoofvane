@@ -35,6 +35,13 @@ from ..common.logging import get_logger
 from ..common.models import Alert, AlertStatus, Brand, SuspectURL, Verdict
 from ..common.pipeline import PipelineStats, run_pipeline_for_brand
 from ..common.settings import get_settings
+from ..common.tenants import (
+    SCOPE_ALERTS_READ,
+    SCOPE_ALERTS_TRIAGE,
+    SCOPE_BRANDS_READ,
+    SCOPE_BRANDS_WRITE,
+    SCOPE_DISCOVERY_RUN,
+)
 from ..delivery.pdf_evidence import build_evidence_pdf
 from ..storage.db import session_scope
 from ..storage.repositories import (
@@ -45,6 +52,8 @@ from ..storage.repositories import (
     SuspectURLRepo,
     VerdictRepo,
 )
+from ..storage.repositories_v2 import AuditLogRepo, FeedbackEventRepo
+from .auth import AuthCtx, require_auth
 
 logger = get_logger(__name__)
 settings = get_settings()
@@ -93,13 +102,17 @@ class TriageRequest(BaseModel):
 
 app = FastAPI(
     title="DoppelDomain",
-    version="0.1.0",
+    version="0.2.0",
     description=(
         "Brand-impersonation detection — Bright Data Hackathon Track 3. "
         "Catches phishing infrastructure by fingerprinting the rendered page, "
         "not just the domain name."
     ),
 )
+
+# Tenant + API key + cost-attribution admin endpoints
+from .admin_router import router as admin_router  # noqa: E402
+app.include_router(admin_router)
 
 # Static + templates
 if _STATIC_DIR.exists():
@@ -124,7 +137,11 @@ def healthz() -> dict[str, str]:
 
 
 @app.post("/api/brands", tags=["brands"], status_code=201)
-def create_brand(payload: BrandCreate) -> dict:
+def create_brand(
+    payload: BrandCreate,
+    request: Request,
+    ctx: AuthCtx = Depends(require_auth(SCOPE_BRANDS_WRITE)),
+) -> dict:
     """Onboard a new brand. Canonical assets are added later via the onboard
     script, since they require an inspection pass against the real login URL."""
     brand = Brand(
@@ -135,27 +152,47 @@ def create_brand(payload: BrandCreate) -> dict:
         target_country=payload.target_country.upper(),
         brand_keywords=payload.brand_keywords,
         score_threshold=payload.score_threshold,
+        tenant_id=(ctx.tenant.id if ctx.tenant else None),
     )
     with session_scope() as s:
         repo = BrandRepo(s)
         if repo.get_by_name(brand.name) is not None:
             raise HTTPException(409, f"Brand already exists: {brand.name}")
         brand = repo.create(brand)
+        AuditLogRepo(s).record(
+            actor=ctx.actor,
+            action="brand.create",
+            tenant_id=brand.tenant_id,
+            target_kind="brand",
+            target_id=brand.id,
+            after=brand.model_dump(mode="json"),
+            request_ip=_client_ip(request),
+            user_agent=request.headers.get("user-agent"),
+        )
     return brand.model_dump(mode="json")
 
 
 @app.get("/api/brands", tags=["brands"])
-def list_brands() -> list[dict]:
+def list_brands(
+    ctx: AuthCtx = Depends(require_auth(SCOPE_BRANDS_READ)),
+) -> list[dict]:
     with session_scope() as s:
-        brands = BrandRepo(s).list_all()
+        tenant_id = ctx.tenant.id if ctx.tenant else None
+        brands = BrandRepo(s).list_all(tenant_id=tenant_id)
     return [b.model_dump(mode="json") for b in brands]
 
 
 @app.get("/api/brands/{brand_id}", tags=["brands"])
-def get_brand(brand_id: Annotated[str, PathParam(min_length=1)]) -> dict:
+def get_brand(
+    brand_id: Annotated[str, PathParam(min_length=1)],
+    ctx: AuthCtx = Depends(require_auth(SCOPE_BRANDS_READ)),
+) -> dict:
     with session_scope() as s:
         brand = BrandRepo(s).get(brand_id)
     if brand is None:
+        raise HTTPException(404, f"Brand not found: {brand_id}")
+    # Tenant isolation: a non-admin key cannot see another tenant's brands
+    if ctx.tenant is not None and brand.tenant_id and brand.tenant_id != ctx.tenant.id:
         raise HTTPException(404, f"Brand not found: {brand_id}")
     return brand.model_dump(mode="json")
 
@@ -169,7 +206,9 @@ def get_brand(brand_id: Annotated[str, PathParam(min_length=1)]) -> dict:
 def run_discovery(
     payload: DiscoveryRunRequest,
     background: BackgroundTasks,
+    request: Request,
     wait: bool = Query(default=False, description="Block until pipeline completes"),
+    ctx: AuthCtx = Depends(require_auth(SCOPE_DISCOVERY_RUN)),
 ) -> dict:
     """Kick off discovery → inspection → scoring → verdict for a brand.
 
@@ -179,8 +218,21 @@ def run_discovery(
     """
     with session_scope() as s:
         brand = BrandRepo(s).get(payload.brand_id)
-    if brand is None:
-        raise HTTPException(404, f"Brand not found: {payload.brand_id}")
+        if brand is None:
+            raise HTTPException(404, f"Brand not found: {payload.brand_id}")
+        # Tenant isolation
+        if ctx.tenant is not None and brand.tenant_id and brand.tenant_id != ctx.tenant.id:
+            raise HTTPException(404, f"Brand not found: {payload.brand_id}")
+        AuditLogRepo(s).record(
+            actor=ctx.actor,
+            action="discovery.run",
+            tenant_id=brand.tenant_id,
+            target_kind="brand",
+            target_id=brand.id,
+            after={"sources": payload.sources, "max_inspect": payload.max_inspect, "wait": wait},
+            request_ip=_client_ip(request),
+            user_agent=request.headers.get("user-agent"),
+        )
 
     if wait:
         stats = run_pipeline_for_brand(
@@ -209,19 +261,26 @@ def list_alerts(
     brand_id: str | None = Query(default=None),
     status: AlertStatus | None = Query(default=None),
     limit: int = Query(default=50, ge=1, le=500),
+    ctx: AuthCtx = Depends(require_auth(SCOPE_ALERTS_READ)),
 ) -> list[dict]:
+    tenant_id = ctx.tenant.id if ctx.tenant else None
     with session_scope() as s:
         repo = AlertRepo(s)
-        if brand_id:
-            alerts = repo.list_for_brand(brand_id, status=status, limit=limit)
-        else:
-            alerts = repo.list_for_brand(brand_id=None, status=status, limit=limit)
+        alerts = repo.list_for_brand(
+            brand_id=brand_id, status=status, tenant_id=tenant_id, limit=limit
+        )
     return [a.model_dump(mode="json") for a in alerts]
 
 
 @app.get("/api/alerts/{alert_id}", tags=["alerts"])
-def get_alert(alert_id: str) -> dict:
+def get_alert(
+    alert_id: str,
+    ctx: AuthCtx = Depends(require_auth(SCOPE_ALERTS_READ)),
+) -> dict:
     bundle = _load_alert_bundle(alert_id)
+    # Tenant isolation
+    if ctx.tenant is not None and bundle["alert"].tenant_id and bundle["alert"].tenant_id != ctx.tenant.id:
+        raise HTTPException(404, f"Alert not found: {alert_id}")
     return {
         "alert": bundle["alert"].model_dump(mode="json"),
         "brand": bundle["brand"].model_dump(mode="json"),
@@ -232,11 +291,18 @@ def get_alert(alert_id: str) -> dict:
 
 
 @app.post("/api/alerts/{alert_id}/triage", tags=["alerts"])
-def triage_alert(alert_id: str, payload: TriageRequest) -> dict:
+def triage_alert(
+    alert_id: str,
+    payload: TriageRequest,
+    request: Request,
+    ctx: AuthCtx = Depends(require_auth(SCOPE_ALERTS_TRIAGE)),
+) -> dict:
     with session_scope() as s:
         repo = AlertRepo(s)
         existing = repo.get(alert_id)
         if existing is None:
+            raise HTTPException(404, f"Alert not found: {alert_id}")
+        if ctx.tenant is not None and existing.tenant_id and existing.tenant_id != ctx.tenant.id:
             raise HTTPException(404, f"Alert not found: {alert_id}")
         updated = repo.update_triage(
             alert_id,
@@ -244,7 +310,118 @@ def triage_alert(alert_id: str, payload: TriageRequest) -> dict:
             notes=payload.notes,
             actor=payload.triaged_by,
         )
+
+        # Record an active-learning feedback event if the analyst marked a
+        # final outcome. open/triaging → no feedback; confirmed → tp; dismissed → fp.
+        outcome_map = {
+            AlertStatus.CONFIRMED: "true_positive",
+            AlertStatus.DISMISSED: "false_positive",
+        }
+        outcome = outcome_map.get(payload.status)
+        if outcome is not None:
+            verdict = VerdictRepo(s).get(existing.verdict_id)
+            scoring = ScoringRepo(s).get(existing.inspection_id)
+            FeedbackEventRepo(s).record(
+                alert_id=alert_id,
+                outcome=outcome,
+                actor=payload.triaged_by or ctx.actor,
+                tenant_id=existing.tenant_id,
+                brand_id=existing.brand_id,
+                attack_family=verdict.attack_family if verdict else None,
+                kit_match=verdict.kit_match if verdict else None,
+                cloaking_detected=bool(verdict.cloaking_detected) if verdict else False,
+                composite_score=scoring.composite_score if scoring else None,
+                notes=payload.notes,
+            )
+
+        AuditLogRepo(s).record(
+            actor=payload.triaged_by or ctx.actor,
+            action="alert.triage",
+            tenant_id=existing.tenant_id,
+            target_kind="alert",
+            target_id=alert_id,
+            before={"status": existing.status.value},
+            after={"status": payload.status.value, "notes": payload.notes},
+            request_ip=_client_ip(request),
+            user_agent=request.headers.get("user-agent"),
+        )
     return updated.model_dump(mode="json")
+
+
+@app.post("/api/alerts/{alert_id}/takedown", tags=["alerts"])
+def submit_alert_takedown(
+    alert_id: str,
+    request: Request,
+    ctx: AuthCtx = Depends(require_auth(SCOPE_ALERTS_TRIAGE)),
+) -> dict:
+    """Submit a takedown request to the appropriate registrar / hosting provider.
+
+    The request is built from the alert's stored evidence; submission goes
+    to the first enabled provider whose ``supports()`` matches the host or
+    registrar. In MOCK_MODE no real network call is made — a synthetic case
+    id is returned so the workflow is demonstrable end-to-end.
+    """
+    # Import here to ensure providers register on first call
+    from ..delivery.takedown import submit_takedown  # noqa: E402
+    from ..delivery.takedown import cloudflare as _cf, namecheap as _nc, godaddy as _gd  # noqa: F401, E402
+
+    bundle = _load_alert_bundle(alert_id)
+    if ctx.tenant is not None and bundle["alert"].tenant_id and bundle["alert"].tenant_id != ctx.tenant.id:
+        raise HTTPException(404, f"Alert not found: {alert_id}")
+
+    result = submit_takedown(
+        bundle["alert"], bundle["brand"], bundle["inspection"], bundle["verdict"]
+    )
+
+    with session_scope() as s:
+        AuditLogRepo(s).record(
+            actor=ctx.actor,
+            action="takedown.submit",
+            tenant_id=bundle["alert"].tenant_id,
+            target_kind="alert",
+            target_id=alert_id,
+            after={
+                "provider": result.provider,
+                "success": result.success,
+                "case_id": result.case_id,
+                "error": result.error,
+            },
+            request_ip=_client_ip(request),
+            user_agent=request.headers.get("user-agent"),
+        )
+    if not result.success:
+        raise HTTPException(400, result.error or "Takedown submission failed")
+    return {
+        "alert_id": alert_id,
+        "provider": result.provider,
+        "case_id": result.case_id,
+        "submitted_at": _utc_now_iso(),
+    }
+
+
+def _utc_now_iso() -> str:
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).isoformat()
+
+
+# --------------------------------------------------------------------------- #
+# Audit log surface (read-only summary)
+# --------------------------------------------------------------------------- #
+
+
+@app.get("/api/audit-log", tags=["meta"])
+def list_audit_log(
+    actor: str | None = Query(default=None),
+    action: str | None = Query(default=None),
+    limit: int = Query(default=100, ge=1, le=1000),
+    ctx: AuthCtx = Depends(require_auth(SCOPE_ALERTS_READ)),
+) -> list[dict]:
+    """Read the audit log scoped to the caller's tenant."""
+    tenant_id = ctx.tenant.id if ctx.tenant else None
+    with session_scope() as s:
+        return AuditLogRepo(s).list_recent(
+            tenant_id=tenant_id, actor=actor, action=action, limit=limit
+        )
 
 
 @app.get(
@@ -252,8 +429,13 @@ def triage_alert(alert_id: str, payload: TriageRequest) -> dict:
     tags=["alerts"],
     response_class=FileResponse,
 )
-def evidence_pdf(alert_id: str) -> FileResponse:
+def evidence_pdf(
+    alert_id: str,
+    ctx: AuthCtx = Depends(require_auth(SCOPE_ALERTS_READ)),
+) -> FileResponse:
     bundle = _load_alert_bundle(alert_id)
+    if ctx.tenant is not None and bundle["alert"].tenant_id and bundle["alert"].tenant_id != ctx.tenant.id:
+        raise HTTPException(404, f"Alert not found: {alert_id}")
     out = build_evidence_pdf(
         bundle["alert"],
         bundle["brand"],
@@ -280,14 +462,56 @@ def dashboard(request: Request) -> HTMLResponse:
         all_alerts: list[Alert] = []
         for b in brands:
             all_alerts.extend(AlertRepo(s).list_for_brand(b.id, limit=100))
+        # Bulk-load verdict signals for the queue display
+        alert_signals: dict[str, dict] = {}
+        for a in all_alerts:
+            v = VerdictRepo(s).get(a.verdict_id)
+            if v is None:
+                continue
+            alert_signals[a.id] = {
+                "attack_family": v.attack_family,
+                "kit_match": v.kit_match,
+                "cloaking_detected": v.cloaking_detected,
+            }
     all_alerts.sort(key=lambda a: a.created_at, reverse=True)
 
     brand_lookup = {b.id: b for b in brands}
+    family_counts: dict[str, int] = {}
+    kit_counts: dict[str, int] = {}
+    cloaking_total = 0
+    for sig in alert_signals.values():
+        if sig["attack_family"]:
+            family_counts[sig["attack_family"]] = family_counts.get(sig["attack_family"], 0) + 1
+        if sig["kit_match"]:
+            kit_counts[sig["kit_match"]] = kit_counts.get(sig["kit_match"], 0) + 1
+        if sig["cloaking_detected"]:
+            cloaking_total += 1
+    # Bright Data spend rollup across all brands (today + per-kind breakdown)
+    from datetime import datetime as _dt, timezone as _tz, timedelta as _td
+    from sqlalchemy import func as _func, select as _select
+    from src.storage.models import CostEventRow as _CostRow
+    cost_today = 0.0
+    cost_breakdown: dict[str, float] = {}
+    with session_scope() as s:
+        since = _dt.now(_tz.utc) - _td(days=7)
+        rows = s.execute(
+            _select(_CostRow.kind, _func.coalesce(_func.sum(_CostRow.usd_amount), 0.0))
+            .where(_CostRow.occurred_at >= since)
+            .group_by(_CostRow.kind)
+        ).all()
+        cost_breakdown = {kind: round(float(amt), 4) for kind, amt in rows}
+        cost_today = round(sum(cost_breakdown.values()), 4)
+
     summary = {
         "total_alerts": len(all_alerts),
         "open": sum(1 for a in all_alerts if a.status == AlertStatus.OPEN),
         "critical": sum(1 for a in all_alerts if a.severity.value == "critical"),
         "high": sum(1 for a in all_alerts if a.severity.value == "high"),
+        "cloaking": cloaking_total,
+        "families": family_counts,
+        "kits": kit_counts,
+        "cost_7d_usd": cost_today,
+        "cost_breakdown": cost_breakdown,
     }
     return templates.TemplateResponse(
         request,
@@ -296,6 +520,7 @@ def dashboard(request: Request) -> HTMLResponse:
             "brands": brands,
             "brands_json": [b.model_dump(mode="json") for b in brands],
             "alerts": all_alerts,
+            "alert_signals": alert_signals,
             "brand_lookup": brand_lookup,
             "summary": summary,
             "mock_mode": settings.mock_mode,
@@ -320,6 +545,29 @@ def alert_detail(request: Request, alert_id: str) -> HTMLResponse:
     )
 
 
+@app.get("/audit", response_class=HTMLResponse, tags=["dashboard"])
+def audit_log_page(request: Request, limit: int = Query(default=100, ge=1, le=500)) -> HTMLResponse:
+    """Human-readable audit log surface. Filters by tenant/actor/action via query string."""
+    tenant_id = request.query_params.get("tenant_id")
+    actor = request.query_params.get("actor")
+    action = request.query_params.get("action")
+    with session_scope() as s:
+        entries = AuditLogRepo(s).list_recent(
+            tenant_id=tenant_id, actor=actor, action=action, limit=limit
+        )
+    return templates.TemplateResponse(
+        request,
+        "audit_log.html",
+        {
+            "entries": entries,
+            "filter_tenant_id": tenant_id,
+            "filter_actor": actor,
+            "filter_action": action,
+            "mock_mode": settings.mock_mode,
+        },
+    )
+
+
 # --------------------------------------------------------------------------- #
 # Helpers
 # --------------------------------------------------------------------------- #
@@ -334,6 +582,13 @@ def _stats_dict(stats: PipelineStats) -> dict:
         "alerts_created": stats.alerts_created,
         "errors": stats.errors,
     }
+
+
+def _client_ip(request: Request) -> str | None:
+    fwd = request.headers.get("x-forwarded-for")
+    if fwd:
+        return fwd.split(",")[0].strip()
+    return request.client.host if request.client else None
 
 
 def _load_alert_bundle(alert_id: str) -> dict:

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Audit log — DoppelDomain{% endblock %}
+
+{% block content %}
+<a class="back" href="/">← Back to triage queue</a>
+
+<header class="alert-header">
+  <div>
+    <h1>Audit log</h1>
+    <p class="muted small">
+      Append-only record of every state-changing operation.
+      Used for compliance and incident investigation. Cannot be modified or deleted.
+    </p>
+  </div>
+</header>
+
+<section class="panel">
+  <h2>Filters</h2>
+  <form method="GET" action="/audit" class="audit-filters">
+    <label>Tenant ID
+      <input type="text" name="tenant_id" value="{{ filter_tenant_id or '' }}" placeholder="brand_01...">
+    </label>
+    <label>Actor
+      <input type="text" name="actor" value="{{ filter_actor or '' }}" placeholder="apikey:dd_xxx or analyst@example.com">
+    </label>
+    <label>Action
+      <input type="text" name="action" value="{{ filter_action or '' }}" placeholder="tenant.create, alert.triage, ...">
+    </label>
+    <button type="submit" class="btn">Apply</button>
+    {% if filter_tenant_id or filter_actor or filter_action %}<a href="/audit" class="btn-link">Clear</a>{% endif %}
+  </form>
+</section>
+
+<section class="panel">
+  <header class="panel-header">
+    <h2>Recent activity</h2>
+    <span class="muted">{{ entries|length }} entries</span>
+  </header>
+  {% if entries %}
+  <table class="data-table audit-table">
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Actor</th>
+        <th>Action</th>
+        <th>Target</th>
+        <th>Tenant</th>
+        <th>IP</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for e in entries %}
+      <tr>
+        <td class="mono small">{{ e.created_at }}</td>
+        <td class="mono small">{{ e.actor }}</td>
+        <td><span class="audit-action audit-action-{{ e.action.split('.')[0] }}">{{ e.action }}</span></td>
+        <td class="small">
+          {% if e.target_kind %}{{ e.target_kind }}:{% endif %}
+          <span class="mono">{{ e.target_id or '—' }}</span>
+        </td>
+        <td class="mono small">{{ e.tenant_id or '—' }}</td>
+        <td class="mono small">{{ e.request_ip or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No audit entries matching the current filters.</p>
+  {% endif %}
+</section>
+{% endblock %}

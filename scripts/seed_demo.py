@@ -84,7 +84,7 @@ def main() -> int:
     print()
 
     print("Running pipeline pass…")
-    stats = run_pipeline_for_brand(brand.id, max_inspect=25)
+    stats = run_pipeline_for_brand(brand.id, max_inspect=100)
 
     print()
     print("Pipeline complete:")

@@ -4,7 +4,9 @@
 
 **Track:** 3 — Security & Compliance
 **Hackathon:** Bright Data — Web Data UNLOCKED (May 25–30, 2026)
-**Status:** Prototype / hackathon build
+**Status:** v0.2 — prototype with detection depth, discovery breadth, and platform foundations
+
+See [docs/09-v02-changelog.md](docs/09-v02-changelog.md) for what v0.2 adds on top of v0.1, framed honestly against the [enterprise readiness gaps](docs/08-enterprise-readiness.md).
 
 ---
 
@@ -14,11 +16,13 @@ DoppelDomain monitors the open web for **pixel-perfect clones** of your brand's 
 
 It does this by combining:
 
-1. **Discovery** — SERP API + certificate-transparency + new-domain feeds surface ~50K suspect URLs/day
-2. **Inspection** — Bright Data Scraping Browser + Web Unlocker + geo-pinned residential proxies render the suspect pages in real Chrome from the target country, capturing screenshots, DOMs, network traffic, and JS bundle hashes
-3. **Similarity scoring** — perceptual image hashing + DOM-tree similarity + CLIP-based logo detection
-4. **AI verdict** — Claude Sonnet 4.6 (vision) reasons over screenshot + DOM + metadata and produces a structured `phish | suspicious | benign` verdict with evidence and a drafted takedown notice
-5. **Delivery** — triage dashboard, evidence-pack PDF export, webhooks to Splunk/Sentinel/Slack, MCP server for analyst queries from Claude
+1. **Discovery** — 7 sources (SERP organic + paid ads, certificate transparency, new-domain delta, Play Store / App Store / APK sideload, GitHub kit leaks, Telegram kit marketplace) surface 100+ suspect URLs per brand-sweep
+2. **Inspection** — Bright Data Scraping Browser + Web Unlocker + geo-pinned residential proxies render suspect pages in real Chrome from the target country. Optional **multi-region inspection** renders from N countries in parallel and detects geo-cloaking divergence
+3. **Similarity scoring** — perceptual image hashing + DOM-tree similarity + CLIP-or-spatial-histogram logo detection + favicon MD5
+4. **Attack-family + kit fingerprinting** — classifies into m365 / banking / crypto / payment / support kit families, matches against known phishing-kit signatures (16Shop, EvilProxy, Caffeine, Tycoon-2FA, GreatHorn, Modlishka)
+5. **AI verdict** — Claude Sonnet 4.6 (vision) reasons over screenshot + DOM + metadata and produces a structured `phish | suspicious | benign` verdict with evidence and a drafted takedown notice
+6. **Delivery** — triage dashboard with family/kit/cloaking signal cards, evidence-pack PDF export, webhooks to ServiceNow + Sentinel + PagerDuty + STIX/TAXII + Slack + Splunk + generic HMAC-signed webhooks, MCP server for analyst queries from Claude, registrar takedown automation (Cloudflare / Namecheap / GoDaddy)
+7. **Platform** — multi-tenancy with API keys + scopes, audit log, per-tenant cost attribution, active-learning feedback loop
 
 ## Why it needs Bright Data
 

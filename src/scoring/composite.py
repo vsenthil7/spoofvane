@@ -34,7 +34,16 @@ def score(
     canonical_logo: bytes,
     canonical_favicon_md5: str | None,
     inspection: InspectionResult,
+    family_classification=None,  # type: ignore[no-untyped-def]  -- avoid scoring-family import cycle
 ) -> ScoringResult:
+    """Compute the composite similarity score.
+
+    ``family_classification`` (optional ``FamilyClassification`` from
+    ``scoring.family.classify``) lets the scorer use kit-family-specific
+    weights — e.g. crypto kits weight DOM signatures higher because the
+    seed-phrase field is the most reliable signal, while M365 kits weight
+    pHash higher because visual layout is the consistent giveaway.
+    """
     settings = get_settings()
 
     suspect_screenshot = _safe_read(inspection.screenshot_hash, ".png")
@@ -45,14 +54,33 @@ def score(
     l = logo_score(canonical_logo, suspect_screenshot)
     f = favicon_match(canonical_favicon_md5, inspection.favicon_hash)
 
+    # If a family classification with confidence ≥ 0.6 is provided, use its
+    # weight profile. Otherwise fall back to the brand's tuned default weights.
+    if family_classification is not None and family_classification.confidence >= 0.6:
+        from .family import weights_for_family
+        family_weights = weights_for_family(family_classification.family)
+        base_weights = {
+            "phash": family_weights["phash"],
+            "dom": family_weights["dom"],
+            "logo": family_weights["logo"],
+            "favicon": family_weights["favicon"],
+        }
+    else:
+        base_weights = {
+            "phash": settings.score_weight_phash,
+            "dom": settings.score_weight_dom,
+            "logo": settings.score_weight_logo,
+            "favicon": settings.score_weight_favicon,
+        }
+
     # Renormalise weights so a missing canonical (no logo, no favicon md5)
     # doesn't perpetually drag the composite down. A brand without a
     # registered logo should be judged on the signals that ARE available.
     weights = {
-        "phash": settings.score_weight_phash if canonical_screenshot else 0.0,
-        "dom": settings.score_weight_dom if canonical_dom else 0.0,
-        "logo": settings.score_weight_logo if canonical_logo else 0.0,
-        "favicon": settings.score_weight_favicon if canonical_favicon_md5 else 0.0,
+        "phash": base_weights["phash"] if canonical_screenshot else 0.0,
+        "dom": base_weights["dom"] if canonical_dom else 0.0,
+        "logo": base_weights["logo"] if canonical_logo else 0.0,
+        "favicon": base_weights["favicon"] if canonical_favicon_md5 else 0.0,
     }
     total_w = sum(weights.values())
     if total_w == 0:
@@ -76,6 +104,7 @@ def score(
         favicon=f,
         composite=composite,
         above_threshold=above,
+        family=(family_classification.family.value if family_classification else "unclassified"),
     )
 
     return ScoringResult(

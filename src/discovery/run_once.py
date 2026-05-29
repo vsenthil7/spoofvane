@@ -18,8 +18,12 @@ from ..storage.db import session_scope
 from ..storage.repositories import BrandRepo, SuspectURLRepo
 from .base import DiscoverySource, DiscoveryRunResult
 from .cert_stream import CertStreamSource
+from .github_leak import GitHubLeakSource
+from .mobile_app_store import MobileAppStoreSource
 from .new_domains import NewDomainsSource
+from .paid_ads import PaidAdSource
 from .serp import SERPSource
+from .telegram_kit import TelegramKitSource
 
 log = get_logger(__name__)
 
@@ -28,6 +32,10 @@ DEFAULT_SOURCES: dict[str, type[DiscoverySource]] = {
     "serp": SERPSource,
     "cert_stream": CertStreamSource,
     "new_domains": NewDomainsSource,
+    "paid_ads": PaidAdSource,
+    "mobile_app_store": MobileAppStoreSource,
+    "github_leak": GitHubLeakSource,
+    "telegram_kit": TelegramKitSource,
 }
 
 

@@ -25,6 +25,10 @@ class Source(str, Enum):
     CERT_STREAM = "cert_stream"
     NEW_DOMAINS = "new_domains"
     MANUAL = "manual"
+    PAID_AD = "paid_ad"
+    MOBILE_APP_STORE = "mobile_app_store"
+    GITHUB_LEAK = "github_leak"
+    TELEGRAM_KIT = "telegram_kit"
 
 
 class Verdict(str, Enum):
@@ -43,6 +47,8 @@ class Severity(str, Enum):
 class AlertStatus(str, Enum):
     OPEN = "open"
     TRIAGED = "triaged"
+    CONFIRMED = "confirmed"  # analyst marked as a real phishing site (true positive)
+    DISMISSED = "dismissed"  # analyst marked as a false positive
     CLOSED = "closed"
 
 
@@ -62,6 +68,8 @@ class Brand(BaseModel):
     canonical_screenshot_hash: str | None = None
     canonical_dom_hash: str | None = None
     score_threshold: float = 0.65
+    # Tenant scoping (v0.2)
+    tenant_id: str | None = None
     created_at: datetime = Field(default_factory=_utcnow)
 
 
@@ -140,6 +148,13 @@ class VerdictResult(BaseModel):
     suggested_action: Literal["takedown", "watch", "dismiss"]
     takedown_draft: str
     model_used: str
+    # Enhanced signals (v0.2)
+    attack_family: str | None = None  # e.g. "m365", "banking", "crypto"
+    attack_family_confidence: float | None = None
+    kit_match: str | None = None  # e.g. "16Shop", "EvilProxy"
+    kit_match_confidence: float | None = None
+    cloaking_detected: bool = False
+    cloaking_evidence: list[str] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=_utcnow)
 
 
@@ -159,4 +174,6 @@ class Alert(BaseModel):
     triage_notes: str | None = None
     triaged_by: str | None = None
     triaged_at: datetime | None = None
+    # Tenant scoping (v0.2)
+    tenant_id: str | None = None
     created_at: datetime = Field(default_factory=_utcnow)

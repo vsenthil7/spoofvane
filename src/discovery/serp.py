@@ -94,15 +94,39 @@ class SERPSource:
 
         Includes a benign result, a typosquat, and an unrelated-looking
         phishing domain so the downstream pipeline has interesting work.
+
+        Some URLs deliberately exercise family classification (bank/wallet/
+        microsoft strings) or kit fingerprinting (16shop/tycoon/caffeine).
+        URLs containing "geo-" exercise multi-region cloaking detection.
         """
-        # The exact URLs don't have to resolve; the demo fixture inspector
-        # returns canned screenshots for them.
         base_slug = query.lower().split('"')[1] if '"' in query else "brand"
         slug = base_slug.replace(" ", "-")
+        first = slug.split('-')[0]
         return [
-            f"https://www.{slug.split('-')[0]}.com/help",  # benign
-            f"https://{slug}-secure-login.com/",  # typosquat-style
-            f"https://account-update-portal.xyz/{slug}",  # unrelated domain, the dangerous one
-            f"https://my-{slug}-support.net/auth",  # plausible-look
-            f"https://help.{slug.split('-')[0]}.org/contact",  # benign
+            # Benign — legitimate brand-owned domains
+            f"https://www.{first}.com/help",
+            f"https://help.{first}.org/contact",
+            # Typosquat / lookalike (generic family)
+            f"https://{slug}-secure-login.com/",
+            f"https://my-{slug}-support.net/auth",
+            # Unrelated phishing domain (generic family)
+            f"https://account-update-portal.xyz/{slug}",
+            # Banking family
+            f"https://{slug}-bank-deposit.com/account",
+            # M365 family
+            f"https://outlook-{slug}-365.com/login",
+            # Crypto family
+            f"https://{slug}-wallet-metamask.io/connect",
+            # Payment family
+            f"https://{slug}-checkout-billing.com/pay",
+            # Tech-support scam family
+            f"https://{slug}-techsupport-help-desk.com/",
+            # Kit fingerprint: 16Shop
+            f"https://{slug}-16shop-portal.xyz/sh16/",
+            # Kit fingerprint: Tycoon-2FA
+            f"https://tycoon-{slug}-secure.com/login",
+            # Kit fingerprint: Caffeine
+            f"https://{slug}-caffeine-verify.io/auth",
+            # Geo-cloaked (only renders payload from URL-hash-derived country)
+            f"https://geo-{slug}-secure.com/login",
         ]

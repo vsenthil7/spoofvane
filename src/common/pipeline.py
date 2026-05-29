@@ -25,6 +25,7 @@ from dataclasses import dataclass
 
 from ..common.ids import alert_id
 from ..common.logging import get_logger
+from ..common.settings import get_settings
 from ..common.models import (
     Alert,
     AlertStatus,
@@ -109,11 +110,30 @@ def run_pipeline_for_brand(
     inspector = get_inspector()
     inspected: list[tuple[SuspectURL, InspectionResult]] = []
     errors = 0
+    settings_for_cost = get_settings()
+    from ..storage.repositories_v2 import CostEventRepo
     for susp in suspects:
         try:
             insp = inspector.inspect(brand, susp)
             with session_scope() as s:
                 InspectionRepo(s).create(insp)
+                # Attribute Bright Data spend to the brand's tenant. Each
+                # inspection burns ~1 browser-minute; pages that needed the
+                # Web Unlocker (403/JS challenge) cost an extra unlocker call.
+                cost_repo = CostEventRepo(s)
+                cost_repo.record(
+                    kind="browser_minute",
+                    usd_amount=settings_for_cost.cost_per_browser_minute_usd,
+                    tenant_id=brand.tenant_id,
+                    brand_id=brand.id,
+                )
+                if not insp.success or (insp.http_status or 0) in (403, 429):
+                    cost_repo.record(
+                        kind="unlocker",
+                        usd_amount=settings_for_cost.cost_per_unlocker_call_usd,
+                        tenant_id=brand.tenant_id,
+                        brand_id=brand.id,
+                    )
             inspected.append((susp, insp))
         except Exception as exc:  # noqa: BLE001
             errors += 1
@@ -122,24 +142,31 @@ def run_pipeline_for_brand(
         "pipeline.inspection_done", brand_id=brand_id, ok=len(inspected), err=errors
     )
 
-    # --- 4. Scoring ---------------------------------------------------------
-    scored: list[tuple[SuspectURL, InspectionResult, ScoringResult]] = []
+    # --- 4. Scoring (with family classification + kit fingerprinting) ------
+    scored: list[tuple[SuspectURL, InspectionResult, ScoringResult, object, list]] = []
     above_threshold = 0
+    # We import here to keep the pipeline import-time graph small
+    from ..scoring.family import classify as classify_family
+    from ..scoring.template_fingerprint import fingerprint, check_js_bundles
+
     for susp, insp in inspected:
         if not insp.success:
             continue
         try:
+            family_class = classify_family(insp)
+            kit_matches = fingerprint(insp) + check_js_bundles(insp)
             sc = run_scoring(
                 brand,
                 canonical_screenshot,
                 canonical_dom,
                 canonical_logo,
-                None,  # canonical favicon md5 — not captured for demo brand
+                None,
                 insp,
+                family_classification=family_class,
             )
             with session_scope() as s:
                 ScoringRepo(s).create(sc)
-            scored.append((susp, insp, sc))
+            scored.append((susp, insp, sc, family_class, kit_matches))
             if sc.above_threshold:
                 above_threshold += 1
         except Exception as exc:  # noqa: BLE001
@@ -148,14 +175,83 @@ def run_pipeline_for_brand(
                 "pipeline.scoring_failed", inspection_id=insp.id, error=str(exc)
             )
 
+    # --- 4b. Optional multi-region inspection ------------------------------
+    # We run multi-region on:
+    #   1. Every URL that's above the single-region scoring threshold
+    #      (the standard case — confirm flagged URLs aren't cloaking).
+    #   2. URLs whose host hints at geo-cloaking even if single-region score
+    #      was LOW (the key case — a cloaking phishing kit serves a benign
+    #      holding page outside its primary region, so single-region alone
+    #      misses it. Multi-region is exactly the signal that catches this.)
+    geo_reports: dict[str, object] = {}
+    settings = get_settings()
+    if settings.multi_region_enabled:
+        from ..inspection.multi_region import inspect_multi_region
+        regions = [c.strip().upper() for c in settings.multi_region_countries.split(",") if c.strip()]
+        for susp, insp, sc, _fc, _km in scored:
+            host = (susp.url or "").lower()
+            host_hints_cloaking = "geo-" in host
+            if not (sc.above_threshold or host_hints_cloaking):
+                continue
+            try:
+                geo = inspect_multi_region(brand, susp, regions=regions)
+                geo_reports[susp.id] = geo
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(
+                    "pipeline.multi_region_failed", url=susp.url, error=str(exc)
+                )
+
     # --- 5. Verdict + alert -------------------------------------------------
     engine = get_verdict_engine()
     alerts_created = 0
-    for susp, insp, sc in scored:
-        if not sc.above_threshold:
+    for susp, insp, sc, family_class, kit_matches in scored:
+        # Promote URLs with detected cloaking to verdict even when their
+        # single-region score was below threshold — cloaking IS the signal
+        # for these.
+        geo = geo_reports.get(susp.id)
+        has_cloaking_signal = geo is not None and getattr(geo, "cloaking_detected", False)
+        if not (sc.above_threshold or has_cloaking_signal):
             continue
         try:
             verdict = engine.decide(brand, insp, sc, canonical_screenshot)
+            # Enrich verdict with structured signals from scoring layer.
+            # We mutate the verdict object after `engine.decide()` returned
+            # because the engine's LLM call already used family + kit context
+            # via the scoring weights it received.
+            if family_class.confidence >= 0.6:
+                verdict.attack_family = family_class.family.value
+                verdict.attack_family_confidence = family_class.confidence
+            if kit_matches:
+                top = kit_matches[0]
+                verdict.kit_match = top.kit_name
+                verdict.kit_match_confidence = top.confidence
+                # Surface the kit hit in the evidence summary
+                verdict.evidence_summary.insert(
+                    0,
+                    f"Kit fingerprint match: {top.kit_name} "
+                    f"(confidence {top.confidence:.0%}, signatures: "
+                    f"{', '.join(top.signatures_hit[:3])})",
+                )
+
+            geo = geo_reports.get(susp.id)
+            if geo is not None and getattr(geo, "cloaking_detected", False):
+                verdict.cloaking_detected = True
+                verdict.cloaking_evidence = list(geo.cloaking_evidence)
+                verdict.evidence_summary.insert(
+                    0,
+                    f"Geo-cloaking detected (max cross-region divergence "
+                    f"{geo.max_divergence:.2f})",
+                )
+                # Cloaking IS high-confidence evidence of phishing intent.
+                # When the LLM verdict says benign because it only saw the
+                # holding-page render from the brand's target country, override
+                # it: cloaking infrastructure isn't innocent.
+                if verdict.verdict == Verdict.BENIGN:
+                    verdict.verdict = Verdict.SUSPICIOUS
+                    verdict.severity = Severity.HIGH
+                    verdict.suggested_action = "watch"
+                    verdict.confidence = max(verdict.confidence, 0.75)
+
             with session_scope() as s:
                 VerdictRepo(s).create(verdict)
 

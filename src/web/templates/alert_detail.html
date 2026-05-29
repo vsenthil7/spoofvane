@@ -17,6 +17,41 @@
   </div>
 </header>
 
+{% if verdict.attack_family or verdict.kit_match or verdict.cloaking_detected %}
+<section class="panel signals-panel">
+  <h2>Detection signals</h2>
+  <div class="signal-grid">
+    {% if verdict.attack_family %}
+    <div class="signal-card signal-family">
+      <div class="signal-label">Attack family</div>
+      <div class="signal-value">{{ verdict.attack_family | upper }}</div>
+      <div class="signal-meta">{{ "%.0f%%" | format((verdict.attack_family_confidence or 0) * 100) }} confidence</div>
+    </div>
+    {% endif %}
+    {% if verdict.kit_match %}
+    <div class="signal-card signal-kit">
+      <div class="signal-label">Phishing kit</div>
+      <div class="signal-value">{{ verdict.kit_match }}</div>
+      <div class="signal-meta">{{ "%.0f%%" | format((verdict.kit_match_confidence or 0) * 100) }} confidence</div>
+    </div>
+    {% endif %}
+    {% if verdict.cloaking_detected %}
+    <div class="signal-card signal-cloak">
+      <div class="signal-label">Geo-cloaking</div>
+      <div class="signal-value">DETECTED</div>
+      <div class="signal-meta">Cross-region divergence</div>
+    </div>
+    {% endif %}
+  </div>
+  {% if verdict.cloaking_evidence %}
+  <h3>Cloaking evidence</h3>
+  <ul class="bullets">
+    {% for line in verdict.cloaking_evidence %}<li>{{ line }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+</section>
+{% endif %}
+
 <section class="grid-2">
   <div class="panel">
     <h2>AI verdict</h2>

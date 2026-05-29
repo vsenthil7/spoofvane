@@ -16,10 +16,59 @@
     <div class="kpi-value kpi-high">{{ summary.high }}</div>
   </div>
   <div class="kpi">
-    <div class="kpi-label">Brands monitored</div>
+    <div class="kpi-label">Cloaking</div>
+    <div class="kpi-value kpi-cloak">{{ summary.cloaking }}</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Brands</div>
     <div class="kpi-value">{{ brands | length }}</div>
   </div>
 </section>
+
+{% if summary.cost_breakdown %}
+<section class="panel cost-panel">
+  <header class="panel-header">
+    <h2>Bright Data spend</h2>
+    <span class="muted">last 7 days</span>
+  </header>
+  <div class="cost-rows">
+    <div class="cost-total">
+      <span class="cost-total-value">${{ "%.2f" | format(summary.cost_7d_usd) }}</span>
+      <span class="cost-total-label">total (7d)</span>
+    </div>
+    <div class="cost-breakdown">
+      {% for kind, amount in summary.cost_breakdown.items() %}
+      <span class="chip chip-cost">{{ kind }} <strong>${{ "%.4f" | format(amount) }}</strong></span>
+      {% endfor %}
+    </div>
+  </div>
+  <p class="muted small">Per-tenant attribution available via <code>GET /api/admin/tenants/{id}/costs</code></p>
+</section>
+{% endif %}
+
+{% if summary.families or summary.kits %}
+<section class="panel breakdown-panel">
+  <header class="panel-header"><h2>Threat breakdown</h2></header>
+  <div class="chip-rows">
+    {% if summary.families %}
+    <div class="chip-row">
+      <span class="chip-label">Attack family</span>
+      {% for fam, count in summary.families.items() %}
+      <span class="chip chip-family">{{ fam | upper }} <strong>{{ count }}</strong></span>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if summary.kits %}
+    <div class="chip-row">
+      <span class="chip-label">Phishing kit</span>
+      {% for kit, count in summary.kits.items() %}
+      <span class="chip chip-kit">{{ kit }} <strong>{{ count }}</strong></span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
 
 <section class="panel">
   <header class="panel-header">
@@ -59,11 +108,12 @@
   <table class="data-table">
     <thead>
       <tr>
-        <th>Severity</th><th>Brand</th><th>Suspect URL</th><th>Status</th><th>Created</th><th></th>
+        <th>Severity</th><th>Brand</th><th>Suspect URL</th><th>Signals</th><th>Status</th><th>Created</th><th></th>
       </tr>
     </thead>
     <tbody>
       {% for a in alerts %}
+      {% set sig = alert_signals.get(a.id, {}) %}
       <tr>
         <td><span class="sev sev-{{ a.severity.value }}">{{ a.severity.value.upper() }}</span></td>
         <td>
@@ -71,6 +121,11 @@
           {{ br.name if br else a.brand_id }}
         </td>
         <td class="mono trunc">{{ a.suspect_url }}</td>
+        <td class="sig-cell">
+          {% if sig.attack_family %}<span class="mini-chip mini-family" title="Attack family">{{ sig.attack_family }}</span>{% endif %}
+          {% if sig.kit_match %}<span class="mini-chip mini-kit" title="Phishing kit">{{ sig.kit_match }}</span>{% endif %}
+          {% if sig.cloaking_detected %}<span class="mini-chip mini-cloak" title="Geo-cloaking detected">cloak</span>{% endif %}
+        </td>
         <td><span class="status status-{{ a.status.value }}">{{ a.status.value }}</span></td>
         <td class="small">{{ a.created_at.strftime("%Y-%m-%d %H:%M") }} UTC</td>
         <td><a class="btn-link" href="/alerts/{{ a.id }}">Inspect →</a></td>

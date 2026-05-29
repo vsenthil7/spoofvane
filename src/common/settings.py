@@ -59,12 +59,54 @@ class Settings(BaseSettings):
     sentinel_workspace_id: str = ""
     sentinel_shared_key: str = ""
 
+    # ─── Enterprise integrations (added in v0.2) ───────────────────────
+    servicenow_instance: str = ""  # e.g. acme.service-now.com
+    servicenow_user: str = ""
+    servicenow_pass: str = ""
+    pagerduty_routing_key: str = ""
+    pagerduty_service_url: str = "https://events.pagerduty.com/v2/enqueue"
+    taxii_collection_url: str = ""
+    taxii_username: str = ""
+    taxii_password: str = ""
+    webhook_signing_secret: str = ""  # for HMAC-SHA256 outbound signatures
+    generic_webhook_url: str = ""  # generic JSON receiver (e.g. a customer's SIEM bridge)
+
+    # ─── Takedown automation (added in v0.2) ───────────────────────────
+    cloudflare_abuse_email: str = ""
+    cloudflare_api_token: str = ""
+    namecheap_api_user: str = ""
+    namecheap_api_key: str = ""
+    godaddy_api_key: str = ""
+    godaddy_api_secret: str = ""
+
     # ─── Scoring ───────────────────────────────────────────────────────
     score_threshold_composite: float = Field(default=0.65, ge=0.0, le=1.0)
     score_weight_phash: float = Field(default=0.35, ge=0.0, le=1.0)
     score_weight_dom: float = Field(default=0.25, ge=0.0, le=1.0)
     score_weight_logo: float = Field(default=0.30, ge=0.0, le=1.0)
     score_weight_favicon: float = Field(default=0.10, ge=0.0, le=1.0)
+
+    # ─── Multi-region inspection (v0.2) ────────────────────────────────
+    geo_cloaking_threshold: float = Field(default=0.35, ge=0.0, le=1.0)
+    multi_region_enabled: bool = False  # off by default — costs more BD spend
+    multi_region_countries: str = "US,GB,DE,BR,IN"  # comma-separated ISO codes
+
+    # ─── Auth (v0.2) ───────────────────────────────────────────────────
+    require_auth: bool = False  # when True, every API call requires an API key
+
+    # ─── Active learning (v0.2) ────────────────────────────────────────
+    active_learning_enabled: bool = True
+    active_learning_min_samples: int = 20  # need this many triage outcomes before adjusting
+
+    # ─── Cost attribution (v0.2) ───────────────────────────────────────
+    cost_per_serp_call_usd: float = 0.0015
+    cost_per_unlocker_call_usd: float = 0.0030
+    cost_per_browser_minute_usd: float = 0.0050
+    cost_alert_per_tenant_per_day_usd: float = 50.0
+
+    # ─── Observability (v0.2) ──────────────────────────────────────────
+    prometheus_enabled: bool = True
+    otel_endpoint: str = ""  # e.g. http://localhost:4317
 
     def ensure_dirs(self) -> None:
         """Create runtime directories if missing."""

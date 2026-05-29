@@ -220,6 +220,56 @@ def build_evidence_pdf(
     )
     story.append(score_table)
 
+    # --- Detection signals (family + kit + cloaking) -----------------------
+    has_signals = bool(
+        verdict.attack_family
+        or verdict.kit_match
+        or verdict.cloaking_detected
+    )
+    if has_signals:
+        story.append(Paragraph("Detection signals", h2))
+        signal_rows = []
+        if verdict.attack_family:
+            signal_rows.append([
+                "Attack family",
+                verdict.attack_family.upper(),
+                f"{(verdict.attack_family_confidence or 0):.0%} confidence",
+            ])
+        if verdict.kit_match:
+            signal_rows.append([
+                "Phishing kit",
+                verdict.kit_match,
+                f"{(verdict.kit_match_confidence or 0):.0%} confidence",
+            ])
+        if verdict.cloaking_detected:
+            signal_rows.append([
+                "Geo-cloaking",
+                "DETECTED",
+                "Cross-region renderer divergence",
+            ])
+        sig_table = Table(signal_rows, colWidths=[4 * cm, 6 * cm, 6 * cm])
+        sig_table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#eceff1")),
+                    ("FONT", (1, 0), (1, -1), "Helvetica-Bold"),
+                    ("FONTSIZE", (0, 0), (-1, -1), 9),
+                    ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#cfd8dc")),
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                    ("TOPPADDING", (0, 0), (-1, -1), 4),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                ]
+            )
+        )
+        story.append(sig_table)
+        if verdict.cloaking_evidence:
+            story.append(Spacer(1, 4))
+            story.append(Paragraph("<b>Cloaking evidence:</b>", body))
+            for line in verdict.cloaking_evidence:
+                story.append(Paragraph(f"• {html.escape(line)}", body))
+
     # --- Evidence bullets ----------------------------------------------------
     story.append(Paragraph("Evidence (from AI verdict)", h2))
     if verdict.evidence_summary:

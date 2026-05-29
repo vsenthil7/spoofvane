@@ -135,7 +135,25 @@ class BrightDataInspector:
 # ─── Mock inspector (MOCK_MODE) ────────────────────────────────────────
 
 
-_PHISH_HOST_HINTS = ("account-update-portal", "secure-login", "verify-account", "auth", "portal", "support.net")
+_PHISH_HOST_HINTS = (
+    # Generic typosquats
+    "account-update-portal", "secure-login", "verify-account", "auth",
+    "portal", "support.net",
+    # Banking family
+    "-bank-", "deposit",
+    # Microsoft / M365 family
+    "outlook-", "-365",
+    # Crypto family
+    "wallet-", "metamask",
+    # Payment family
+    "checkout-", "billing",
+    # Tech-support scam family
+    "techsupport",
+    # Kit family signatures
+    "tycoon-", "evilproxy", "caffeine-", "16shop",
+    # Geo-cloaked fixtures
+    "geo-",
+)
 _BENIGN_HOST_HINTS = ("help.", "contact", "/help", ".org")
 
 
@@ -153,13 +171,49 @@ class MockInspector:
         is_phishy = any(h in host or h in path for h in _PHISH_HOST_HINTS)
         is_benign = any(h in host or h in path for h in _BENIGN_HOST_HINTS) and not is_phishy
 
+        # The brand's own canonical login URL is always rendered as a login
+        # page (i.e., phishy template) so the similarity baseline is "real
+        # login page" — not the help-center fallback. Without this, the
+        # canonical baseline is benign and every other benign result scores
+        # 1.0 against it, producing false positives.
+        is_canonical_baseline = (
+            suspect.discovery_metadata.get("role") == "canonical_baseline"
+        )
+        if is_canonical_baseline:
+            is_phishy = True
+            is_benign = False
+
+        # Geo-cloaking simulation. URLs whose host contains "geo-" or that
+        # carry an explicit "cloak" flag in their discovery metadata only
+        # serve the phishing payload from their "primary" region (derived
+        # from the URL hash); from any other region we render a benign
+        # holding page. This is what real geo-targeted phishing kits do,
+        # and is the signal multi-region inspection is designed to surface.
+        rendered_country = brand.target_country
+        url_says_cloaked = "geo-" in host or "geo-" in path
+        flag_says_cloaked = "cloak" in suspect.discovery_metadata.get("flags", [])
+        cloak_eligible = url_says_cloaked or flag_says_cloaked
+
+        if cloak_eligible:
+            # When cloaking is in play we *force* phishy behaviour from the
+            # primary region (so the cloak has something to cloak), and
+            # benign from every other region.
+            if self._is_primary_region_for_url(suspect.url, rendered_country):
+                effective_phishy, effective_benign = True, False
+            else:
+                effective_phishy, effective_benign = False, True
+        else:
+            effective_phishy, effective_benign = is_phishy, is_benign
+
         # Build the synthetic screenshot
-        screenshot = self._render_synthetic(brand, suspect.url, is_phishy=is_phishy, is_benign=is_benign)
+        screenshot = self._render_synthetic(
+            brand, suspect.url, is_phishy=effective_phishy, is_benign=effective_benign
+        )
         buf = BytesIO()
         screenshot.save(buf, format="PNG")
         screenshot_bytes = buf.getvalue()
 
-        dom = self._render_dom(brand, suspect.url, is_phishy=is_phishy).encode("utf-8")
+        dom = self._render_dom(brand, suspect.url, is_phishy=effective_phishy).encode("utf-8")
 
         favicon_bytes = self._render_favicon(brand, mimic=is_phishy)
 
@@ -179,6 +233,18 @@ class MockInspector:
         )
         asn = "AS204957" if is_phishy else "AS13335"
 
+        # JS bundle hashes — when the URL signals a specific kit, inject the
+        # corresponding known-bad bundle hash so check_js_bundles() fires.
+        bundle_hashes = [hashlib.sha256(f"bundle-{host}".encode()).hexdigest()[:16]]
+        if "16shop" in suspect.url.lower():
+            bundle_hashes.append("a3f9b21c2c8d1f73")
+        elif "evilproxy" in suspect.url.lower():
+            bundle_hashes.append("e72b9fc4901aa315")
+        elif "caffeine" in suspect.url.lower():
+            bundle_hashes.append("94d8f01b3e2c1a90")
+        elif "tycoon" in suspect.url.lower():
+            bundle_hashes.append("6f12e08d5c93b471")
+
         return InspectionResult(
             id=inspection_id(),
             suspect_url_id=suspect.id,
@@ -191,13 +257,29 @@ class MockInspector:
             dom_path=dom_path,
             dom_hash=dom_hash,
             favicon_hash=favicon_hash,
-            js_bundle_hashes=[hashlib.sha256(f"bundle-{host}".encode()).hexdigest()[:16]],
+            js_bundle_hashes=bundle_hashes,
             asn=asn,
             registrar=registrar,
             registration_date=registration_date,
         )
 
     # ─── synthetic rendering ───────────────────────────────────────────
+
+    @staticmethod
+    def _is_primary_region_for_url(url: str, region: str) -> bool:
+        """Derive which region a (cloaked) URL "really" targets, from its host hash.
+
+        Used by the multi-region cloaking simulation: any inspection NOT from
+        that region gets the benign holding-page render.
+
+        The candidate set is deliberately scoped to the same regions we
+        inspect from by default — otherwise URL hashes mapping to FR/JP/AU/SG
+        would never get caught, defeating the demo.
+        """
+        countries = ("US", "GB", "DE", "BR", "IN")
+        h = int(hashlib.md5(url.encode()).hexdigest(), 16)
+        primary = countries[h % len(countries)]
+        return region.upper() == primary
 
     @staticmethod
     def _render_synthetic(brand: Brand, url: str, is_phishy: bool, is_benign: bool) -> Image.Image:
@@ -243,17 +325,102 @@ class MockInspector:
 
     @staticmethod
     def _render_dom(brand: Brand, url: str, is_phishy: bool) -> str:
-        if is_phishy:
+        if not is_phishy:
             return (
-                f"<html><head><title>{brand.name} – Sign in</title></head>"
-                f"<body><header><img src='/logo.png' alt='{brand.name}'></header>"
-                f"<main><form action='{url}/auth' method='post'>"
-                f"<input name='email'><input name='password' type='password'>"
-                f"<button type='submit'>Sign in</button></form></main></body></html>"
+                f"<html><head><title>Help center</title></head>"
+                f"<body><h1>Help center</h1><p>Search articles or contact us.</p></body></html>"
             )
+
+        # Family + kit hints from the URL/path/host. This lets the same
+        # discovery feed exercise the family classifier and kit fingerprinter
+        # end to end in the demo.
+        url_lower = url.lower()
+        family_body = ""
+        kit_extras = ""
+
+        # Family-specific content. The match has to be on a distinctive
+        # family marker, not just any substring that happens to overlap with
+        # the brand name. We check URL path/host segments deliberately to
+        # avoid false positives.
+        url_lower = url.lower()
+        segments = url_lower.replace("://", "/").split("/")
+        all_tokens = set()
+        for seg in segments:
+            for token in seg.split("-"):
+                all_tokens.add(token)
+                # Also split on . for hostname tokens
+                for t2 in token.split("."):
+                    all_tokens.add(t2)
+
+        if {"deposit", "account"} & all_tokens and "bank" in all_tokens:
+            family_body = (
+                "<label>Account number</label><input name='accountnumber'>"
+                "<label>Sort code</label><input name='sortcode'>"
+                "<label>One time passcode (OTP)</label><input name='otp'>"
+                "<p>We have detected unusual activity on your account.</p>"
+            )
+        elif {"outlook", "office", "microsoft", "365"} & all_tokens:
+            family_body = (
+                "<h1>Sign in to Microsoft 365</h1>"
+                "<p>Your mailbox is full. Click here to verify your Outlook account.</p>"
+                "<input name='email' placeholder='name@microsoft.com'>"
+            )
+        elif {"wallet", "metamask", "binance", "coinbase", "crypto"} & all_tokens:
+            family_body = (
+                "<h1>Connect your wallet</h1>"
+                "<label>Enter your 12-word seed phrase to recover MetaMask</label>"
+                "<textarea name='mnemonic'></textarea>"
+                "<p>Claim your free ETH airdrop.</p>"
+            )
+        elif {"checkout", "billing", "pay"} & all_tokens:
+            family_body = (
+                "<h1>Complete payment</h1>"
+                "<label>Card number</label><input name='pan'>"
+                "<label>CVV</label><input name='cvv'>"
+                "<label>Expiry date MM/YY</label><input name='expiry'>"
+                "<p>Verified by Visa 3-D Secure check.</p>"
+            )
+        elif {"techsupport", "support"} & all_tokens and "help-desk" in url_lower:
+            family_body = (
+                "<h1>Your computer is infected!</h1>"
+                "<p>Call Microsoft Support immediately: +1 800 555 1234</p>"
+                "<p>A virus has been detected on your device.</p>"
+            )
+
+        # Kit hints based on URL features. Real kits leave these fingerprints
+        # in the rendered DOM whether or not the brand they impersonate matches.
+        if "16shop" in url_lower or "/sh16/" in url_lower:
+            kit_extras = (
+                "<!-- powered by 16shop -->"
+                "<form class='sh16-form' action='/sh16/submit'>"
+                "<input type='hidden' name='vk16' value='abc123'></form>"
+            )
+        elif "evilproxy" in url_lower or "ep_session" in url_lower:
+            kit_extras = (
+                "<script src='//cdn.epproxy.io/relay.js'></script>"
+                "<input type='hidden' name='ep_session' value='xyz'>"
+                "<input type='hidden' name='ep_relay' value='abc'>"
+            )
+        elif "tycoon" in url_lower:
+            kit_extras = (
+                "<!-- tycoon-2fa kit v3 -->"
+                "<script src='//abc.pinata.io/aaaaaaaaaaaaaaaaaaaaaaaa'></script>"
+                "<script>var t = cf_chl_gen_tk_abc;</script>"
+            )
+        elif "caffeine" in url_lower:
+            kit_extras = (
+                "<!-- powered by caffeine -->"
+                "<div class='caf-modal'><form class='caf-input' action='/cf/logme'></form></div>"
+            )
+
         return (
-            f"<html><head><title>Help center</title></head>"
-            f"<body><h1>Help center</h1><p>Search articles or contact us.</p></body></html>"
+            f"<html><head><title>{brand.name} – Sign in</title></head>"
+            f"<body><header><img src='/logo.png' alt='{brand.name}'></header>"
+            f"<main>{family_body}"
+            f"<form action='{url}/auth' method='post'>"
+            f"<input name='email'><input name='password' type='password'>"
+            f"<button type='submit'>Sign in</button></form>"
+            f"{kit_extras}</main></body></html>"
         )
 
     @staticmethod

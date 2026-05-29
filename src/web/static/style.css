@@ -211,3 +211,52 @@ a:hover { text-decoration: underline; }
   .triage-form { grid-template-columns: 1fr; }
   .triage-form .wide { grid-column: 1; }
 }
+
+/* Detection signal cards */
+.signals-panel { background: linear-gradient(0deg, #fffdf5, #fffdf5); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; }
+.signal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 8px; }
+.signal-card { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+.signal-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); }
+.signal-value { font-size: 18px; font-weight: 700; margin: 4px 0 2px; }
+.signal-meta { font-size: 11px; color: var(--muted); }
+.signal-family { border-left: 3px solid #1a237e; }
+.signal-family .signal-value { color: #1a237e; }
+.signal-kit { border-left: 3px solid #b00020; }
+.signal-kit .signal-value { color: #b00020; }
+.signal-cloak { border-left: 3px solid #ef6c00; }
+.signal-cloak .signal-value { color: #ef6c00; }
+
+/* Mini chips for queue */
+.kpi-cloak { color: var(--medium); }
+.breakdown-panel .chip-rows { display: flex; flex-direction: column; gap: 8px; }
+.chip-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.chip-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); min-width: 100px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 12px; font-size: 12px; background: #eceff1; color: #37474f; }
+.chip strong { font-weight: 700; }
+.chip-family { background: #e8eaf6; color: #1a237e; }
+.chip-kit { background: #ffebee; color: #b00020; }
+.sig-cell { white-space: nowrap; }
+.mini-chip { display: inline-block; padding: 2px 6px; margin-right: 4px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+.mini-family { background: #e8eaf6; color: #1a237e; }
+.mini-kit { background: #ffebee; color: #b00020; }
+.mini-cloak { background: #fff3e0; color: #bf360c; }
+
+/* Audit log */
+.audit-filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+.audit-filters label { display: flex; flex-direction: column; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+.audit-filters input { margin-top: 4px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; min-width: 200px; }
+.audit-table td { vertical-align: middle; }
+.audit-action { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: var(--mono, monospace); background: #eceff1; color: #37474f; }
+.audit-action-tenant { background: #e8eaf6; color: #1a237e; }
+.audit-action-apikey { background: #ffebee; color: #b00020; }
+.audit-action-brand { background: #e8f5e9; color: #1b5e20; }
+.audit-action-alert { background: #fff3e0; color: #bf360c; }
+.audit-action-discovery { background: #f3e5f5; color: #4a148c; }
+
+/* Cost panel */
+.cost-rows { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.cost-total { display: flex; flex-direction: column; }
+.cost-total-value { font-size: 28px; font-weight: 700; color: #1b5e20; }
+.cost-total-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+.cost-breakdown { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip-cost { background: #e8f5e9; color: #1b5e20; }

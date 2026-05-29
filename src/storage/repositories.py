@@ -49,6 +49,7 @@ class BrandRepo:
             canonical_screenshot_hash=brand.canonical_screenshot_hash,
             canonical_dom_hash=brand.canonical_dom_hash,
             score_threshold=brand.score_threshold,
+            tenant_id=brand.tenant_id,
             created_at=brand.created_at,
         )
         self.s.add(row)
@@ -63,8 +64,11 @@ class BrandRepo:
         row = self.s.scalar(select(orm.BrandRow).where(orm.BrandRow.name == name))
         return self._to_pydantic(row) if row else None
 
-    def list_all(self) -> list[m.Brand]:
-        rows = self.s.scalars(select(orm.BrandRow).order_by(orm.BrandRow.created_at)).all()
+    def list_all(self, tenant_id: str | None = None) -> list[m.Brand]:
+        q = select(orm.BrandRow).order_by(orm.BrandRow.created_at)
+        if tenant_id is not None:
+            q = q.where(orm.BrandRow.tenant_id == tenant_id)
+        rows = self.s.scalars(q).all()
         return [self._to_pydantic(r) for r in rows]
 
     @staticmethod
@@ -80,6 +84,7 @@ class BrandRepo:
             canonical_screenshot_hash=row.canonical_screenshot_hash,
             canonical_dom_hash=row.canonical_dom_hash,
             score_threshold=row.score_threshold,
+            tenant_id=row.tenant_id,
             created_at=_to_utc(row.created_at),
         )
 
@@ -267,6 +272,12 @@ class VerdictRepo:
             suggested_action=verdict.suggested_action,
             takedown_draft=verdict.takedown_draft,
             model_used=verdict.model_used,
+            attack_family=verdict.attack_family,
+            attack_family_confidence=verdict.attack_family_confidence,
+            kit_match=verdict.kit_match,
+            kit_match_confidence=verdict.kit_match_confidence,
+            cloaking_detected=verdict.cloaking_detected,
+            cloaking_evidence=list(verdict.cloaking_evidence or []),
             created_at=verdict.created_at,
         )
         self.s.add(row)
@@ -287,6 +298,12 @@ class VerdictRepo:
             suggested_action=row.suggested_action,
             takedown_draft=row.takedown_draft,
             model_used=row.model_used,
+            attack_family=row.attack_family,
+            attack_family_confidence=row.attack_family_confidence,
+            kit_match=row.kit_match,
+            kit_match_confidence=row.kit_match_confidence,
+            cloaking_detected=bool(row.cloaking_detected),
+            cloaking_evidence=list(row.cloaking_evidence or []),
             created_at=_to_utc(row.created_at),
         )
 
@@ -310,6 +327,7 @@ class AlertRepo:
             triage_notes=alert.triage_notes,
             triaged_by=alert.triaged_by,
             triaged_at=alert.triaged_at,
+            tenant_id=alert.tenant_id,
             created_at=alert.created_at,
         )
         self.s.add(row)
@@ -325,6 +343,7 @@ class AlertRepo:
         brand_id: str | None = None,
         status: m.AlertStatus | None = None,
         severity: m.Severity | None = None,
+        tenant_id: str | None = None,
         limit: int = 50,
     ) -> list[m.Alert]:
         q = select(orm.AlertRow).order_by(desc(orm.AlertRow.created_at)).limit(limit)
@@ -334,6 +353,8 @@ class AlertRepo:
             q = q.where(orm.AlertRow.status == status.value)
         if severity:
             q = q.where(orm.AlertRow.severity == severity.value)
+        if tenant_id:
+            q = q.where(orm.AlertRow.tenant_id == tenant_id)
         rows = self.s.scalars(q).all()
         return [self._to_pydantic(r) for r in rows]
 
@@ -367,5 +388,6 @@ class AlertRepo:
             triage_notes=row.triage_notes,
             triaged_by=row.triaged_by,
             triaged_at=_to_utc(row.triaged_at),
+            tenant_id=row.tenant_id,
             created_at=_to_utc(row.created_at),
         )
