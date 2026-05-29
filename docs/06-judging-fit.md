@@ -1,4 +1,4 @@
-# DoppelDomain — Judging-criteria self-assessment
+# SpoofVane — Judging-criteria self-assessment
 
 **Document:** 06 — Judging fit
 **Version:** 0.1 (hackathon prototype)
@@ -18,10 +18,10 @@
 | **Hackathon Fit (Track 3)** | 10% | 10/10 | Pure Track 3 — Security & Compliance. Brand impersonation is the canonical Track 3 example. |
 | **TOTAL** | 100% | **84.5/100** | Honest self-score after competitive research (was 91.5 with overclaimed Originality + Business Value). Still strong; still Track 3 contender. The downgrade is the price of credibility under sceptical questioning. |
 
-## 2. Where DoppelDomain wins
+## 2. Where SpoofVane wins
 
 ### 2.1 The "most justified BD dependency" of any Track 3 entry
-Most demos in the public Bright Data hub use the products as a convenience layer over generic scraping. DoppelDomain genuinely cannot exist without all of:
+Most demos in the public Bright Data hub use the products as a convenience layer over generic scraping. SpoofVane genuinely cannot exist without all of:
 
 - **Scraping Browser** — phishing pages are JS-heavy and won't render in a non-browser scraper
 - **Web Unlocker** — phishing kits actively block scanners; this is the only way through
@@ -45,7 +45,7 @@ The original draft claimed a "defensible moat" — that was overstated. Two laye
 
 So this is a 12–24 month head-start, not a permanent moat. The product needs to use that window to either land OEM deals or build a takedown moat (registrar relationships). Section 5 of `07-competitive-analysis.md` covers what's missing for enterprise-grade defensibility.
 
-## 3. Where DoppelDomain is weaker
+## 3. Where SpoofVane is weaker
 
 ### 3.1 AI necessity (7/10)
 The verdict layer is real and load-bearing, but it's not as dominant as in some pure-AI ideas in the set. A determined operator could get to 65% of the value with deterministic rules + the BD stack. We score lower than 9/10 here.
@@ -62,11 +62,11 @@ Auto-takedown via registrar APIs is out of scope for the prototype. We generate 
 
 | Entry | Source | Total | Notes |
 | --- | --- | --- | --- |
-| **DoppelDomain** | Claude | **91.5** | Sharp brand-impersonation specialist; deepest BD dependency |
+| **SpoofVane** | Claude | **91.5** | Sharp brand-impersonation specialist; deepest BD dependency |
 | **ComplyVane** | Perplexity | 89.5 | Regulatory monitoring specialist; orthogonal use case, not a competitor |
 | **NyxveilGuardian** | ChatGPT | 65.0 | Generic Track 3 catch-all; less sharp |
 
-DoppelDomain and ComplyVane are non-overlapping picks if the team wants two Track 3 entries — one for brand impersonation, one for regulatory drift.
+SpoofVane and ComplyVane are non-overlapping picks if the team wants two Track 3 entries — one for brand impersonation, one for regulatory drift.
 
 ## 5. Reviewer recommendation from the master matrix
 

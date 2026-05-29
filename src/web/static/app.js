@@ -1,4 +1,4 @@
-/* DoppelDomain — dashboard interactions */
+/* SpoofVane — dashboard interactions */
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector(".triage-form");

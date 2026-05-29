@@ -22,7 +22,7 @@ Run via::
 A Claude Desktop / IDE MCP host can then add an entry like::
 
     {
-      "doppeldomain": {
+      "spoofvane": {
         "command": "python",
         "args": ["-m", "src.delivery.mcp_server"]
       }
@@ -51,7 +51,7 @@ from ..storage.repositories import (
 
 logger = get_logger(__name__)
 
-SERVER_NAME = "doppeldomain"
+SERVER_NAME = "spoofvane"
 SERVER_VERSION = "0.1.0"
 PROTOCOL_VERSION = "2024-11-05"
 
@@ -177,7 +177,7 @@ _TOOLS: list[dict[str, Any]] = [
     {
         "name": "query_alerts",
         "description": (
-            "List DoppelDomain alerts, optionally filtered by brand_id, "
+            "List SpoofVane alerts, optionally filtered by brand_id, "
             "status (open/triaged/closed/false_positive), severity "
             "(critical/high/medium/low), with a default limit of 25 and max 100."
         ),

@@ -114,7 +114,7 @@ def new_mfa_secret() -> str:
     return pyotp.random_base32()
 
 
-def mfa_provisioning_uri(secret: str, *, account_name: str, issuer: str = "DoppelDomain") -> str:
+def mfa_provisioning_uri(secret: str, *, account_name: str, issuer: str = "SpoofVane") -> str:
     """``otpauth://`` URI for QR enrolment in Google Authenticator / Authy."""
     return pyotp.TOTP(secret).provisioning_uri(name=account_name, issuer_name=issuer)
 
@@ -142,7 +142,7 @@ def verify_recovery_code(code: str, hashed_list: list[str]) -> bool:
 
 # ──────────────────────────── Web sessions ──────────────────────────────
 
-_SESSION_SALT = "doppeldomain.web.session.v1"
+_SESSION_SALT = "spoofvane.web.session.v1"
 
 
 def _session_serializer() -> URLSafeTimedSerializer:

@@ -1,4 +1,4 @@
-# DoppelDomain
+# SpoofVane
 
 > **Catch brand-impersonation infrastructure the day it goes live by fingerprinting the page itself — not just the domain name.**
 
@@ -12,7 +12,7 @@ Changelogs, newest first: [v0.4](docs/12-v04-changelog.md) (social channel + AI 
 
 ## What it does
 
-DoppelDomain monitors the open web for **pixel-perfect clones** of your brand's login, payment, and account pages — including the ones existing brand-protection tools miss: unrelated-looking domains hosting JS-heavy adversarial pages behind Cloudflare with geo-targeting.
+SpoofVane monitors the open web for **pixel-perfect clones** of your brand's login, payment, and account pages — including the ones existing brand-protection tools miss: unrelated-looking domains hosting JS-heavy adversarial pages behind Cloudflare with geo-targeting.
 
 It does this by combining:
 
@@ -72,7 +72,7 @@ Set `MOCK_MODE=true` in `.env` to run end-to-end with fixture data (no network c
 ## Repository layout
 
 ```
-doppeldomain/
+spoofvane/
 ├── README.md                      ← you are here
 ├── requirements.txt
 ├── docs/

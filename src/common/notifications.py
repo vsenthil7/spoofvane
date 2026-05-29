@@ -179,7 +179,7 @@ def _maybe_email(s: Session, *, account_id: str, kind: str, severity: str,
                  recipients=len(recipients), title=title)
     else:
         try:
-            _send_smtp(settings, recipients, subject=f"[DoppelDomain] {title}", html=html)
+            _send_smtp(settings, recipients, subject=f"[SpoofVane] {title}", html=html)
             log.info("email.sent", kind=kind, recipients=len(recipients))
         except Exception as exc:
             log.warning("email.send_failed", error=str(exc))
@@ -199,10 +199,10 @@ def _render_email(*, title: str, body: str, severity: str, link: str) -> str:
     <h2 style="margin:6px 0 10px;font-size:18px;color:#fff">{title}</h2>
     <p style="margin:0 0 16px;color:#cbd5e1;line-height:1.5">{body}</p>
     <a href="{link}" style="display:inline-block;background:{colour};color:#fff;
-       text-decoration:none;padding:9px 16px;border-radius:6px;font-weight:600">View in DoppelDomain</a>
+       text-decoration:none;padding:9px 16px;border-radius:6px;font-weight:600">View in SpoofVane</a>
   </div>
   <p style="font-size:11px;color:#64748b;text-align:center;margin-top:12px">
-    You received this because of your DoppelDomain notification preferences.</p>
+    You received this because of your SpoofVane notification preferences.</p>
 </div>"""
 
 

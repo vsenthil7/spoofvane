@@ -1,5 +1,5 @@
 """
-AI Triage Copilot (v0.4) — an agentic Claude tool-use loop over DoppelDomain's
+AI Triage Copilot (v0.4) — an agentic Claude tool-use loop over SpoofVane's
 own data layer.
 
 This is the "max AI usage" layer. v0.1–v0.3 used a single Claude *call* to reach
@@ -54,7 +54,7 @@ from ..delivery.mcp_server import (
 log = get_logger(__name__)
 
 
-_SYSTEM_PROMPT = """You are the DoppelDomain Triage Copilot, an expert \
+_SYSTEM_PROMPT = """You are the SpoofVane Triage Copilot, an expert \
 phishing/brand-impersonation analyst embedded in a SOC.
 
 You help analysts understand and act on brand-impersonation alerts. You have \

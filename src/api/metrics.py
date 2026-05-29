@@ -13,7 +13,7 @@ proper Counter/Histogram objects. This module covers the gauge-style metrics
 that matter for a hackathon demo and for basic alerting (e.g. "page me if
 open critical alerts > N").
 
-Metric naming follows Prometheus conventions: ``doppeldomain_<subsystem>_<unit>``.
+Metric naming follows Prometheus conventions: ``spoofvane_<subsystem>_<unit>``.
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ def render_metrics() -> str:
             select(orm.AlertRow.severity, func.count()).group_by(orm.AlertRow.severity)
         ).all()
         _emit(
-            "doppeldomain_alerts_total",
+            "spoofvane_alerts_total",
             "Total alerts by severity",
             "gauge",
             [({"severity": sev}, float(cnt)) for sev, cnt in sev_rows],
@@ -58,7 +58,7 @@ def render_metrics() -> str:
             select(orm.AlertRow.status, func.count()).group_by(orm.AlertRow.status)
         ).all()
         _emit(
-            "doppeldomain_alerts_by_status",
+            "spoofvane_alerts_by_status",
             "Total alerts by triage status",
             "gauge",
             [({"status": st}, float(cnt)) for st, cnt in status_rows],
@@ -69,7 +69,7 @@ def render_metrics() -> str:
             select(func.count()).where(orm.VerdictRow.cloaking_detected.is_(True))
         ) or 0
         _emit(
-            "doppeldomain_cloaking_detected_total",
+            "spoofvane_cloaking_detected_total",
             "Verdicts where geo-cloaking was detected",
             "gauge",
             [({}, float(cloaking_count))],
@@ -82,7 +82,7 @@ def render_metrics() -> str:
             .group_by(orm.VerdictRow.attack_family)
         ).all()
         _emit(
-            "doppeldomain_verdicts_by_family",
+            "spoofvane_verdicts_by_family",
             "Verdicts by detected attack family",
             "gauge",
             [({"family": fam}, float(cnt)) for fam, cnt in family_rows],
@@ -95,7 +95,7 @@ def render_metrics() -> str:
             .group_by(orm.VerdictRow.kit_match)
         ).all()
         _emit(
-            "doppeldomain_verdicts_by_kit",
+            "spoofvane_verdicts_by_kit",
             "Verdicts by matched phishing kit",
             "gauge",
             [({"kit": kit}, float(cnt)) for kit, cnt in kit_rows],
@@ -106,7 +106,7 @@ def render_metrics() -> str:
             select(orm.SuspectURLRow.source, func.count()).group_by(orm.SuspectURLRow.source)
         ).all()
         _emit(
-            "doppeldomain_suspects_total",
+            "spoofvane_suspects_total",
             "Discovered suspect URLs by source",
             "gauge",
             [({"source": src}, float(cnt)) for src, cnt in src_rows],
@@ -118,7 +118,7 @@ def render_metrics() -> str:
             .group_by(orm.CostEventRow.kind)
         ).all()
         _emit(
-            "doppeldomain_brightdata_spend_usd",
+            "spoofvane_brightdata_spend_usd",
             "Cumulative Bright Data spend in USD by API kind",
             "gauge",
             [({"kind": kind}, round(float(amt), 6)) for kind, amt in cost_rows],
@@ -129,7 +129,7 @@ def render_metrics() -> str:
             select(orm.FeedbackEventRow.outcome, func.count()).group_by(orm.FeedbackEventRow.outcome)
         ).all()
         _emit(
-            "doppeldomain_feedback_total",
+            "spoofvane_feedback_total",
             "Analyst feedback events by outcome",
             "gauge",
             [({"outcome": out}, float(cnt)) for out, cnt in fb_rows],
@@ -140,7 +140,7 @@ def render_metrics() -> str:
         key_count = s.scalar(
             select(func.count()).select_from(orm.ApiKeyRow).where(orm.ApiKeyRow.revoked_at.is_(None))
         ) or 0
-        _emit("doppeldomain_tenants_total", "Total tenants", "gauge", [({}, float(tenant_count))])
-        _emit("doppeldomain_active_api_keys_total", "Active (non-revoked) API keys", "gauge", [({}, float(key_count))])
+        _emit("spoofvane_tenants_total", "Total tenants", "gauge", [({}, float(tenant_count))])
+        _emit("spoofvane_active_api_keys_total", "Active (non-revoked) API keys", "gauge", [({}, float(key_count))])
 
     return "\n".join(lines) + "\n"

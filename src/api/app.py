@@ -1,5 +1,5 @@
 """
-DoppelDomain HTTP API + triage dashboard.
+SpoofVane HTTP API + triage dashboard.
 
 This module exposes a single :class:`fastapi.FastAPI` instance named ``app``
 which can be served by ``uvicorn``::
@@ -106,7 +106,7 @@ class AlertNoteCreate(BaseModel):
 # --------------------------------------------------------------------------- #
 
 app = FastAPI(
-    title="DoppelDomain",
+    title="SpoofVane",
     version="0.3.0",
     description=(
         "Brand-impersonation detection — Bright Data Hackathon Track 3. "

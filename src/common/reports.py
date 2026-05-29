@@ -159,7 +159,7 @@ def _detection_pdf(title: str, data: dict) -> bytes:
     doc = SimpleDocTemplate(buf, pagesize=A4, title=title,
                             leftMargin=2 * cm, rightMargin=2 * cm)
     styles = getSampleStyleSheet()
-    story = [Paragraph(f"DoppelDomain — {title}", styles["Title"]),
+    story = [Paragraph(f"SpoofVane — {title}", styles["Title"]),
              Paragraph(f"Generated {data['generated_at']}", styles["Normal"]),
              Spacer(1, 0.6 * cm)]
 
@@ -202,7 +202,7 @@ def _board_pdf(data: dict) -> bytes:
     total_phish = data["verdicts"].get("phish", 0)
     pending = data["review_queue"].get("pending", 0)
     story = [
-        Paragraph("DoppelDomain — Executive Board Pack", styles["Title"]),
+        Paragraph("SpoofVane — Executive Board Pack", styles["Title"]),
         Paragraph(f"Generated {data['generated_at']}", styles["Normal"]),
         Spacer(1, 0.8 * cm),
         Paragraph("Key indicators", styles["Heading2"]),

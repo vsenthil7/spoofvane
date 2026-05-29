@@ -80,7 +80,7 @@ class NamecheapProvider(TakedownProvider):
             "first_observed": alert.created_at.isoformat(),
             "verdict_confidence": verdict.confidence,
             "evidence": verdict.evidence_summary[:8],
-            "doppeldomain_alert_id": alert.id,
+            "spoofvane_alert_id": alert.id,
         }
 
 

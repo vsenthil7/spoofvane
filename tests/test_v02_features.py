@@ -430,10 +430,10 @@ class TestMetrics:
         from src.api.metrics import render_metrics
         text = render_metrics()
         # Valid exposition: HELP + TYPE lines present
-        assert "# HELP doppeldomain_alerts_total" in text
-        assert "# TYPE doppeldomain_alerts_total gauge" in text
-        assert "doppeldomain_tenants_total" in text
-        assert "doppeldomain_brightdata_spend_usd" in text
+        assert "# HELP spoofvane_alerts_total" in text
+        assert "# TYPE spoofvane_alerts_total gauge" in text
+        assert "spoofvane_tenants_total" in text
+        assert "spoofvane_brightdata_spend_usd" in text
 
 
 class TestDiffDetector:

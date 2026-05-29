@@ -1,4 +1,4 @@
-"""HTTP API for DoppelDomain."""
+"""HTTP API for SpoofVane."""
 
 from .app import app
 

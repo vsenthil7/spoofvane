@@ -89,7 +89,7 @@ def run_for_brand(brand: Brand, source_names: Sequence[str] | None = None) -> li
 
 
 def _cli() -> None:
-    parser = argparse.ArgumentParser(description="DoppelDomain — run a discovery pass")
+    parser = argparse.ArgumentParser(description="SpoofVane — run a discovery pass")
     parser.add_argument("--brand", required=True, help="Brand name as onboarded")
     parser.add_argument(
         "--sources",

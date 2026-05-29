@@ -2,7 +2,7 @@
 PagerDuty integration.
 
 For ``critical`` and ``high`` severity alerts we trigger PagerDuty incidents
-on the customer's security on-call rotation. Triage in DoppelDomain (or
+on the customer's security on-call rotation. Triage in SpoofVane (or
 ServiceNow → triage) closes the PagerDuty incident via the same Events API.
 
 Configuration:
@@ -52,11 +52,11 @@ def trigger_pagerduty(
         "dedup_key": alert.id,
         "payload": {
             "summary": (
-                f"[DoppelDomain] {alert.severity.value.upper()} — "
+                f"[SpoofVane] {alert.severity.value.upper()} — "
                 f"{brand.name} impersonation detected: {alert.suspect_url[:100]}"
             ),
             "severity": severity_to_pagerduty(alert.severity.value),
-            "source": "doppeldomain",
+            "source": "spoofvane",
             "component": brand.name,
             "group": "brand-impersonation",
             "class": verdict.verdict.value,
@@ -73,8 +73,8 @@ def trigger_pagerduty(
         },
         "links": [
             {
-                "href": f"https://doppeldomain.example/alerts/{alert.id}",
-                "text": "Inspect alert in DoppelDomain",
+                "href": f"https://spoofvane.example/alerts/{alert.id}",
+                "text": "Inspect alert in SpoofVane",
             },
         ],
     }

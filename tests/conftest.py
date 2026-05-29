@@ -26,7 +26,7 @@ def _isolate_storage(tmp_path_factory: pytest.TempPathFactory) -> Path:
     clear the lru_cache afterwards in case some import path called it
     earlier.
     """
-    root = tmp_path_factory.mktemp("doppeldomain")
+    root = tmp_path_factory.mktemp("spoofvane")
     db_path = root / "test.db"
     os.environ["DATABASE_URL"] = f"sqlite:///{db_path}"
     os.environ["EVIDENCE_DIR"] = str(root / "evidence")

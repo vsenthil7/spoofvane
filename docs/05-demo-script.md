@@ -1,4 +1,4 @@
-# DoppelDomain — 3-minute demo script
+# SpoofVane — 3-minute demo script
 
 **Document:** 05 — Demo script
 **Version:** 0.1 (hackathon prototype)
@@ -16,7 +16,7 @@
 
 ## 1. The hook (15 seconds)
 
-> *"The number one entry vector for credential theft in 2026 is not a typosquat. It's an unrelated-looking domain hosting a perfect clone of your login page, served only to visitors in the victim country, behind Cloudflare. Existing brand-protection tools cannot see it — because they can't even reach the page. We built **DoppelDomain** to fix exactly that."*
+> *"The number one entry vector for credential theft in 2026 is not a typosquat. It's an unrelated-looking domain hosting a perfect clone of your login page, served only to visitors in the victim country, behind Cloudflare. Existing brand-protection tools cannot see it — because they can't even reach the page. We built **SpoofVane** to fix exactly that."*
 
 ## 2. The problem in two slides (30 seconds)
 
@@ -46,7 +46,7 @@ The Claude verdict streams in:
 The takedown draft appears in the panel below — addressed to Namecheap's abuse team.
 
 ### Beat 5 — MCP from Claude (10s)
-Tab to the Claude window. Type *"Use DoppelDomain MCP. Show me all critical open alerts for DemoBank from the last hour."* Claude calls the MCP server, returns the list, offers to draft takedowns. Click accept on one. *"Analysts can run the whole loop from inside Claude."*
+Tab to the Claude window. Type *"Use SpoofVane MCP. Show me all critical open alerts for DemoBank from the last hour."* Claude calls the MCP server, returns the list, offers to draft takedowns. Click accept on one. *"Analysts can run the whole loop from inside Claude."*
 
 ## 4. Why Bright Data (30 seconds)
 
@@ -56,7 +56,7 @@ Tab to the Claude window. Type *"Use DoppelDomain MCP. Show me all critical open
 
 ## 5. Close (15 seconds)
 
-> *"We're not pitching a Netcraft replacement. We're pitching a complementary feed that reaches phishing pages incumbents can't — geo-blocked, Cloudflare-fronted, anti-bot-protected. Realistic ARR is $30–80K as an add-on into existing brand-protection workflows, or 6-figure OEM licences into the incumbents themselves. We've shown discovery → render → score → verdict → evidence pack, end-to-end, in three minutes. That's DoppelDomain."*
+> *"We're not pitching a Netcraft replacement. We're pitching a complementary feed that reaches phishing pages incumbents can't — geo-blocked, Cloudflare-fronted, anti-bot-protected. Realistic ARR is $30–80K as an add-on into existing brand-protection workflows, or 6-figure OEM licences into the incumbents themselves. We've shown discovery → render → score → verdict → evidence pack, end-to-end, in three minutes. That's SpoofVane."*
 
 ## 6. Q&A preparation
 

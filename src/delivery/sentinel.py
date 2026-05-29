@@ -6,7 +6,7 @@ post alerts as custom-log entries which then surface in Sentinel's hunting
 queries, Workbooks, and (via Analytics Rules) Incidents. Customers run a
 single KQL rule like::
 
-    DoppelDomain_CL
+    SpoofVane_CL
     | where Severity_s in ("critical","high")
     | extend AccountCustomEntity = ""
     | project TimeGenerated, BrandName_s, SuspectUrl_s, Verdict_s, ...
@@ -50,7 +50,7 @@ def send_alert_to_sentinel(
     if not (workspace_id and shared_key):
         return None
 
-    log_type = "DoppelDomain"
+    log_type = "SpoofVane"
     url = f"https://{workspace_id}.ods.opinsights.azure.com/api/logs?api-version=2016-04-01"
 
     event = {

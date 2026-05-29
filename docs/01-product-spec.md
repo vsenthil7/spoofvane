@@ -1,4 +1,4 @@
-# DoppelDomain — Product Specification
+# SpoofVane — Product Specification
 
 **Document:** 01 — Product Spec
 **Version:** 0.1 (hackathon prototype)
@@ -8,9 +8,9 @@
 
 ## 1. Problem statement
 
-Brand impersonation is one of the most damaging entry vectors for credential theft and customer fraud. A large brand-protection market already exists — Netcraft, ZeroFox, BrandShield, Bolster, MarkMonitor, Recorded Future, and others compete in this space, with mature platforms and seven-figure ARR contracts. **DoppelDomain is not a replacement for any of them.**
+Brand impersonation is one of the most damaging entry vectors for credential theft and customer fraud. A large brand-protection market already exists — Netcraft, ZeroFox, BrandShield, Bolster, MarkMonitor, Recorded Future, and others compete in this space, with mature platforms and seven-figure ARR contracts. **SpoofVane is not a replacement for any of them.**
 
-The wedge DoppelDomain addresses is a specific, narrow blind spot in that existing stack: **phishing infrastructure that incumbents physically cannot reach with their current scanning approach.**
+The wedge SpoofVane addresses is a specific, narrow blind spot in that existing stack: **phishing infrastructure that incumbents physically cannot reach with their current scanning approach.**
 
 ### The specific blind spot
 
@@ -27,7 +27,7 @@ Reaching these pages at scale requires three things together:
 2. Residential IPs pinned to the victim's country — for geo-targeting
 3. Anti-bot challenge bypass — for the fronting layer
 
-This is exactly the capability surface Bright Data's Scraping Browser + Web Unlocker + residential proxies were built for. DoppelDomain is the application of that capability surface to the phishing-detection problem.
+This is exactly the capability surface Bright Data's Scraping Browser + Web Unlocker + residential proxies were built for. SpoofVane is the application of that capability surface to the phishing-detection problem.
 
 ### What is NOT novel
 
@@ -48,11 +48,11 @@ The combination of:
 
 For full competitive analysis with a 13-vendor feature matrix, see `07-competitive-analysis.md`. For an honest scoring against enterprise procurement requirements, see `08-enterprise-readiness.md`.
 
-## 2. How DoppelDomain fits next to existing tools
+## 2. How SpoofVane fits next to existing tools
 
-The pitch is **complement, not replace**. The typical buyer already has a primary brand-protection vendor; DoppelDomain feeds that vendor's existing pipeline with results from pages it cannot otherwise reach.
+The pitch is **complement, not replace**. The typical buyer already has a primary brand-protection vendor; SpoofVane feeds that vendor's existing pipeline with results from pages it cannot otherwise reach.
 
-| Existing tool | What it does well | What DoppelDomain adds |
+| Existing tool | What it does well | What SpoofVane adds |
 | --- | --- | --- |
 | Netcraft / Bolster (primary brand protection) | Massive crawl, takedown relationships, 24×7 SOC | Geo-pinned + anti-bot-bypassed renders of pages they can't currently reach |
 | ZeroFox / BrandShield (broad DRP) | Social media, app stores, dark web | Depth on the web-page channel specifically |
@@ -89,7 +89,7 @@ Reselling brand-protection-as-a-service into the mid-market.
 | Enterprise, 3–8 sub-brands, multi-region | $50K–$120K |
 | OEM licence to a primary brand-protection vendor | $200K–$500K flat |
 
-The original draft of this spec quoted "$40K–$300K" — that range fits primary brand-protection contracts (Netcraft, BrandShield, MarkMonitor land in $80K–$500K), not DoppelDomain's complementary position. See `07-competitive-analysis.md` §7 for the bottom-up TAM derivation.
+The original draft of this spec quoted "$40K–$300K" — that range fits primary brand-protection contracts (Netcraft, BrandShield, MarkMonitor land in $80K–$500K), not SpoofVane's complementary position. See `07-competitive-analysis.md` §7 for the bottom-up TAM derivation.
 
 ## 4. Use cases
 

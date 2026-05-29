@@ -8,13 +8,13 @@ This document is deliberately written against my own product. Every claim I'd be
 
 ## 1. The honest summary
 
-DoppelDomain as built today is **not** an enterprise-grade brand-protection platform, and it should not pitch as one. Three of the four capabilities the original spec claimed as differentiators are already in production at incumbents.
+SpoofVane as built today is **not** an enterprise-grade brand-protection platform, and it should not pitch as one. Three of the four capabilities the original spec claimed as differentiators are already in production at incumbents.
 
 What is genuinely defensible — and what the product should be positioned around — is a much narrower wedge:
 
 > **The geo-targeted phishing-infrastructure detector that reaches pages incumbents can't.**
 > 
-> Existing brand-protection tools struggle with phishing pages that are Cloudflare-fronted, geo-restricted to the victim's country, JS-rendered, or behind aggressive anti-bot defences. Bright Data's residential proxies + Scraping Browser are the enabling technology to reach those pages reliably and at scale. DoppelDomain is the layer that captures, fingerprints, and routes them.
+> Existing brand-protection tools struggle with phishing pages that are Cloudflare-fronted, geo-restricted to the victim's country, JS-rendered, or behind aggressive anti-bot defences. Bright Data's residential proxies + Scraping Browser are the enabling technology to reach those pages reliably and at scale. SpoofVane is the layer that captures, fingerprints, and routes them.
 
 This is an **add-on** product positioned alongside Netcraft / ZeroFox / BrandShield, not a replacement for them. Realistic ARR: $30–80K per enterprise customer as a complementary feed; not $300K as a primary brand-protection contract.
 
@@ -33,7 +33,7 @@ The brand-impersonation and digital-risk-protection (DRP) market in 2026 contain
 | **C. IP / domain-portfolio specialists** | Trademark watch + UDRP + registrar relationships | MarkMonitor, Corsearch, OpSec, Red Points | Legal teeth, mature enforcement pipelines | Slow; mostly post-hoc; less technical depth on detection |
 | **D. Digital risk protection (broad)** | Multi-source threat intel (dark web, credentials, social, brand) | Recorded Future, CrowdStrike Falcon Intel, Constella, Cyble | Breadth; SOC integration; threat-actor context | Brand-impersonation is one of many features, not the focus |
 
-DoppelDomain plays in **A** — external infrastructure monitoring. It is **not** an alternative to Memcyco (B), which solves a fundamentally different problem at a different layer.
+SpoofVane plays in **A** — external infrastructure monitoring. It is **not** an alternative to Memcyco (B), which solves a fundamentally different problem at a different layer.
 
 ---
 
@@ -41,7 +41,7 @@ DoppelDomain plays in **A** — external infrastructure monitoring. It is **not*
 
 This is the matrix a CISO would actually use when evaluating. Filled honestly — `✓` means in production today, `~` means partial or via partner, `✗` means not offered.
 
-| Capability | **DoppelDomain (today)** | **DoppelDomain (12-mo roadmap)** | Netcraft | ZeroFox | BrandShield | Bolster | Recorded Future | MarkMonitor | Memcyco | Red Points | Corsearch | Cyble | Constella | BrandIntel (PhishLabs) |
+| Capability | **SpoofVane (today)** | **SpoofVane (12-mo roadmap)** | Netcraft | ZeroFox | BrandShield | Bolster | Recorded Future | MarkMonitor | Memcyco | Red Points | Corsearch | Cyble | Constella | BrandIntel (PhishLabs) |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Look-alike domain detection (typosquats, IDN, combo) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Certificate-transparency monitoring | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ~ | ✓ | ~ | ~ | ✓ | ✓ | ✓ |
@@ -58,11 +58,11 @@ This is the matrix a CISO would actually use when evaluating. Filled honestly �
 | Automated takedown with registrar relationships | ✗ | ~ | ✓ | ✓ | ✓ | ✓ | ~ | ✓ | ✓ | ✓ | ✓ | ✓ | ~ | ✓ |
 | SOC / 24×7 analyst service | ✗ | ✗ | ✓ | ✓ | ✓ | ~ | ✓ | ✓ | ~ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
-Columns where DoppelDomain shows **bold** wins are the genuine wedge. Everything else is either parity (table stakes) or a gap (sections 4–5).
+Columns where SpoofVane shows **bold** wins are the genuine wedge. Everything else is either parity (table stakes) or a gap (sections 4–5).
 
 ---
 
-## 4. Where DoppelDomain is genuinely differentiated
+## 4. Where SpoofVane is genuinely differentiated
 
 Three capabilities, all of them downstream of the Bright Data stack:
 
@@ -84,7 +84,7 @@ Three capabilities, all of them downstream of the Bright Data stack:
 
 ---
 
-## 5. Where DoppelDomain is *not* enterprise-ready
+## 5. Where SpoofVane is *not* enterprise-ready
 
 Being honest about this matters more than being honest about strengths. A buyer call collapses on the gaps below within ten minutes.
 
@@ -122,7 +122,7 @@ How to position against the three most likely "but we already use X" objections.
 
 ### vs. Netcraft
 
-| | Netcraft | DoppelDomain |
+| | Netcraft | SpoofVane |
 |---|---|---|
 | Scale | 20+ years, massive crawl footprint | New entrant |
 | Takedown speed | Industry-leading registrar relationships | Draft only, manual send |
@@ -135,7 +135,7 @@ How to position against the three most likely "but we already use X" objections.
 
 ### vs. ZeroFox
 
-| | ZeroFox | DoppelDomain |
+| | ZeroFox | SpoofVane |
 |---|---|---|
 | Coverage | Social, app stores, dark web, brand impersonation | Web pages only |
 | Detection model | URL/keyword/asset matching | Page-content fingerprinting |
@@ -148,7 +148,7 @@ How to position against the three most likely "but we already use X" objections.
 
 This is the most important head-to-head because Memcyco is the most technically advanced player and the easiest one to confuse us with.
 
-| | Memcyco | DoppelDomain |
+| | Memcyco | SpoofVane |
 |---|---|---|
 | Where the detection runs | JavaScript on the *protected brand's* site | External scanner |
 | What it sees | Real victims being phished in real time | Phishing infrastructure once it's live |
@@ -163,7 +163,7 @@ This is the most important head-to-head because Memcyco is the most technically 
 
 ## 7. Realistic market sizing and pricing
 
-The original spec quoted "$40K–$300K ARR per enterprise customer." That range is correct for primary brand-protection contracts (Netcraft, BrandShield, MarkMonitor land in $80K–$500K). It is **wrong** for DoppelDomain in its current scope.
+The original spec quoted "$40K–$300K ARR per enterprise customer." That range is correct for primary brand-protection contracts (Netcraft, BrandShield, MarkMonitor land in $80K–$500K). It is **wrong** for SpoofVane in its current scope.
 
 Honest ARR bands for the wedge described above:
 
@@ -171,7 +171,7 @@ Honest ARR bands for the wedge described above:
 |---|---|---|
 | Mid-market fintech / crypto exchange / neobank, 1 brand, 1 login surface | **$15K–$35K** | Add-on to existing Netcraft / Bolster contract; budget comes from CISO discretionary or T&S |
 | Enterprise bank / global retailer, 3–8 sub-brands, multi-region | **$50K–$120K** | Per-brand pricing with volume discount; sold into the same team that runs the primary contract |
-| Brand-protection vendor reselling DoppelDomain as an OEM "hard-to-reach pages" feed | **$200K–$500K** flat | This is the most credible 7-figure ARR path: licence the engine to one of the big platforms, not sell direct |
+| Brand-protection vendor reselling SpoofVane as an OEM "hard-to-reach pages" feed | **$200K–$500K** flat | This is the most credible 7-figure ARR path: licence the engine to one of the big platforms, not sell direct |
 
 Bottom-up TAM check, using publicly known counts:
 

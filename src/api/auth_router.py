@@ -200,7 +200,7 @@ async def mfa_confirm(body: MfaConfirmIn, user: AuthedUser = Depends(current_use
 # for discovery + token parsing; state is signed so we don't need server
 # storage. Works with Google, Okta, Entra ID, Auth0, etc.
 
-_OIDC_STATE_SALT = "doppeldomain.oidc.state.v1"
+_OIDC_STATE_SALT = "spoofvane.oidc.state.v1"
 
 
 @router.get("/oidc/login")

@@ -1,4 +1,4 @@
-# DoppelDomain — API reference
+# SpoofVane — API reference
 
 **Document:** 03 — API reference
 **Version:** 0.1 (hackathon prototype)
@@ -6,7 +6,7 @@
 
 ---
 
-DoppelDomain exposes two interfaces:
+SpoofVane exposes two interfaces:
 
 1. A **REST API** over FastAPI for the dashboard and for direct integration
 2. An **MCP server** for analyst use inside Claude
@@ -139,7 +139,7 @@ Supported destinations: `slack`, `splunk_hec`, `sentinel`, `generic_webhook`.
 
 ## 2. MCP server
 
-DoppelDomain exposes a Bright Data MCP-compatible server so analysts can query alerts directly from Claude during an incident.
+SpoofVane exposes a Bright Data MCP-compatible server so analysts can query alerts directly from Claude during an incident.
 
 Endpoint: `ws://localhost:8000/mcp` (development).
 
@@ -184,7 +184,7 @@ Mark an alert as triaged.
 
 ### Example MCP session (analyst inside Claude)
 
-> **Analyst:** *Use the DoppelDomain MCP. Show me all critical open alerts for Example Bank from the last 24 hours.*
+> **Analyst:** *Use the SpoofVane MCP. Show me all critical open alerts for Example Bank from the last 24 hours.*
 >
 > **Claude:** *Calls `query_alerts(brand_id="brand_01HXYZ", severity="critical", status="open", since="2026-05-27T00:00:00Z")` → returns 3 alerts → presents them in a table → offers to draft takedowns for all three.*
 

@@ -66,8 +66,8 @@ DEMO_USERS: list[dict] = [
      "password": DEMO_PASSWORD},
 
     # ── Platform super-admin (internal staff) ─────────────────────────
-    {"email": "staff@doppeldomain.demo", "role": "owner", "tier": "enterprise",
-     "account": "DoppelDomain Platform", "mfa": False, "staff": True,
+    {"email": "staff@spoofvane.demo", "role": "owner", "tier": "enterprise",
+     "account": "SpoofVane Platform", "mfa": False, "staff": True,
      "password": DEMO_PASSWORD},
 ]
 

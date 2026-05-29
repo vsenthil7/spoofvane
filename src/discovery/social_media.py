@@ -2,7 +2,7 @@
 Social-media impersonation discovery (v0.4).
 
 This source closes the single largest competitive gap identified in
-``docs/07-competitive-analysis.md``: the matrix marks DoppelDomain ``✗`` on
+``docs/07-competitive-analysis.md``: the matrix marks SpoofVane ``✗`` on
 "Social-media impersonation" while ZeroFox, BrandShield, Bolster, Red Points,
 Cyble and Constella all ship it. Real enterprises buy a *platform* that watches
 every channel an attacker can impersonate them on — not just web pages.

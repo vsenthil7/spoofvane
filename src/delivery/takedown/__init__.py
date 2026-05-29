@@ -1,7 +1,7 @@
 """
 Registrar takedown automation.
 
-When an alert is confirmed (manually or via auto-confirm policy), DoppelDomain
+When an alert is confirmed (manually or via auto-confirm policy), SpoofVane
 can file a takedown request with the registrar or hosting provider of the
 suspect domain. We do NOT auto-file by default — these are legal acts that
 can have real consequences if a false positive slips through. The takedown

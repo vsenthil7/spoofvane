@@ -1,4 +1,4 @@
-# DoppelDomain — Runbook
+# SpoofVane — Runbook
 
 **Document:** 04 — Runbook
 **Version:** 0.1 (hackathon prototype)
@@ -19,7 +19,7 @@
 
 ```bash
 git clone <repo>
-cd doppeldomain
+cd spoofvane
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -36,7 +36,7 @@ BRIGHTDATA_API_KEY=...
 BRIGHTDATA_PROXY_USER=...
 BRIGHTDATA_PROXY_PASS=...
 BRIGHTDATA_SERP_HOST=brd.superproxy.io:33335
-DATABASE_URL=sqlite:///data/doppeldomain.db
+DATABASE_URL=sqlite:///data/spoofvane.db
 EVIDENCE_DIR=data/evidence
 ```
 

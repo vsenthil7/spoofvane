@@ -1,4 +1,4 @@
-# DoppelDomain v0.2 — what changed
+# SpoofVane v0.2 — what changed
 
 Where v0.1 was a single-tenant prototype that demonstrated the detection idea, v0.2 closes the most-asked-for gaps from the [enterprise readiness analysis](08-enterprise-readiness.md) — detection depth, discovery breadth, multi-tenant platform foundations, and enterprise integrations. It is still not procurement-ready (see "still gapped" below), but it is materially closer.
 

@@ -1,0 +1,8 @@
+SpoofVane v0.5.0 (spoofvane-convergence-v9)
+Coder:  Claude (Opus 4.8), running in Claude Code (Anthropic CLI)
+Issued: 29 May 2026, 08:45 BST
+Source lineage: DoppelDomain v0.4 enterprise -> rebranded + convergence build
+Review stack: Perplexity v9 (08:22) > Claude v8 (07:51) > ChatGPT v7 (07:19) > Claude v6 (07:09)
+Tests: 241 passing, 2 skipped (replay mode, credential-free)
+Differential depth probe: 7/7 Bright Data clients green
+See STATUS.md and docs/TRACEABILITY_MASTER.md for honest per-requirement status.

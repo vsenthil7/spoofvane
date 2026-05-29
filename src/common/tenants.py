@@ -33,7 +33,7 @@ class TenantPlan(str, Enum):
 
 
 class Tenant(BaseModel):
-    """An organisation that uses DoppelDomain."""
+    """An organisation that uses SpoofVane."""
 
     model_config = ConfigDict(from_attributes=True)
 

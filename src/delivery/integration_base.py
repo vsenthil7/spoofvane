@@ -56,7 +56,7 @@ def post_with_retry(
 ) -> DeliveryResult:
     """POST a JSON body with retry-with-backoff.
 
-    If ``signing_secret`` is provided, an ``X-DoppelDomain-Signature`` header
+    If ``signing_secret`` is provided, an ``X-SpoofVane-Signature`` header
     is added with HMAC-SHA256(secret, body)::
 
         sha256=<hex digest>
@@ -69,7 +69,7 @@ def post_with_retry(
         request_headers.update(headers)
     if signing_secret:
         mac = hmac.new(signing_secret.encode("utf-8"), body_bytes, hashlib.sha256)
-        request_headers["X-DoppelDomain-Signature"] = f"sha256={mac.hexdigest()}"
+        request_headers["X-SpoofVane-Signature"] = f"sha256={mac.hexdigest()}"
 
     start = time.monotonic()
     last_error: str | None = None

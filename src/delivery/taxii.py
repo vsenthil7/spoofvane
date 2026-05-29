@@ -1,7 +1,7 @@
 """
 STIX 2.1 / TAXII 2.1 threat intel publishing.
 
-DoppelDomain alerts about brand impersonation infrastructure are valuable
+SpoofVane alerts about brand impersonation infrastructure are valuable
 threat intel for the wider security community. We translate alerts into
 STIX 2.1 indicator bundles and POST them to a TAXII 2.1 collection. ISACs
 and other security tools subscribe to that collection to ingest our IoCs.
@@ -68,7 +68,7 @@ def build_stix_bundle(
         "id": identity_id,
         "created": now_iso,
         "modified": now_iso,
-        "name": "DoppelDomain",
+        "name": "SpoofVane",
         "identity_class": "organization",
         "sectors": ["technology"],
         "description": "Brand-impersonation detection platform",
@@ -134,10 +134,10 @@ def build_stix_bundle(
             "last_observed": observed_iso,
             "number_observed": 1,
             "object_refs": [],
-            "x_doppeldomain_asn": inspection.asn,
-            "x_doppeldomain_registrar": inspection.registrar,
-            "x_doppeldomain_rendered_country": inspection.rendered_country,
-            "x_doppeldomain_cloaking_detected": verdict.cloaking_detected,
+            "x_spoofvane_asn": inspection.asn,
+            "x_spoofvane_registrar": inspection.registrar,
+            "x_spoofvane_rendered_country": inspection.rendered_country,
+            "x_spoofvane_cloaking_detected": verdict.cloaking_detected,
         })
 
     return {

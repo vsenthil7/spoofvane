@@ -1,11 +1,11 @@
 """
 ServiceNow ITSM integration.
 
-DoppelDomain alerts are pushed as ServiceNow incidents so SOC/IR teams can
+SpoofVane alerts are pushed as ServiceNow incidents so SOC/IR teams can
 manage them inside their existing workflow. Bidirectional sync is intended
 but not implemented here — when an analyst closes the incident in
 ServiceNow, a webhook (configured in ServiceNow Business Rules) should call
-``POST /api/alerts/{id}/triage`` back to DoppelDomain. The route already
+``POST /api/alerts/{id}/triage`` back to SpoofVane. The route already
 records that as feedback.
 
 Configuration (in settings.py):
@@ -52,7 +52,7 @@ def send_alert_as_incident(
         f"Brand: {brand.name}",
         f"Suspect URL: {alert.suspect_url}",
         f"Verdict: {verdict.verdict.value} (confidence {verdict.confidence:.0%})",
-        f"Composite score: see DoppelDomain alert {alert.id}",
+        f"Composite score: see SpoofVane alert {alert.id}",
         "",
         "Evidence:",
     ]
@@ -69,7 +69,7 @@ def send_alert_as_incident(
 
     body = {
         "short_description": (
-            f"[DoppelDomain] {alert.severity.value.upper()} — "
+            f"[SpoofVane] {alert.severity.value.upper()} — "
             f"{brand.name} impersonation: {alert.suspect_url[:80]}"
         ),
         "description": "\n".join(description_lines),
@@ -78,9 +78,9 @@ def send_alert_as_incident(
         "impact": severity_to_servicenow(alert.severity.value),
         "urgency": severity_to_servicenow(alert.severity.value),
         "correlation_id": alert.id,  # so updates can find the right ticket
-        "u_doppeldomain_alert_id": alert.id,  # custom field convention
-        "u_doppeldomain_evidence_pdf": (
-            f"https://{settings.servicenow_instance}-doppeldomain/api/alerts/"
+        "u_spoofvane_alert_id": alert.id,  # custom field convention
+        "u_spoofvane_evidence_pdf": (
+            f"https://{settings.servicenow_instance}-spoofvane/api/alerts/"
             f"{alert.id}/evidence.pdf"
         ),
     }

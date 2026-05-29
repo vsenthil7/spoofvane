@@ -1,4 +1,4 @@
-# DoppelDomain — Architecture
+# SpoofVane — Architecture
 
 **Document:** 02 — Architecture
 **Version:** 0.1 (hackathon prototype)
@@ -211,7 +211,7 @@ SuspectURL ─► InspectionResult ─► ScoringResult ─► Verdict ─► Al
 
 ### Dev (this repo, MOCK_MODE)
 
-- SQLite at `data/doppeldomain.db`
+- SQLite at `data/spoofvane.db`
 - Local filesystem for evidence at `data/evidence/`
 - All Bright Data calls return fixture data
 - All Claude calls return canned verdicts unless `ANTHROPIC_API_KEY` is set

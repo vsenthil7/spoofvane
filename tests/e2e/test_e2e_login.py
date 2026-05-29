@@ -1,6 +1,6 @@
 """End-to-end browser tests (Playwright).
 
-These drive a real Chromium against a running DoppelDomain server, covering the
+These drive a real Chromium against a running SpoofVane server, covering the
 flows a user actually clicks: login, failed login, demo-user quick-fill, MFA
 challenge, logout, and unauthenticated redirect.
 
@@ -70,7 +70,7 @@ def page():
 class TestLoginFlow:
     def test_login_page_loads(self, page):
         page.goto(f"{BASE}/login")
-        expect(page.get_by_text("Sign in to DoppelDomain")).to_be_visible()
+        expect(page.get_by_text("Sign in to SpoofVane")).to_be_visible()
 
     def test_successful_login_redirects_to_dashboard(self, page):
         page.goto(f"{BASE}/login")

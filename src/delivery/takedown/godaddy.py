@@ -79,7 +79,7 @@ class GoDaddyProvider(TakedownProvider):
             "infoUrl": alert.suspect_url,
             "intentional": True,
             "proxy": False,
-            "source": "doppeldomain",
+            "source": "spoofvane",
         }
 
 

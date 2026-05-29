@@ -14,7 +14,7 @@ gated takedown) is removed or weakened.
 
 ## 1. Social-media impersonation discovery (NEW)
 
-`docs/07-competitive-analysis.md` §3 marks DoppelDomain `✗` on **social-media
+`docs/07-competitive-analysis.md` §3 marks SpoofVane `✗` on **social-media
 impersonation** while ZeroFox, BrandShield, Bolster, Red Points, Cyble and
 Constella all ship it — the biggest single-channel gap in the matrix, and the
 most common reason a buyer says "this is a feed, not a platform."
@@ -68,7 +68,7 @@ middleware).
 ## 3. Competitive matrix movement
 
 `docs/07-competitive-analysis.md` §3 social-media row updated:
-`✗` → `~` for **DoppelDomain (today)** (web-funnel detection across 8 platforms;
+`✗` → `~` for **SpoofVane (today)** (web-funnel detection across 8 platforms;
 not yet full in-platform social listening) and `~` → `✓` on the 12-month
 roadmap column.
 

@@ -18,7 +18,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
-    """Runtime configuration for DoppelDomain."""
+    """Runtime configuration for SpoofVane."""
 
     model_config = SettingsConfigDict(
         env_file=str(REPO_ROOT / ".env"),
@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     environment: Literal["dev", "staging", "prod"] = "dev"
 
     # ─── Storage ───────────────────────────────────────────────────────
-    database_url: str = f"sqlite:///{REPO_ROOT / 'data' / 'doppeldomain.db'}"
+    database_url: str = f"sqlite:///{REPO_ROOT / 'data' / 'spoofvane.db'}"
     evidence_dir: Path = REPO_ROOT / "data" / "evidence"
     reports_dir: Path = REPO_ROOT / "data" / "reports"
     canonical_dir: Path = REPO_ROOT / "data" / "canonical"
@@ -120,7 +120,7 @@ class Settings(BaseSettings):
     smtp_user: str = ""
     smtp_password: str = ""
     smtp_use_tls: bool = True
-    email_from: str = "DoppelDomain Alerts <alerts@doppeldomain.example>"
+    email_from: str = "SpoofVane Alerts <alerts@spoofvane.example>"
     app_base_url: str = "http://127.0.0.1:8000"
 
     # ─── Active learning (v0.2) ────────────────────────────────────────

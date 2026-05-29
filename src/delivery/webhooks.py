@@ -13,7 +13,7 @@ In MOCK_MODE the destinations log the payload but do not POST.
 
 Outbound generic payloads are signed when ``settings.webhook_signing_secret``
 is set. The signature is HMAC-SHA256 over the JSON body and is delivered in
-the ``X-DoppelDomain-Signature: sha256=<hex>`` header. Receivers verify before
+the ``X-SpoofVane-Signature: sha256=<hex>`` header. Receivers verify before
 trusting the payload — protects against a stolen webhook URL being used to
 spoof events.
 """
@@ -116,8 +116,8 @@ def _post_generic(url: str, payload: dict, signing_secret: str, *, dry: bool) ->
     headers = {"Content-Type": "application/json"}
     if signing_secret:
         sig = hmac.new(signing_secret.encode(), body, hashlib.sha256).hexdigest()
-        headers["X-DoppelDomain-Signature"] = f"sha256={sig}"
-        headers["X-DoppelDomain-Schema"] = payload.get("schema", "")
+        headers["X-SpoofVane-Signature"] = f"sha256={sig}"
+        headers["X-SpoofVane-Schema"] = payload.get("schema", "")
     if dry:
         log.info("webhook.generic.dry", url=url, signed=bool(signing_secret), size=len(body))
         return "dry-run"
@@ -138,7 +138,7 @@ def _build_payload(
     verdict: VerdictResult,
 ) -> dict:
     return {
-        "schema": "doppeldomain.alert.v1",
+        "schema": "spoofvane.alert.v1",
         "alert_id": alert.id,
         "brand": brand.name,
         "severity": alert.severity.value,
@@ -175,7 +175,7 @@ def _post_slack(url: str, payload: dict, *, dry: bool) -> str:
     signals_block = ("  ·  ".join(signal_lines)) if signal_lines else "_No structured signals_"
 
     msg = {
-        "text": f":rotating_light: *DoppelDomain* — {payload['severity'].upper()} — {payload['brand']}",
+        "text": f":rotating_light: *SpoofVane* — {payload['severity'].upper()} — {payload['brand']}",
         "blocks": [
             {
                 "type": "section",
@@ -207,7 +207,7 @@ def _post_slack(url: str, payload: dict, *, dry: bool) -> str:
 
 
 def _post_splunk(url: str, token: str, payload: dict, *, dry: bool) -> str:
-    body = {"event": payload, "sourcetype": "doppeldomain:alert"}
+    body = {"event": payload, "sourcetype": "spoofvane:alert"}
     if dry:
         return "skipped (mock)"
     try:

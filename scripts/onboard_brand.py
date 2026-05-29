@@ -1,5 +1,5 @@
 """
-Onboard a brand into DoppelDomain.
+Onboard a brand into SpoofVane.
 
 Usage::
 
@@ -46,7 +46,7 @@ logger = get_logger(__name__)
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Onboard a brand into DoppelDomain")
+    parser = argparse.ArgumentParser(description="Onboard a brand into SpoofVane")
     parser.add_argument("--name", required=True, help="Brand display name")
     parser.add_argument(
         "--login-url", required=True, help="Canonical login URL — will be inspected"

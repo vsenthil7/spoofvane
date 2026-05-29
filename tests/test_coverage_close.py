@@ -33,7 +33,7 @@ class TestDashboardHtml:
     def test_dashboard_renders(self, client, seeded):
         r = client.get("/")
         assert r.status_code == 200
-        assert "DoppelDomain" in r.text
+        assert "SpoofVane" in r.text
 
     def test_login_page_renders(self, client, seeded):
         r = client.get("/login")
