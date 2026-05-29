@@ -1,0 +1,213 @@
+/* DoppelDomain — minimal triage UI */
+
+:root {
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --border: #e1e5ea;
+  --text: #1a2233;
+  --muted: #5b6776;
+  --accent: #1a237e;
+  --accent-soft: #e8eaf6;
+  --critical: #b00020;
+  --high: #d84315;
+  --medium: #ef6c00;
+  --low: #2e7d32;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.topbar {
+  background: var(--accent);
+  color: #fff;
+  border-bottom: 1px solid #0f184c;
+}
+.topbar-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.brand { color: #fff; display: flex; align-items: baseline; gap: 10px; }
+.brand:hover { text-decoration: none; }
+.brand-mark { font-size: 22px; }
+.brand-name { font-size: 18px; font-weight: 700; letter-spacing: 0.2px; }
+.brand-sub { font-size: 12px; color: #c5cae9; }
+
+.topnav { display: flex; gap: 18px; align-items: center; }
+.topnav a { color: #c5cae9; }
+.topnav a:hover { color: #fff; text-decoration: none; }
+.badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
+.badge-mock { background: #ffeb3b; color: #5d4037; }
+
+.content {
+  max-width: 1280px;
+  margin: 24px auto;
+  padding: 0 24px;
+}
+
+.footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 24px;
+}
+
+/* KPIs */
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.kpi {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+.kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+.kpi-value { font-size: 28px; font-weight: 700; margin-top: 4px; }
+.kpi-critical { color: var(--critical); }
+.kpi-high { color: var(--high); }
+
+/* Panels */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+.panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.panel h2 { margin: 0 0 4px; font-size: 16px; }
+.panel h3 { font-size: 13px; color: var(--muted); margin: 14px 0 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Tables */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.data-table th, .data-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.data-table th {
+  background: #fafbfc;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover { background: #fafbfc; }
+
+/* Severity / status pills */
+.sev { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+.sev-critical { background: var(--critical); }
+.sev-high     { background: var(--high); }
+.sev-medium   { background: var(--medium); }
+.sev-low      { background: var(--low); }
+
+.status { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+.status-open { background: #fff3e0; color: #bf360c; }
+.status-triaged { background: #e3f2fd; color: #0d47a1; }
+.status-closed { background: #eceff1; color: #455a64; }
+.status-false_positive { background: #f3e5f5; color: #6a1b9a; }
+
+.verdict-phish { color: var(--critical); }
+.verdict-suspicious { color: var(--high); }
+.verdict-benign { color: var(--low); }
+
+/* Buttons */
+.btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:hover { background: #0f184c; }
+.btn-link { color: var(--accent); font-weight: 600; }
+
+/* Misc */
+.mono { font-family: var(--mono); font-size: 12px; }
+.small { font-size: 11px; }
+.muted { color: var(--muted); }
+.trunc { max-width: 380px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.back { display: inline-block; margin-bottom: 14px; color: var(--muted); font-size: 13px; }
+
+/* Alert detail */
+.alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+  gap: 16px;
+}
+.alert-header h1 { margin: 0 0 6px; font-size: 22px; display: flex; align-items: center; gap: 12px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.kv { margin: 0; }
+.kv dt { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 8px; }
+.kv dd { margin: 2px 0 0; }
+.kv-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 24px; }
+.kv-grid dt { grid-column: span 1; }
+
+.score-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.score-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.score-table tr.composite td { background: #fff8e1; border-bottom: none; }
+
+.bullets { margin: 4px 0 0 18px; padding: 0; }
+.bullets li { margin: 2px 0; }
+
+.takedown {
+  background: #f5f7fa;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Triage form */
+.triage-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+  align-items: end;
+}
+.triage-form label { display: flex; flex-direction: column; font-size: 12px; color: var(--muted); gap: 4px; }
+.triage-form input, .triage-form select, .triage-form textarea {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font: inherit;
+}
+.triage-form .wide { grid-column: span 2; }
+.triage-form button { grid-column: 1; }
+.triage-feedback { grid-column: 2; align-self: center; font-size: 12px; }
+
+@media (max-width: 900px) {
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; }
+  .triage-form { grid-template-columns: 1fr; }
+  .triage-form .wide { grid-column: 1; }
+}

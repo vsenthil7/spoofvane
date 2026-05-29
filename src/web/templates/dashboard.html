@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Triage queue — DoppelDomain{% endblock %}
+
+{% block content %}
+<section class="kpis">
+  <div class="kpi">
+    <div class="kpi-label">Open alerts</div>
+    <div class="kpi-value">{{ summary.open }}</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Critical</div>
+    <div class="kpi-value kpi-critical">{{ summary.critical }}</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">High</div>
+    <div class="kpi-value kpi-high">{{ summary.high }}</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Brands monitored</div>
+    <div class="kpi-value">{{ brands | length }}</div>
+  </div>
+</section>
+
+<section class="panel">
+  <header class="panel-header">
+    <h2>Brands</h2>
+    <button class="btn" onclick="runDiscoveryPrompt()">Run discovery sweep</button>
+  </header>
+  {% if brands %}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th><th>Login URL</th><th>Country</th><th>Threshold</th><th>Brand ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in brands %}
+      <tr>
+        <td><strong>{{ b.name }}</strong></td>
+        <td class="mono">{{ b.login_url }}</td>
+        <td>{{ b.target_country }}</td>
+        <td>{{ "%.2f" | format(b.score_threshold) }}</td>
+        <td class="mono small">{{ b.id }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No brands yet. Use <code>scripts/onboard_brand.py</code> or <code>scripts/seed_demo.py</code>.</p>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <header class="panel-header">
+    <h2>Alert queue</h2>
+    <span class="muted">{{ summary.total_alerts }} total</span>
+  </header>
+  {% if alerts %}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Severity</th><th>Brand</th><th>Suspect URL</th><th>Status</th><th>Created</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in alerts %}
+      <tr>
+        <td><span class="sev sev-{{ a.severity.value }}">{{ a.severity.value.upper() }}</span></td>
+        <td>
+          {% set br = brand_lookup.get(a.brand_id) %}
+          {{ br.name if br else a.brand_id }}
+        </td>
+        <td class="mono trunc">{{ a.suspect_url }}</td>
+        <td><span class="status status-{{ a.status.value }}">{{ a.status.value }}</span></td>
+        <td class="small">{{ a.created_at.strftime("%Y-%m-%d %H:%M") }} UTC</td>
+        <td><a class="btn-link" href="/alerts/{{ a.id }}">Inspect →</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No alerts yet. Run a discovery sweep to populate the queue.</p>
+  {% endif %}
+</section>
+
+<script>
+  window.__brands = {{ brands_json | tojson }};
+</script>
+{% endblock %}

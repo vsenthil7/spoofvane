@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Alert {{ alert.id }} — DoppelDomain{% endblock %}
+
+{% block content %}
+<a class="back" href="/">← Back to triage queue</a>
+
+<header class="alert-header">
+  <div>
+    <h1>
+      <span class="sev sev-{{ alert.severity.value }}">{{ alert.severity.value.upper() }}</span>
+      {{ brand.name }}
+    </h1>
+    <p class="mono trunc">{{ alert.suspect_url }}</p>
+  </div>
+  <div class="alert-actions">
+    <a class="btn" href="/api/alerts/{{ alert.id }}/evidence.pdf" target="_blank">Download evidence PDF</a>
+  </div>
+</header>
+
+<section class="grid-2">
+  <div class="panel">
+    <h2>AI verdict</h2>
+    <dl class="kv">
+      <dt>Verdict</dt><dd><strong class="verdict-{{ verdict.verdict.value }}">{{ verdict.verdict.value.upper() }}</strong></dd>
+      <dt>Confidence</dt><dd>{{ "%.0f%%" | format(verdict.confidence * 100) }}</dd>
+      <dt>Suggested action</dt><dd>{{ verdict.suggested_action }}</dd>
+      <dt>Model</dt><dd class="mono small">{{ verdict.model_used }}</dd>
+    </dl>
+    {% if verdict.evidence_summary %}
+    <h3>Evidence</h3>
+    <ul class="bullets">
+      {% for bullet in verdict.evidence_summary %}<li>{{ bullet }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <h2>Similarity scoring</h2>
+    <table class="score-table">
+      <tr><td>Perceptual hash (screenshot)</td><td>{{ "%.3f" | format(scoring.phash_score) }}</td><td class="muted">×0.35</td></tr>
+      <tr><td>DOM structural similarity</td><td>{{ "%.3f" | format(scoring.dom_score) }}</td><td class="muted">×0.25</td></tr>
+      <tr><td>Logo region similarity</td><td>{{ "%.3f" | format(scoring.logo_score) }}</td><td class="muted">×0.30</td></tr>
+      <tr><td>Favicon match</td><td>{{ "yes" if scoring.favicon_match else "no" }}</td><td class="muted">×0.10</td></tr>
+      <tr class="composite">
+        <td><strong>Composite</strong></td>
+        <td><strong>{{ "%.3f" | format(scoring.composite_score) }}</strong></td>
+        <td class="muted">threshold {{ "%.2f" | format(brand.score_threshold) }}</td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Inspection metadata</h2>
+  <dl class="kv kv-grid">
+    <dt>Inspection ID</dt><dd class="mono small">{{ inspection.id }}</dd>
+    <dt>Rendered from</dt><dd>{{ inspection.rendered_country }}</dd>
+    <dt>Final URL</dt><dd class="mono trunc">{{ inspection.final_url or "—" }}</dd>
+    <dt>HTTP status</dt><dd>{{ inspection.http_status or "—" }}</dd>
+    <dt>ASN</dt><dd>{{ inspection.asn or "—" }}</dd>
+    <dt>Registrar</dt><dd>{{ inspection.registrar or "—" }}</dd>
+    <dt>Registered</dt><dd>{{ inspection.registration_date.strftime("%Y-%m-%d") if inspection.registration_date else "—" }}</dd>
+    <dt>Inspected at</dt><dd>{{ inspection.inspected_at.strftime("%Y-%m-%d %H:%M:%S UTC") }}</dd>
+    <dt>Screenshot hash</dt><dd class="mono small">{{ inspection.screenshot_hash or "—" }}</dd>
+    <dt>DOM hash</dt><dd class="mono small">{{ inspection.dom_hash or "—" }}</dd>
+  </dl>
+</section>
+
+<section class="panel">
+  <h2>Takedown draft <span class="muted small">(not sent)</span></h2>
+  <pre class="takedown">{{ verdict.takedown_draft }}</pre>
+</section>
+
+<section class="panel">
+  <h2>Triage</h2>
+  <p class="muted">Status: <span class="status status-{{ alert.status.value }}">{{ alert.status.value }}</span>{% if alert.triaged_by %} — last updated by <strong>{{ alert.triaged_by }}</strong>{% endif %}</p>
+  <form class="triage-form" data-alert-id="{{ alert.id }}">
+    <label>Status
+      <select name="status">
+        <option value="triaged">triaged</option>
+        <option value="closed">closed</option>
+        <option value="false_positive">false_positive</option>
+        <option value="open">open (reopen)</option>
+      </select>
+    </label>
+    <label>Triaged by
+      <input name="triaged_by" type="text" placeholder="analyst@brand.com" required>
+    </label>
+    <label class="wide">Notes
+      <textarea name="notes" rows="2" placeholder="Optional notes"></textarea>
+    </label>
+    <button type="submit" class="btn">Save triage</button>
+    <span class="triage-feedback muted"></span>
+  </form>
+</section>
+{% endblock %}
