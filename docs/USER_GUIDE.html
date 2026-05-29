@@ -1,0 +1,478 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpoofVane — Visual User Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+--bg:#0b0f17;--surface:#131a26;--s2:#1b2433;--s3:#232f42;--border:#2c3a52;--bstrong:#3d4f6e;
+--text:#e8edf5;--muted:#93a1b8;--faint:#5e6e88;--brand:#ffb020;--accent:#36c2ce;
+--phish:#ff4d57;--phishbg:#2a1316;--susp:#ffb020;--suspbg:#2a2310;--benign:#3ddc84;--benignbg:#0f2419;--info:#4d9fff;
+--mono:"JetBrains Mono",ui-monospace,monospace;--sans:"IBM Plex Sans",system-ui,sans-serif;--disp:"Space Grotesk",Georgia,serif;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55}
+.wrap{max-width:1040px;margin:0 auto;padding:48px 24px 96px}
+.title{font-family:var(--disp);font-size:42px;color:var(--brand);margin:0}
+.sub{color:var(--muted);margin:4px 0 8px;font-size:15px}
+.meta{color:var(--faint);font-size:12px;font-family:var(--mono);margin-bottom:40px}
+h2.sec{font-family:var(--disp);font-size:24px;border-bottom:1px solid var(--border);padding-bottom:8px;margin:56px 0 24px}
+.shot{margin:0 0 44px}
+figcaption{font-family:var(--disp);font-size:18px;margin-bottom:10px}
+.pid{font-family:var(--mono);font-size:12px;background:var(--s3);color:var(--brand);padding:2px 8px;border-radius:999px;margin-right:8px}
+.browser{border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-2);background:var(--bg)}
+.bar{background:var(--s2);padding:8px 12px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)}
+.dot{width:11px;height:11px;border-radius:50%}.dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+.url{margin-left:12px;font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--bg);padding:3px 10px;border-radius:6px}
+.viewport{min-height:200px}
+.note{color:var(--muted);font-size:13px;margin:10px 2px 0;border-left:2px solid var(--accent);padding-left:10px}
+/* app shell */
+.app{display:grid;grid-template-columns:150px 1fr;min-height:300px}
+aside{background:var(--surface);border-right:1px solid var(--border);padding:16px 10px}
+.logo{font-family:var(--disp);color:var(--brand);font-size:15px;margin-bottom:16px}.logo.big{font-size:24px;text-align:center;margin-bottom:24px}
+aside a{display:block;color:var(--muted);font-size:12px;padding:6px 8px;border-radius:6px;text-decoration:none}
+aside a.on{background:var(--s3);color:var(--text)}
+main{padding:20px 24px}
+h1{font-family:var(--disp);font-size:22px;margin:0 0 16px}
+.htop{display:flex;justify-content:space-between;align-items:center}
+.count{font-family:var(--mono);font-size:13px;color:var(--brand)}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.tile{background:var(--s2);border-radius:8px;padding:14px}.tile .k{color:var(--faint);font-size:11px}.tile .v{font-family:var(--mono);font-size:22px;color:var(--brand)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+.ph{font-family:var(--disp);font-size:14px;margin-bottom:8px}
+.pie{height:90px;border-radius:8px;background:conic-gradient(var(--phish) 0 35%,var(--susp) 35% 60%,var(--benign) 60% 100%)}
+.map{height:90px;border-radius:8px;background:linear-gradient(120deg,var(--s3),var(--s2));position:relative}
+.strip span{font-family:var(--mono);font-size:11px;background:var(--s3);padding:3px 8px;border-radius:6px;margin:0 2px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--faint);font-weight:600;font-size:11px;border-bottom:1px solid var(--border);padding:8px}
+td{padding:8px;border-bottom:1px solid var(--border)}
+.mono{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.pill{font-family:var(--mono);font-size:11px;padding:2px 9px;border-radius:999px;text-transform:uppercase;font-weight:600}
+.pill.phish{color:var(--phish);background:var(--phishbg)}.pill.suspicious{color:var(--susp);background:var(--suspbg)}.pill.benign{color:var(--benign);background:var(--benignbg)}
+.primary{background:var(--brand);color:#1a1300;border:0;border-radius:6px;padding:8px 14px;font-weight:700;cursor:pointer}
+.danger{background:var(--phish);color:#fff;border:0;border-radius:6px;padding:8px 14px;font-weight:700;cursor:pointer}
+.sso{display:block;width:100%;background:var(--s2);color:var(--text);border:1px solid var(--bstrong);border-radius:6px;padding:10px;margin-bottom:8px}
+.login{display:grid;place-items:center;padding:30px}.card{width:300px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px}
+.card input{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:8px}
+.card .primary{width:100%}.or{text-align:center;color:var(--faint);font-size:12px;margin:8px 0}.mfa{margin-top:12px;font-size:11px;color:var(--faint);text-align:center}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tab{font-size:11px;padding:4px 9px;border-radius:999px;background:var(--s2);color:var(--muted)}.tab.on{background:var(--brand);color:#1a1300}
+.shotbox{height:80px;border-radius:8px;background:repeating-linear-gradient(45deg,var(--s2),var(--s2) 10px,var(--s3) 10px,var(--s3) 20px);display:grid;place-items:center;font-size:11px;color:var(--muted)}
+.sla{font-family:var(--mono)}.sla.hot{color:var(--phish)}.sla.warm{color:var(--susp)}.sla.cool{color:var(--benign)}
+.graph{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0}.node{background:var(--s3);border:1px solid var(--bstrong);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:12px}.edge{color:var(--faint);font-size:11px;font-family:var(--mono)}
+.lock{font-size:11px;background:var(--suspbg);color:var(--susp);padding:2px 8px;border-radius:999px}
+.badge{font-size:11px;padding:2px 8px;border-radius:999px}.badge.ok{background:var(--benignbg);color:var(--benign)}.badge.wait{background:var(--suspbg);color:var(--susp)}
+.search{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:12px;font-family:var(--mono);font-size:12px}
+.bar2{height:14px;background:var(--s2);border-radius:999px;overflow:hidden;margin:8px 0}.fill{height:100%;background:var(--brand)}
+.badges{display:flex;gap:8px;flex-wrap:wrap}.cbadge{background:var(--benignbg);color:var(--benign);padding:4px 10px;border-radius:999px;font-size:12px}
+.err{display:grid;place-items:center;padding:50px;text-align:center}.code{font-family:var(--disp);font-size:64px;color:var(--brand)}.code.phishc{color:var(--phish)}
+.flow{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:8px}
+.legend{color:var(--muted);font-size:13px;margin-top:12px}
+.toc{columns:3;column-gap:18px;font-size:13px;margin-bottom:24px}.toc a{color:var(--accent);text-decoration:none;display:block;padding:2px 0}
+</style></head>
+<body><div class="wrap">
+<h1 class="title">⬡ SpoofVane — Visual User Guide</h1>
+<p class="sub">Every screen, shown and annotated, plus how they connect.</p>
+<p class="meta">v0.5.0 · built by Claude (Opus 4.8) in Claude Code · 29 May 2026, 09:53 BST · 21 screens (P01–P21)</p>
+
+<h2 class="sec">Screen flow map</h2>
+
+<svg viewBox="0 0 900 460" class="flow">
+  <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#36c2ce"/></marker></defs>
+  <!-- nodes -->
+  <g font-family="JetBrains Mono, monospace" font-size="12">
+  <rect x="30" y="20" width="120" height="40" rx="8" fill="#1b2433" stroke="#3d4f6e"/><text x="90" y="44" fill="#e8edf5" text-anchor="middle">P01 Login</text>
+  <rect x="30" y="100" width="120" height="40" rx="8" fill="#1b2433" stroke="#3d4f6e"/><text x="90" y="124" fill="#e8edf5" text-anchor="middle">P02 Dashboard</text>
+  <rect x="220" y="100" width="120" height="40" rx="8" fill="#1b2433" stroke="#3d4f6e"/><text x="280" y="124" fill="#e8edf5" text-anchor="middle">P05 Triage</text>
+  <rect x="410" y="100" width="130" height="40" rx="8" fill="#2a1316" stroke="#ff4d57"/><text x="475" y="124" fill="#ff4d57" text-anchor="middle">P06 Alert detail</text>
+  <rect x="410" y="20" width="130" height="40" rx="8" fill="#1b2433" stroke="#3d4f6e"/><text x="475" y="44" fill="#e8edf5" text-anchor="middle">P07 Clusters</text>
+  <rect x="410" y="180" width="130" height="40" rx="8" fill="#1b2433" stroke="#3d4f6e"/><text x="475" y="204" fill="#e8edf5" text-anchor="middle">P08 Deepfakes</text>
+  <rect x="600" y="100" width="130" height="40" rx="8" fill="#2a2310" stroke="#ffb020"/><text x="665" y="124" fill="#ffb020" text-anchor="middle">P12 Review</text>
+  <rect x="600" y="180" width="130" height="40" rx="8" fill="#1b2433" stroke="#3d4f6e"/><text x="665" y="204" fill="#e8edf5" text-anchor="middle">P10 Takedowns</text>
+  <rect x="600" y="260" width="130" height="40" rx="8" fill="#0f2419" stroke="#3ddc84"/><text x="665" y="284" fill="#3ddc84" text-anchor="middle">P11 Audit</text>
+  <rect x="30" y="180" width="120" height="40" rx="8" fill="#1b2433" stroke="#3d4f6e"/><text x="90" y="204" fill="#e8edf5" text-anchor="middle">P03 Brands</text>
+  <rect x="30" y="260" width="120" height="40" rx="8" fill="#1b2433" stroke="#3d4f6e"/><text x="90" y="284" fill="#e8edf5" text-anchor="middle">P04 Brand detail</text>
+  <rect x="220" y="360" width="510" height="40" rx="8" fill="#131a26" stroke="#2c3a52"/><text x="475" y="384" fill="#93a1b8" text-anchor="middle">Admin: P13 Cost · P14 Compliance · P15 Agents · P16 Users · P17 Tenants</text>
+  </g>
+  <!-- edges -->
+  <g stroke="#36c2ce" stroke-width="1.6" fill="none" marker-end="url(#a)">
+  <path d="M90,60 L90,100"/>
+  <path d="M150,120 L220,120"/>
+  <path d="M340,120 L410,120"/>
+  <path d="M475,100 L475,60"/>
+  <path d="M475,140 L475,180"/>
+  <path d="M540,120 L600,120"/>
+  <path d="M665,140 L665,180"/>
+  <path d="M665,220 L665,260"/>
+  <path d="M150,200 L150,200 L90,200" /><path d="M150,200 L220,160 L220,140" />
+  <path d="M90,220 L90,260"/>
+  </g>
+</svg>
+
+<p class="legend">Cyan arrows show navigation. Red = the alert investigation hub; amber = human-in-the-loop review; green = the audit trail every action lands in. Admin screens sit in the bottom band.</p>
+
+<h2 class="sec">The 21 screens</h2>
+
+<figure class="shot">
+  <figcaption><span class="pid">P01</span> Login</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport">
+<div class="login">
+  <div class="card">
+    <div class="logo big">⬡ SpoofVane</div>
+    <button class="sso">Continue with SSO (OIDC)</button>
+    <button class="sso">Continue with SAML</button>
+    <div class="or">or</div>
+    <input placeholder="email"><input placeholder="password" type="password">
+    <button class="primary">Sign in</button>
+    <div class="mfa">🔐 MFA challenge appears here when enabled</div>
+  </div>
+</div></div>
+  </div>
+  <p class="note">Entry point. SSO/SAML/local + TOTP MFA. On success → Dashboard.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P02</span> Dashboard</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="on">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <h1>Threat posture</h1>
+  <div class="tiles"><div class="tile"><div class="k">Active alerts</div><div class="v">247</div></div><div class="tile"><div class="k">Phish today</div><div class="v">18</div></div><div class="tile"><div class="k">Open takedowns</div><div class="v">9</div></div><div class="tile"><div class="k">BD spend (mo)</div><div class="v">$412</div></div></div>
+  <div class="row2">
+    <div class="panel"><div class="ph">Threat families</div><div class="pie"></div></div>
+    <div class="panel"><div class="ph">Hosting regions</div><div class="map"></div></div>
+  </div>
+  <div class="panel"><div class="ph">Live pipeline</div><div class="strip"><span>discover</span>→<span>inspect</span>→<span>score</span>→<span>verdict</span>→<span>takedown</span></div></div>
+</main></div></div>
+  </div>
+  <p class="note">Day starts here. Click any KPI tile to drill into its queue.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P03</span> Brands</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="on">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <div class="htop"><h1>Protected brands</h1><button class="primary">+ New brand (wizard)</button></div>
+  <table><tr><th>Brand</th><th>Domain</th><th>Regions</th><th>Worst verdict</th></tr><tr><td>Acme Bank</td><td>acmebank.com</td><td>US, EU</td><td><span class="pill benign">benign</span></td></tr><tr><td>Globex</td><td>globex.com</td><td>US</td><td><span class="pill suspicious">suspicious</span></td></tr><tr><td>Initech</td><td>initech.io</td><td>APAC</td><td><span class="pill phish">phish</span></td></tr></table>
+</main></div></div>
+  </div>
+  <p class="note">Brand list. The wizard (H3) suggests keywords, TLDs and regions for you.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P04</span> Brand detail</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="on">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <h1>Acme Bank</h1>
+  <div class="row2">
+    <div class="panel"><div class="ph">Canonical assets</div><p>login: acmebank.com/login<br>logo hash: 3f9a…<br>screenshot hash: a21c…</p></div>
+    <div class="panel"><div class="ph">Monitoring</div><p>Regions: US, EU<br>Score threshold: 0.65</p></div>
+  </div>
+</main></div></div>
+  </div>
+  <p class="note">Per-brand config: canonical assets, regions, escalation threshold.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P05</span> Triage queue</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="on">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <h1>Triage queue <span class="count">247</span></h1>
+  <table><tr><th>Verdict</th><th>URL</th><th>Score</th><th>Source</th><th>SLA</th></tr><tr><td><span class="pill phish">phish</span></td><td class="mono">acme-secure-login.top</td><td>0.91</td><td>SERP</td><td class="sla hot">2m</td></tr><tr><td><span class="pill suspicious">suspicious</span></td><td class="mono">acmebank-verify.xyz</td><td>0.58</td><td>OpenPhish</td><td class="sla warm">14m</td></tr><tr><td><span class="pill phish">phish</span></td><td class="mono">my-acme.cc</td><td>0.87</td><td>Registrar</td><td class="sla hot">5m</td></tr><tr><td><span class="pill benign">benign</span></td><td class="mono">acme-fanblog.net</td><td>0.12</td><td>CertStream</td><td class="sla cool">1h</td></tr></table>
+</main></div></div>
+  </div>
+  <p class="note">Analyst's main workspace. Click a row → Alert detail.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P06</span> Alert detail — 10 evidence tabs</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="on">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <div class="htop"><h1>acme-secure-login.top <span class="pill phish">phish</span></h1><button class="danger">Request takedown</button></div>
+  <div class="tabs"><span class="tab on">Summary</span><span class="tab ">Evidence</span><span class="tab ">Multi-region</span><span class="tab ">Verdict trace</span><span class="tab ">MITRE</span><span class="tab ">Kit</span><span class="tab ">Cluster</span><span class="tab ">Deepfake</span><span class="tab ">Takedown</span><span class="tab ">Audit</span></div>
+  <div class="row2">
+    <div class="panel"><div class="ph">Screenshot (US-residential)</div><div class="shotbox">rendered via Bright Data Scraping Browser</div></div>
+    <div class="panel"><div class="ph">Verdict trace</div><p class="mono">claude: phish 0.92<br>gpt-5: phish 0.89<br>gemini: phish 0.90<br>merge: PHISH · no dissent</p></div>
+  </div>
+</main></div></div>
+  </div>
+  <p class="note">The heart of the product. Ten tabs of evidence; takedown request starts here → Review queue.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P07</span> Clusters</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="on">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <h1>Threat-network graph</h1>
+  <div class="graph">
+    <span class="node">acme-secure.top</span><span class="edge">— ASN AS200651 —</span><span class="node">my-acme.cc</span>
+    <span class="edge">— kit EvilProxy —</span><span class="node">acme-verify.xyz</span>
+  </div>
+  <p class="muted">Nodes link by shared ASN / registrar / kit / favicon / JA3.</p>
+</main></div></div>
+  </div>
+  <p class="note">Reveals campaigns, not single sites. Click a node → its alert.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P08</span> Deepfakes</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="on">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <h1>Deepfake review</h1>
+  <div class="panel"><div class="ph">CEO impersonation clip #1182 <span class="pill phish">phish</span></div>
+    <p class="mono">face dist 0.81 · lip-sync 0.74 · voiceprint match 0.03 · C2PA ✗ invalid<br>multimodal verdict: DEEPFAKE 0.79</p></div>
+</main></div></div>
+  </div>
+  <p class="note">Multimodal queue: face, lip-sync, voiceprint, C2PA provenance.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P09</span> Exec protection</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="on">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <h1>Executive protection <span class="lock">🔒 lawful-basis gated</span></h1>
+  <div class="panel"><div class="ph">Jane Doe, CEO</div>
+  <p>Likeness assets found: 3 · Voice assets: 1<br>Impersonation handles: @jane_x_15, @jane_linkedin_57</p></div>
+</main></div></div>
+  </div>
+  <p class="note">Sensitive surface — needs a recorded lawful basis before any action.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P10</span> Takedowns</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="on">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <h1>Takedown status</h1>
+  <table><tr><th>URL</th><th>Channel</th><th>Status</th><th>Ref</th></tr><tr><td class="mono">acme-secure.top</td><td>Cloudflare</td><td><span class="badge ok">submitted</span></td><td class="mono">CF-6d8f</td></tr><tr><td class="mono">my-acme.cc</td><td>Hetzner abuse</td><td><span class="badge wait">HITL pending</span></td><td class="mono">—</td></tr><tr><td class="mono">acme-verify.xyz</td><td>Namecheap</td><td><span class="badge ok">acknowledged</span></td><td class="mono">NC-44a1</td></tr></table>
+</main></div></div>
+  </div>
+  <p class="note">Registrar + hosting-abuse channels, reference IDs, manual override.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P11</span> Audit</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="on">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <h1>Audit log</h1>
+  <input class="search" placeholder="Ask: analyst takedown actions for tenant acme">
+  <table><tr><th>#</th><th>Actor</th><th>Action</th><th>Outcome</th><th>Hash</th></tr>
+  <tr><td>1182</td><td>analyst:kim</td><td>takedown_request</td><td>ok</td><td class="mono">a3f9…</td></tr>
+  <tr><td>1183</td><td>reviewer:lee</td><td>takedown_approve</td><td>ok</td><td class="mono">b2c1…</td></tr></table>
+</main></div></div>
+  </div>
+  <p class="note">Hash-chained, NL-searchable (H2). Tamper-evident.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P12</span> Review queue</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="on">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <h1>HITL review <span class="lock">reviewer ≠ analyst</span></h1>
+  <div class="panel"><div class="ph">Takedown: acme-secure.top <span class="pill phish">phish</span></div>
+  <p>Raised by analyst:kim · awaiting reviewer approval</p>
+  <button class="primary">Approve</button> <button class="danger">Deny</button></div>
+</main></div></div>
+  </div>
+  <p class="note">Consequential actions wait here for a different person's approval.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P13</span> Cost</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="on">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <h1>Bright Data spend</h1>
+  <div class="panel"><div class="ph">Tenant: acme · tier: business</div>
+  <div class="bar2"><div class="fill" style="width:41%"></div></div>
+  <p class="mono">$412 / $1000 envelope · SLM cheap-path 73%</p></div>
+</main></div></div>
+  </div>
+  <p class="note">Spend vs tier envelope, budget alerts, SLM-first routing.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P14</span> Compliance</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="on">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <h1>Compliance evidence</h1><div class="badges"><span class="cbadge">SOC 2</span><span class="cbadge">ISO 27001</span><span class="cbadge">DORA</span><span class="cbadge">NIS2</span></div>
+  <p class="muted">Control status + exportable auditor pack.</p>
+</main></div></div>
+  </div>
+  <p class="note">What auditors read: framework status + evidence export.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P15</span> Admin · Agents</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="on">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <div class="htop"><h1>Agents</h1><button class="danger">⨯ Global kill-switch</button></div>
+  <table><tr><th>Agent</th><th>State</th><th>Blast</th></tr>
+  <tr><td>takedown_agent</td><td>idle</td><td>0.6</td></tr>
+  <tr><td>cred_poison_agent</td><td>blocked (2-person)</td><td>0.85</td></tr></table>
+</main></div></div>
+  </div>
+  <p class="note">Registry, governance budgets, and the kill-switch (E7).</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P16</span> Admin · Users</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="on">Users</a><a class="">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <h1>Users &amp; roles</h1>
+  <table><tr><th>User</th><th>Role</th></tr><tr><td>kim</td><td>analyst</td></tr><tr><td>lee</td><td>reviewer</td></tr></table>
+</main></div></div>
+  </div>
+  <p class="note">RBAC — 6 roles with segregation of duties.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P17</span> Admin · Tenants</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="on">Tenants</a><a class="">Settings</a></aside>
+      <main>
+  <h1>Tenants</h1>
+  <table><tr><th>Tenant</th><th>Residency</th><th>Tier</th></tr><tr><td>acme</td><td>EU</td><td>business</td></tr></table>
+</main></div></div>
+  </div>
+  <p class="note">Multi-tenant management + data-residency region per tenant.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P18</span> Admin · Demo health</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="on">Settings</a></aside>
+      <main>
+  <h1>Demo health</h1>
+  <p class="mono">Pages covered: 21/21 ✓<br>Seed brands: 3 ✓<br>BD products exercised: 7/7 ✓</p>
+</main></div></div>
+  </div>
+  <p class="note">Internal — seed completeness + 21-page coverage check.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P19</span> Settings</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="app">
+      <aside><div class="logo">⬡ SpoofVane</div><a class="">Dashboard</a><a class="">Brands</a><a class="">Triage</a><a class="">Clusters</a><a class="">Deepfakes</a><a class="">Exec</a><a class="">Takedowns</a><a class="">Audit</a><a class="">Review</a><a class="">Cost</a><a class="">Compliance</a><a class="">Agents</a><a class="">Users</a><a class="">Tenants</a><a class="on">Settings</a></aside>
+      <main>
+  <h1>Settings</h1>
+  <div class="panel"><div class="ph">Profile · MFA · API keys</div><p>MFA: enabled 🔐 · API keys: 2 active</p></div>
+</main></div></div>
+  </div>
+  <p class="note">Profile, MFA enrolment, API keys.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P20</span> Not found (404)</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="err"><div class="code">404</div><p>This surface does not exist.</p></div></div>
+  </div>
+  <p class="note">Shown for unknown URLs.</p>
+</figure>
+
+
+<figure class="shot">
+  <figcaption><span class="pid">P21</span> Forbidden (403)</figcaption>
+  <div class="browser">
+    <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="url">app.spoofvane.io</span></div>
+    <div class="viewport"><div class="err"><div class="code phishc">403</div><p>Your role does not permit access.</p></div></div>
+  </div>
+  <p class="note">Shown when your role lacks access.</p>
+</figure>
+
+
+<p class="meta">SpoofVane Visual User Guide — screens mirror the canonical page registry <code>console/src/lib/pages.ts</code>. Mockups use the product's real design tokens (<code>console/src/tokens/tokens.css</code>).</p>
+</div></body></html>
