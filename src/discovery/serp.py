@@ -129,4 +129,6 @@ class SERPSource:
             f"https://{slug}-caffeine-verify.io/auth",
             # Geo-cloaked (only renders payload from URL-hash-derived country)
             f"https://geo-{slug}-secure.com/login",
+            # Time-bomb: benign on first scan, flips to phish on re-inspection
+            f"https://{slug}-timebomb-login.com/account",
         ]

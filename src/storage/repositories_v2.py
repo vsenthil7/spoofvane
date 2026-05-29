@@ -381,3 +381,57 @@ class AuditLogRepo:
             }
             for r in rows
         ]
+
+
+# --------------------------------------------------------------------------- #
+# Alert notes (analyst collaboration thread)
+# --------------------------------------------------------------------------- #
+
+
+class AlertNoteRepo:
+    """Append-only analyst notes per alert."""
+
+    def __init__(self, session: Session) -> None:
+        self.s = session
+
+    def add(
+        self,
+        *,
+        alert_id: str,
+        author: str,
+        body: str,
+        tenant_id: str | None = None,
+    ) -> dict:
+        from ..common.ids import alert_id as _id
+        row = orm.AlertNoteRow(
+            id=_id(),
+            alert_id=alert_id,
+            tenant_id=tenant_id,
+            author=author,
+            body=body,
+        )
+        self.s.add(row)
+        self.s.flush()
+        return {
+            "id": row.id,
+            "alert_id": row.alert_id,
+            "author": row.author,
+            "body": row.body,
+            "created_at": _to_utc(row.created_at).isoformat(),
+        }
+
+    def list_for_alert(self, alert_id: str) -> list[dict]:
+        rows = self.s.scalars(
+            select(orm.AlertNoteRow)
+            .where(orm.AlertNoteRow.alert_id == alert_id)
+            .order_by(orm.AlertNoteRow.created_at)
+        ).all()
+        return [
+            {
+                "id": r.id,
+                "author": r.author,
+                "body": r.body,
+                "created_at": _to_utc(r.created_at).isoformat() if r.created_at else None,
+            }
+            for r in rows
+        ]

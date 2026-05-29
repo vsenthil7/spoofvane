@@ -183,6 +183,21 @@ class MockInspector:
             is_phishy = True
             is_benign = False
 
+        # Time-bomb simulation. A URL carrying "timebomb" in its host or a
+        # time_bomb flag renders as a benign holding page on first inspection
+        # (recheck_count 0), then flips to a phishing payload on re-inspection
+        # (recheck_count >= 1). This exercises the diff-detector: a previously-
+        # benign URL that now looks like a login page is a high-confidence
+        # activation signal.
+        recheck_count = int(suspect.discovery_metadata.get("recheck_count", 0))
+        url_says_timebomb = "timebomb" in host or "timebomb" in path
+        flag_says_timebomb = "timebomb" in suspect.discovery_metadata.get("flags", [])
+        if (url_says_timebomb or flag_says_timebomb):
+            if recheck_count >= 1:
+                is_phishy, is_benign = True, False  # activated
+            else:
+                is_phishy, is_benign = False, True   # still dormant
+
         # Geo-cloaking simulation. URLs whose host contains "geo-" or that
         # carry an explicit "cloak" flag in their discovery metadata only
         # serve the phishing payload from their "primary" region (derived

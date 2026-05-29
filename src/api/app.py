@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Annotated
 
 from fastapi import BackgroundTasks, Body, Depends, FastAPI, HTTPException, Path as PathParam, Query, Request
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, HttpUrl
@@ -96,6 +96,11 @@ class TriageRequest(BaseModel):
     triaged_by: str = Field(min_length=1, max_length=120)
 
 
+class AlertNoteCreate(BaseModel):
+    body: str = Field(min_length=1, max_length=5000)
+    author: str | None = Field(default=None, max_length=200)
+
+
 # --------------------------------------------------------------------------- #
 # App + templates
 # --------------------------------------------------------------------------- #
@@ -129,6 +134,15 @@ templates = Jinja2Templates(directory=str(_TEMPLATE_DIR))
 def healthz() -> dict[str, str]:
     """Liveness probe used by demo runner / k8s."""
     return {"status": "ok", "mock_mode": str(settings.mock_mode).lower()}
+
+
+@app.get("/metrics", tags=["meta"])
+def metrics() -> Response:
+    """Prometheus metrics exposition. Gated by PROMETHEUS_ENABLED."""
+    if not getattr(settings, "prometheus_enabled", True):
+        raise HTTPException(404, "Metrics disabled")
+    from src.api.metrics import render_metrics
+    return Response(content=render_metrics(), media_type="text/plain; version=0.0.4")
 
 
 # --------------------------------------------------------------------------- #
@@ -251,6 +265,63 @@ def run_discovery(
     return {"status": "queued", "brand_id": payload.brand_id}
 
 
+@app.post("/api/discovery/recheck", tags=["pipeline"])
+def recheck_brand(
+    payload: DiscoveryRunRequest,
+    request: Request,
+    max_urls: int = Query(default=50, ge=1, le=500),
+    hours_lookback: int = Query(default=48, ge=1, le=720),
+    ctx: AuthCtx = Depends(require_auth(SCOPE_DISCOVERY_RUN)),
+) -> dict:
+    """Re-inspect recently-seen URLs to catch time-bomb phishing activations.
+
+    A URL that rendered as a benign holding page on first pass but now serves
+    a credential-harvest payload is a high-confidence time-bomb activation —
+    the operator flipped it after distributing the link to victims. Single-shot
+    scanners miss this entirely; this is the catch.
+    """
+    from src.inspection.diff_detector import recheck_recent
+
+    with session_scope() as s:
+        brand = BrandRepo(s).get(payload.brand_id)
+        if brand is None:
+            raise HTTPException(404, f"Brand not found: {payload.brand_id}")
+        if ctx.tenant is not None and brand.tenant_id and brand.tenant_id != ctx.tenant.id:
+            raise HTTPException(404, f"Brand not found: {payload.brand_id}")
+        AuditLogRepo(s).record(
+            actor=ctx.actor,
+            action="discovery.recheck",
+            tenant_id=brand.tenant_id,
+            target_kind="brand",
+            target_id=brand.id,
+            after={"max_urls": max_urls, "hours_lookback": hours_lookback},
+            request_ip=_client_ip(request),
+            user_agent=request.headers.get("user-agent"),
+        )
+
+    diffs = recheck_recent(payload.brand_id, max_urls=max_urls, hours_lookback=hours_lookback)
+    time_bombs = [d for d in diffs if d.time_bomb]
+    return {
+        "status": "completed",
+        "brand_id": payload.brand_id,
+        "rechecked": len(diffs),
+        "time_bombs_detected": len(time_bombs),
+        "diffs": [
+            {
+                "suspect_url_id": d.suspect_url_id,
+                "phash_change": d.phash_change,
+                "dom_change": d.dom_change,
+                "max_change": d.max_change,
+                "looks_like_phish_now": d.looks_like_phish_now,
+                "benign_before": d.benign_before,
+                "time_bomb": d.time_bomb,
+                "detected_at": d.detected_at.isoformat(),
+            }
+            for d in diffs
+        ],
+    }
+
+
 # --------------------------------------------------------------------------- #
 # Alerts
 # --------------------------------------------------------------------------- #
@@ -346,6 +417,54 @@ def triage_alert(
             user_agent=request.headers.get("user-agent"),
         )
     return updated.model_dump(mode="json")
+
+
+@app.get("/api/alerts/{alert_id}/notes", tags=["alerts"])
+def list_alert_notes(
+    alert_id: str,
+    ctx: AuthCtx = Depends(require_auth(SCOPE_ALERTS_READ)),
+) -> list[dict]:
+    from src.storage.repositories_v2 import AlertNoteRepo
+    with session_scope() as s:
+        existing = AlertRepo(s).get(alert_id)
+        if existing is None:
+            raise HTTPException(404, f"Alert not found: {alert_id}")
+        if ctx.tenant is not None and existing.tenant_id and existing.tenant_id != ctx.tenant.id:
+            raise HTTPException(404, f"Alert not found: {alert_id}")
+        return AlertNoteRepo(s).list_for_alert(alert_id)
+
+
+@app.post("/api/alerts/{alert_id}/notes", tags=["alerts"], status_code=201)
+def add_alert_note(
+    alert_id: str,
+    payload: AlertNoteCreate,
+    request: Request,
+    ctx: AuthCtx = Depends(require_auth(SCOPE_ALERTS_TRIAGE)),
+) -> dict:
+    from src.storage.repositories_v2 import AlertNoteRepo
+    with session_scope() as s:
+        existing = AlertRepo(s).get(alert_id)
+        if existing is None:
+            raise HTTPException(404, f"Alert not found: {alert_id}")
+        if ctx.tenant is not None and existing.tenant_id and existing.tenant_id != ctx.tenant.id:
+            raise HTTPException(404, f"Alert not found: {alert_id}")
+        note = AlertNoteRepo(s).add(
+            alert_id=alert_id,
+            author=payload.author or ctx.actor,
+            body=payload.body,
+            tenant_id=existing.tenant_id,
+        )
+        AuditLogRepo(s).record(
+            actor=payload.author or ctx.actor,
+            action="alert.note_add",
+            tenant_id=existing.tenant_id,
+            target_kind="alert",
+            target_id=alert_id,
+            after={"note_id": note["id"]},
+            request_ip=_client_ip(request),
+            user_agent=request.headers.get("user-agent"),
+        )
+    return note
 
 
 @app.post("/api/alerts/{alert_id}/takedown", tags=["alerts"])
@@ -531,6 +650,9 @@ def dashboard(request: Request) -> HTMLResponse:
 @app.get("/alerts/{alert_id}", response_class=HTMLResponse, tags=["dashboard"])
 def alert_detail(request: Request, alert_id: str) -> HTMLResponse:
     bundle = _load_alert_bundle(alert_id)
+    from src.storage.repositories_v2 import AlertNoteRepo
+    with session_scope() as s:
+        notes = AlertNoteRepo(s).list_for_alert(alert_id)
     return templates.TemplateResponse(
         request,
         "alert_detail.html",
@@ -540,6 +662,7 @@ def alert_detail(request: Request, alert_id: str) -> HTMLResponse:
             "inspection": bundle["inspection"],
             "scoring": bundle["scoring"],
             "verdict": bundle["verdict"],
+            "notes": notes,
             "mock_mode": settings.mock_mode,
         },
     )

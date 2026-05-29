@@ -61,3 +61,44 @@ window.runDiscoveryPrompt = async () => {
   );
   window.location.reload();
 };
+
+// Analyst notes — append-only thread
+(function () {
+  const form = document.querySelector(".note-form");
+  if (!form) return;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const alertId = form.dataset.alertId;
+    const author = form.querySelector("[name=author]").value.trim();
+    const body = form.querySelector("[name=body]").value.trim();
+    const feedback = form.querySelector(".note-feedback");
+    if (!body) return;
+    feedback.textContent = "Saving…";
+    try {
+      const r = await fetch(`/api/alerts/${alertId}/notes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ body, author: author || null }),
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const note = await r.json();
+      const thread = document.getElementById("notes-thread");
+      const empty = document.getElementById("notes-empty");
+      if (empty) empty.remove();
+      const div = document.createElement("div");
+      div.className = "note";
+      div.innerHTML =
+        `<div class="note-meta"><span class="note-author"></span> · ` +
+        `<span class="note-time"></span></div><div class="note-body"></div>`;
+      div.querySelector(".note-author").textContent = note.author;
+      div.querySelector(".note-time").textContent = note.created_at;
+      div.querySelector(".note-body").textContent = note.body;
+      thread.appendChild(div);
+      form.querySelector("[name=body]").value = "";
+      feedback.textContent = "Saved.";
+      setTimeout(() => (feedback.textContent = ""), 2000);
+    } catch (err) {
+      feedback.textContent = "Error: " + err.message;
+    }
+  });
+})();

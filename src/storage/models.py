@@ -141,6 +141,26 @@ class AuditLogRow(Base):
     )
 
 
+class AlertNoteRow(Base):
+    """Append-only analyst notes on an alert — a collaboration thread.
+
+    Distinct from ``alerts.triage_notes`` (a single overwriteable field):
+    this preserves every analyst comment with author + timestamp so an
+    investigation has a full audit trail of who-said-what-when.
+    """
+
+    __tablename__ = "alert_notes"
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    alert_id: Mapped[str] = mapped_column(String(40), ForeignKey("alerts.id"), index=True)
+    tenant_id: Mapped[str | None] = mapped_column(String(40), index=True)
+    author: Mapped[str] = mapped_column(String(200))
+    body: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=_utcnow, index=True
+    )
+
+
 # ─── Suspect URL ───────────────────────────────────────────────────────
 
 

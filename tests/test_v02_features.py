@@ -390,3 +390,86 @@ class TestActiveLearning:
                 repo.record(alert_id=f"fp{i}", outcome="false_positive", actor="t", composite_score=0.99)
             report = analyse_feedback(s, min_samples=20)
         assert 0.4 <= report.threshold.recommended_threshold <= 0.9
+
+
+# --------------------------------------------------------------------------- #
+# Wave-5 follow-ups: notes, metrics, diff-detector endpoint
+# --------------------------------------------------------------------------- #
+
+
+class TestAlertNotes:
+    def test_note_roundtrip(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path}/notes.db")
+        from src.common.settings import get_settings
+        get_settings.cache_clear()  # type: ignore[attr-defined]
+        from src.storage.db import session_scope
+        from src.storage.init_db import init_db
+        from src.storage.repositories_v2 import AlertNoteRepo
+
+        init_db()
+        with session_scope() as s:
+            repo = AlertNoteRepo(s)
+            repo.add(alert_id="alrt_x", author="alice", body="first note")
+            repo.add(alert_id="alrt_x", author="bob", body="second note")
+            repo.add(alert_id="alrt_y", author="carol", body="other alert")
+            notes = repo.list_for_alert("alrt_x")
+        assert len(notes) == 2
+        assert notes[0]["author"] == "alice"
+        assert notes[1]["author"] == "bob"
+        # Ordering is chronological
+        assert notes[0]["body"] == "first note"
+
+
+class TestMetrics:
+    def test_metrics_render(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path}/metrics.db")
+        from src.common.settings import get_settings
+        get_settings.cache_clear()  # type: ignore[attr-defined]
+        from src.storage.init_db import init_db
+        init_db()
+        from src.api.metrics import render_metrics
+        text = render_metrics()
+        # Valid exposition: HELP + TYPE lines present
+        assert "# HELP doppeldomain_alerts_total" in text
+        assert "# TYPE doppeldomain_alerts_total gauge" in text
+        assert "doppeldomain_tenants_total" in text
+        assert "doppeldomain_brightdata_spend_usd" in text
+
+
+class TestDiffDetector:
+    def test_timebomb_flip_detected(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path}/diff.db")
+        monkeypatch.setenv("MOCK_MODE", "true")
+        from src.common.settings import get_settings
+        get_settings.cache_clear()  # type: ignore[attr-defined]
+        from src.storage.db import session_scope
+        from src.storage.init_db import init_db
+        from src.storage.repositories import BrandRepo, SuspectURLRepo, InspectionRepo
+        from src.inspection.browser import get_inspector
+        from src.inspection.diff_detector import recheck_recent
+
+        init_db()
+        # Create a brand + a time-bomb suspect, inspect once (dormant/benign)
+        brand = Brand(
+            id=brand_id(), name="DiffBank",
+            login_url="https://login.diffbank.example/signin",
+            target_country="US", brand_keywords=["DiffBank"],
+        )
+        susp = SuspectURL(
+            id=suspect_id(), brand_id=brand.id,
+            url="https://diffbank-timebomb-login.com/account",
+            source=Source.SERP,
+        )
+        insp = get_inspector().inspect(brand, susp)  # recheck_count=0 → benign
+        with session_scope() as s:
+            BrandRepo(s).create(brand)
+            SuspectURLRepo(s).create(susp)
+            InspectionRepo(s).create(insp)
+        bid = brand.id
+
+        # Recheck — the time-bomb should now flip to phishy
+        diffs = recheck_recent(bid, max_urls=10, hours_lookback=48)
+        time_bombs = [d for d in diffs if d.time_bomb]
+        assert len(time_bombs) >= 1
+        assert time_bombs[0].benign_before is True
+        assert time_bombs[0].looks_like_phish_now is True

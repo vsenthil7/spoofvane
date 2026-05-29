@@ -80,8 +80,21 @@ v0.1 shipped with 24 tests. v0.2 adds 20 more covering:
 - STIX 2.1 bundle structure (verifies identity + indicator + malware + relationship objects)
 - All 4 new discovery sources yielding fixtures
 - Active-learning tuner (3 tests: insufficient-data hold, threshold separation, clamping guardrail)
+- Alert notes append-only roundtrip
+- Prometheus metrics exposition rendering
+- Diff-detector time-bomb flip detection
 
-`pytest -q` → `44 passed in 2.31s`.
+`pytest -q` → `47 passed`.
+
+## Wave 5 follow-ups (post-initial-v0.2)
+
+Three items originally listed as "not reached" were subsequently built:
+
+**Analyst notes thread.** A new append-only `alert_notes` table (distinct from the single overwriteable `alerts.triage_notes`) with `AlertNoteRepo`, `GET`/`POST /api/alerts/{id}/notes` endpoints, and a threaded notes UI on the alert detail page with a JS post handler. Every comment preserves author + timestamp so an investigation has a full who-said-what-when trail. Note additions are audit-logged.
+
+**Diff-detector reachable.** `src/inspection/diff_detector.py` (built earlier but never callable) is now wired to `POST /api/discovery/recheck`. It re-inspects recently-seen URLs and flags time-bomb activations — URLs that rendered benign on first pass but now serve a credential-harvest payload. The mock inspector gained a time-bomb simulation (`timebomb` host hint flips dormant→active on recheck #1+). Fixing the test for this surfaced and fixed a real `DetachedInstanceError` bug: the detector was reading ORM rows out of a closed session.
+
+**Prometheus `/metrics`.** `src/api/metrics.py` exposes gauge metrics in Prometheus text exposition format (`text/plain; version=0.0.4`) without a heavy client dependency — alerts by severity/status, cloaking count, verdicts by family/kit, suspects by source, Bright Data spend by kind, feedback by outcome, tenant + active-key counts. Gated by `PROMETHEUS_ENABLED`. OpenTelemetry tracing remains unimplemented.
 
 ## Still gapped
 
@@ -98,10 +111,9 @@ Realistic positioning is unchanged from the competitive analysis: this is an OEM
 
 ## What did **not** get added
 
-For honesty: things on the v0.2 wish-list that I planned but didn't reach in this build:
+For honesty: things on the v0.2 wish-list that remain unbuilt:
 
-- Analyst notes / collaboration thread on alert detail (the schema supports notes; no UI for multi-user threading)
-- Live-mode implementations for the four new discovery sources (only fixture data; live SERP-ads, App Store, GitHub, Telegram fetches are stubbed)
-- Prometheus metrics + OpenTelemetry tracing (settings exist; instrumentation does not)
+- Live-mode implementations for the four new discovery sources (only fixture data; live SERP-ads, App Store, GitHub, Telegram fetches are stubbed — they need real Bright Data credentials, not appropriate to fake)
+- OpenTelemetry distributed tracing (Prometheus metrics now exist; OTel does not)
 - Customer-facing webhook signature verification documentation
-- Auto-applying active-learning recommendations on a schedule (the report is generated and exposed; applying it is still a manual operator decision by design)
+- Auto-applying active-learning recommendations on a schedule (the report is generated and exposed at `GET /api/admin/tuning`; applying it is still a manual operator decision by design)

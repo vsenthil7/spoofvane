@@ -101,19 +101,23 @@ def recheck_recent(
             .limit(max_urls)
         )
         suspect_rows = s.scalars(q).all()
-        suspect_data = [
-            (
-                SuspectURL.model_validate(r, from_attributes=True),
-                # The most recent inspection for each
-                s.scalars(
-                    select(InspectionRow)
-                    .where(InspectionRow.suspect_url_id == r.id)
-                    .order_by(desc(InspectionRow.inspected_at))
-                    .limit(1)
-                ).first(),
+        from ..storage.repositories import InspectionRepo
+        insp_repo = InspectionRepo(s)
+        suspect_data = []
+        for r in suspect_rows:
+            susp_model = SuspectURL.model_validate(r, from_attributes=True)
+            prior_row = s.scalars(
+                select(InspectionRow)
+                .where(InspectionRow.suspect_url_id == r.id)
+                .order_by(desc(InspectionRow.inspected_at))
+                .limit(1)
+            ).first()
+            # Convert to pydantic *inside* the session so attribute access
+            # after the session closes doesn't trigger a lazy DB load.
+            prior_model = (
+                insp_repo.get(prior_row.id) if prior_row is not None else None
             )
-            for r in suspect_rows
-        ]
+            suspect_data.append((susp_model, prior_model))
 
     inspector = get_inspector()
     for susp, prior_row in suspect_data:

@@ -164,6 +164,7 @@ SQLAlchemy models against SQLite (dev) or Postgres (prod). Core tables:
 | `cost_events` *(v0.2)* | One row per Bright Data API call billed to a tenant |
 | `feedback_events` *(v0.2)* | Analyst triage outcomes — active-learning signal |
 | `audit_log` *(v0.2)* | Append-only state-change record with actor + IP + before/after |
+| `alert_notes` *(v0.2)* | Append-only analyst collaboration thread per alert |
 
 Evidence blobs (screenshots, DOMs, HARs) live in S3 (or `data/evidence/` in MOCK_MODE), keyed by SHA-256.
 
@@ -172,6 +173,7 @@ Evidence blobs (screenshots, DOMs, HARs) live in S3 (or `data/evidence/` in MOCK
 FastAPI app with route auth via `Depends(require_auth(scope))`. Routes:
 
 - `GET /healthz` — liveness
+- `GET /metrics` *(v0.2)* — Prometheus exposition (gated by `PROMETHEUS_ENABLED`)
 - `POST /api/brands` (`brands:write`) / `GET /api/brands` (`brands:read`)
 - `POST /api/discovery/run` (`discovery:run`)
 - `GET /api/alerts` (`alerts:read`) / `POST /api/alerts/{id}/triage` (`alerts:triage`)
@@ -180,6 +182,9 @@ FastAPI app with route auth via `Depends(require_auth(scope))`. Routes:
 - `POST /api/admin/tenants/{id}/keys` *(v0.2)* (`admin:*`) — issue API key
 - `GET /api/admin/tenants/{id}/costs` *(v0.2)* (`admin:*`) — spend view
 - `GET /api/admin/audit-log` *(v0.2)* (`admin:*`) — audit query
+- `GET /api/admin/tuning` *(v0.2)* (`admin:*`) — active-learning recommendations
+- `POST /api/discovery/recheck` *(v0.2)* (`discovery:run`) — re-inspect for time-bomb activations
+- `GET`/`POST /api/alerts/{id}/notes` *(v0.2)* — analyst notes thread
 - HTML pages: `/` (dashboard), `/alerts/{id}`, `/audit` *(v0.2)*
 
 ## 3. Data flow (per suspect URL)

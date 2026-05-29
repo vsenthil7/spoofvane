@@ -260,3 +260,14 @@ a:hover { text-decoration: underline; }
 .cost-total-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
 .cost-breakdown { display: flex; gap: 8px; flex-wrap: wrap; }
 .chip-cost { background: #e8f5e9; color: #1b5e20; }
+
+/* Analyst notes thread */
+.notes-thread { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.note { border-left: 3px solid var(--border); padding: 6px 12px; background: #fafbfc; border-radius: 0 4px 4px 0; }
+.note-meta { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+.note-author { font-weight: 600; color: #37474f; }
+.note-body { font-size: 14px; white-space: pre-wrap; }
+.note-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+.note-form label { display: flex; flex-direction: column; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+.note-form label.wide { flex: 1; min-width: 240px; }
+.note-form input, .note-form textarea { margin-top: 4px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; }
