@@ -19,5 +19,5 @@ export interface AuditRow {
 export interface CostRow { product: string; usd: number; tenantId: string; }
 export interface PageMeta {
   id: string; route: string; title: string; component: string;
-  minRole: Role; nav: boolean;
+  minRole: Role; nav: boolean; icon?: string;
 }
