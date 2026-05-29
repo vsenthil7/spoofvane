@@ -136,6 +136,11 @@ class ScoringResult(BaseModel):
     favicon_match: bool
     composite_score: float = Field(ge=0.0, le=1.0)
     above_threshold: bool
+    # v06 §E — per-signal weighted contributions (sum ≈ composite) for the
+    # Alert Detail stacked bar, and the Platt-calibrated probability from the
+    # persisted fitted model. Optional/defaulted so older rows stay valid.
+    score_contributions: dict[str, float] = Field(default_factory=dict)
+    probability: float | None = Field(default=None, ge=0.0, le=1.0)
 
 
 # ─── Verdict ───────────────────────────────────────────────────────────

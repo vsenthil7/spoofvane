@@ -8,8 +8,11 @@ the calibrator is never a no-op.
 """
 from __future__ import annotations
 
+import json
 import math
+import os
 from dataclasses import dataclass, field
+from pathlib import Path
 
 
 @dataclass
@@ -55,3 +58,37 @@ def calibrate(raw_score: float, contributions: dict[str, float],
         raw_score=round(raw_score, 4),
         contributions={k: round(v, 4) for k, v in contributions.items()},
     )
+
+
+# v06 §E — persisted fitted-model artifact. scripts/fit_calibration.py writes
+# this; load_calibrator() reads it at runtime, falling back to the shipped
+# default (never a no-op) when absent.
+_DEFAULT_CALIBRATION_PATH = (
+    Path(__file__).resolve().parents[2] / "data" / "calibration" / "platt.json"
+)
+
+
+def calibration_path() -> Path:
+    return Path(os.getenv("SPOOFVANE_CALIBRATION_PATH", str(_DEFAULT_CALIBRATION_PATH)))
+
+
+def load_calibrator() -> PlattCalibrator:
+    """Load the persisted Platt params, or the shipped default if absent."""
+    path = calibration_path()
+    try:
+        data = json.loads(path.read_text())
+        return PlattCalibrator(a=float(data["a"]), b=float(data["b"]))
+    except (FileNotFoundError, KeyError, ValueError, OSError):
+        return PlattCalibrator()
+
+
+def save_calibrator(cal: PlattCalibrator, fitted_on: int, path: Path | None = None) -> Path:
+    """Persist fitted Platt params + provenance to JSON."""
+    from datetime import datetime, timezone
+    p = path or calibration_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps({
+        "a": cal.a, "b": cal.b, "fitted_on": fitted_on,
+        "ts": datetime.now(timezone.utc).isoformat(),
+    }, indent=2))
+    return p

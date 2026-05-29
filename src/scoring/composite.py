@@ -95,6 +95,21 @@ def score(
     composite = round(min(1.0, float(composite)), 4)
     above = bool(composite >= brand.score_threshold)
 
+    # v06 §E — per-signal weighted contributions (sum ≈ composite). Guard div0.
+    if total_w == 0:
+        contributions = {"phash": 0.0, "dom": 0.0, "logo": 0.0, "favicon": 0.0}
+    else:
+        contributions = {
+            "phash": round(weights["phash"] * p / total_w, 4),
+            "dom": round(weights["dom"] * d / total_w, 4),
+            "logo": round(weights["logo"] * l / total_w, 4),
+            "favicon": round(weights["favicon"] * (1.0 if f else 0.0) / total_w, 4),
+        }
+    # Calibrated probability from the persisted fitted model (falls back to the
+    # shipped default if no artifact present — never a no-op).
+    from .calibration import calibrate, load_calibrator
+    probability = calibrate(composite, contributions, calibrator=load_calibrator()).probability
+
     log.info(
         "score",
         inspection_id=inspection.id,
@@ -115,4 +130,6 @@ def score(
         favicon_match=f,
         composite_score=composite,
         above_threshold=above,
+        score_contributions=contributions,
+        probability=probability,
     )
