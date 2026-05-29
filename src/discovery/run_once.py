@@ -23,6 +23,7 @@ from .mobile_app_store import MobileAppStoreSource
 from .new_domains import NewDomainsSource
 from .paid_ads import PaidAdSource
 from .serp import SERPSource
+from .social_media import SocialMediaSource
 from .telegram_kit import TelegramKitSource
 
 log = get_logger(__name__)
@@ -36,6 +37,7 @@ DEFAULT_SOURCES: dict[str, type[DiscoverySource]] = {
     "mobile_app_store": MobileAppStoreSource,
     "github_leak": GitHubLeakSource,
     "telegram_kit": TelegramKitSource,
+    "social_media": SocialMediaSource,
 }
 
 

@@ -9,6 +9,7 @@ Seven sources implement the ``DiscoverySource`` protocol:
 * ``mobile_app_store.py`` : Play Store / App Store / APK sideload (v0.2)
 * ``github_leak.py``      : Public GitHub kit + credential leak detection (v0.2)
 * ``telegram_kit.py``     : Telegram + paste-site kit marketplace mentions (v0.2)
+* ``social_media.py``     : Social-platform impersonation profiles/pages (v0.4)
 
 All emit ``SuspectURL`` instances into the queue.
 """
@@ -21,6 +22,7 @@ from .paid_ads import PaidAdSource
 from .mobile_app_store import MobileAppStoreSource
 from .github_leak import GitHubLeakSource
 from .telegram_kit import TelegramKitSource
+from .social_media import SocialMediaSource
 
 __all__ = [
     "DiscoverySource",
@@ -32,4 +34,5 @@ __all__ = [
     "MobileAppStoreSource",
     "GitHubLeakSource",
     "TelegramKitSource",
+    "SocialMediaSource",
 ]

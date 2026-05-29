@@ -244,3 +244,44 @@ class TestTenantIsolation:
         assert b_accounts.isdisjoint(e_accounts) or (b_accounts and e_accounts)
         # and crucially the actual ids differ
         assert b_accounts != e_accounts
+
+
+# ───────────────────────── AI Triage Copilot ────────────────────────────
+
+class TestCopilotHttp:
+    def test_viewer_can_ask_read_only(self, client, seeded):
+        h, _ = _bearer(client, "viewer@business.demo")
+        r = client.post(
+            "/api/copilot/ask",
+            headers=h,
+            json={"question": "Show me the open critical alerts"},
+        )
+        assert r.status_code == 200
+        body = r.json()
+        assert "answer" in body
+        assert "model_used" in body
+        assert isinstance(body["steps"], list)
+
+    def test_viewer_denied_actions_mode(self, client, seeded):
+        # Viewer lacks alerts:triage, so allow_actions must be rejected.
+        h, _ = _bearer(client, "viewer@business.demo")
+        r = client.post(
+            "/api/copilot/ask",
+            headers=h,
+            json={"question": "Triage the noise", "allow_actions": True},
+        )
+        assert r.status_code == 403
+        assert "alerts:triage" in r.json()["detail"]
+
+    def test_analyst_allowed_actions_mode(self, client, seeded):
+        h, _ = _bearer(client, "analyst@business.demo")
+        r = client.post(
+            "/api/copilot/ask",
+            headers=h,
+            json={"question": "Show me open alerts", "allow_actions": True},
+        )
+        assert r.status_code == 200
+
+    def test_unauthenticated_denied(self, client, seeded):
+        r = TestClient(client.app).post("/api/copilot/ask", json={"question": "hello"})
+        assert r.status_code == 401

@@ -29,6 +29,7 @@ class Source(str, Enum):
     MOBILE_APP_STORE = "mobile_app_store"
     GITHUB_LEAK = "github_leak"
     TELEGRAM_KIT = "telegram_kit"
+    SOCIAL_MEDIA = "social_media"  # v0.4 — impersonation profiles/pages on social platforms
 
 
 class Verdict(str, Enum):

@@ -177,4 +177,49 @@ async def export_audit(
     return PlainTextResponse(body, media_type=media)
 
 
+# ─────────────────────────── AI Triage Copilot ──────────────────────────
+
+class CopilotAsk(BaseModel):
+    question: str = Field(min_length=1, max_length=2000)
+    brand_id: str | None = None
+    # When True the analyst is asking the agent to also be able to move triage
+    # state. This requires the stronger ALERTS_TRIAGE permission (enforced in
+    # the route), and even then the agent can never approve/send a takedown.
+    allow_actions: bool = False
+
+
+@router.post("/copilot/ask")
+async def copilot_ask(
+    body: CopilotAsk,
+    user: AuthedUser = Depends(require(Permission.ALERTS_READ)),
+) -> dict:
+    """Ask the agentic AI Triage Copilot a natural-language question.
+
+    Read-only by default. If ``allow_actions`` is requested, the caller must
+    additionally hold ``ALERTS_TRIAGE``; the agent can then move triage state
+    but never approve or submit a takedown — that gate stays in the review
+    queue.
+    """
+    from ..verdict.copilot import get_triage_copilot
+    from ..common.rbac import permissions_for
+
+    if body.allow_actions and Permission.ALERTS_TRIAGE not in permissions_for(user.role):
+        raise HTTPException(
+            status_code=403,
+            detail="allow_actions requires the alerts:triage permission",
+        )
+
+    copilot = get_triage_copilot(allow_actions=body.allow_actions)
+    result = copilot.ask(body.question, brand_id=body.brand_id)
+    return {
+        "answer": result.answer,
+        "model_used": result.model_used,
+        "iterations": result.iterations,
+        "steps": [
+            {"tool": st.tool, "arguments": st.arguments, "ok": st.ok}
+            for st in result.steps
+        ],
+    }
+
+
 __all__ = ["router"]

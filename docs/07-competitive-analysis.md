@@ -51,7 +51,7 @@ This is the matrix a CISO would actually use when evaluating. Filled honestly �
 | **Geo-pinned rendering (residential)** | **✓** | **✓** | ~ | ✗ | ✗ | ~ | ✗ | ✗ | n/a | ✗ | ✗ | ✗ | ✗ | ~ |
 | **Anti-bot bypass at inspection time** | **✓** | **✓** | ~ | ✗ | ✗ | ~ | ✗ | ✗ | n/a | ✗ | ✗ | ✗ | ✗ | ~ |
 | Mobile-app store impersonation | ✗ | ~ | ✓ | ✓ | ✓ | ✓ | ~ | ✓ | ✗ | ✓ | ✓ | ~ | ~ | ✓ |
-| Social-media impersonation | ✗ | ~ | ~ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Social-media impersonation | ~ | ✓ | ~ | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Paid-ad / search-engine abuse | ✗ | ~ | ~ | ✓ | ✓ | ~ | ✓ | ✓ | ~ | ✓ | ~ | ~ | ~ | ✓ |
 | Dark-web / leaked credential monitoring | ✗ | ✗ | ~ | ✓ | ~ | ~ | ✓ | ~ | ~ | ~ | ~ | ✓ | ✓ | ✓ |
 | **Real-time in-session victim protection** | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | **✓** | ✗ | ✗ | ✗ | ✗ | ✗ |
