@@ -14,16 +14,30 @@ export class ConsoleShell {
     await this.page.waitForSelector("flt-glass-pane, flutter-view", {
       timeout: 30_000,
     });
-    // Flutter web does not populate the semantics tree (the <flt-semantics>
-    // nodes Playwright queries by aria-label) until accessibility is enabled.
-    // It exposes an "Enable accessibility" placeholder button for exactly this;
-    // activating it builds the semantic DOM. This is the supported way to drive
-    // a CanvasKit Flutter app from the DOM.
     await this.enableAccessibility();
-    // Dashboard title is the first-paint anchor.
+    // The app opens on the Login screen; click a demo SSO option to enter the
+    // console, then the Dashboard is the first-paint anchor.
+    await this.demoLogin();
     await expect(this.byLabel("Security Dashboard")).toBeVisible({
       timeout: 30_000,
     });
+  }
+
+  /** Click a demo sign-in option (Continue with Google) to enter the console.
+   *  Flutter processes real pointer events at coordinates, so we click the
+   *  centre of the semantic node's bounding box rather than dispatching a DOM
+   *  click (which the canvas ignores). */
+  async demoLogin(): Promise<void> {
+    const google = this.page
+        .locator('flt-semantics:has-text("Continue with Google")')
+        .last();
+    if (await google.count()) {
+      const box = await google.boundingBox();
+      if (box) {
+        await this.page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+        await this.page.waitForTimeout(800);
+      }
+    }
   }
 
   /** Click the Flutter "Enable accessibility" placeholder so the semantics DOM
@@ -62,15 +76,17 @@ export class ConsoleShell {
     return this.page.locator(`flt-semantics:has-text("${text}")`).first();
   }
 
-  /** Click a nav-rail destination by its label. The rail tiles are exposed as
-   *  role=button semantic nodes whose label is the destination name. */
+  /** Click a nav-rail destination by its label. Uses a real coordinate click on
+   *  the semantic node's box (Flutter ignores DOM clicks on the canvas). */
   async navigateTo(navLabel: string): Promise<void> {
     const button = this.page
       .locator(`flt-semantics[role="button"]:has-text("${navLabel}")`)
-      .first();
-    await button.click({ force: true });
-    // Let the content area rebuild.
-    await this.page.waitForTimeout(500);
+      .last();
+    const box = await button.boundingBox();
+    if (box) {
+      await this.page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    }
+    await this.page.waitForTimeout(600);
   }
 
   pill(which: "LIVE" | "SEED"): Locator {

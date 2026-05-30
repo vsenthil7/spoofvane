@@ -1,9 +1,15 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:spoofvane_app/api.dart';
 import 'package:spoofvane_app/app.dart';
+import 'package:spoofvane_app/theme.dart';
 import 'package:spoofvane_app/widgets/source_pill.dart';
 import 'support/fake_api.dart';
 import 'support/pump.dart';
+
+// These cover the Console shell directly (the app now opens on the Login
+// screen; login flow is covered in login_screen_test.dart).
+Widget _console() => MaterialApp(theme: buildSvTheme(), home: const Console());
 
 void main() {
   late ApiClient original;
@@ -15,7 +21,7 @@ void main() {
 
   testWidgets('boots on the dashboard with brand + LIVE pill', (tester) async {
     useDesktopSurface(tester);
-    await tester.pumpWidget(const SpoofVaneApp());
+    await tester.pumpWidget(_console());
     await tester.pumpAndSettle();
     expect(find.text('Security Dashboard'), findsOneWidget);
     expect(find.text('Dashboard'), findsWidgets); // nav rail label
@@ -25,7 +31,7 @@ void main() {
 
   testWidgets('nav switches to the triage screen', (tester) async {
     useDesktopSurface(tester);
-    await tester.pumpWidget(const SpoofVaneApp());
+    await tester.pumpWidget(_console());
     await tester.pumpAndSettle();
     await tester.tap(find.text('Triage Queue'));
     await tester.pumpAndSettle();
@@ -35,14 +41,14 @@ void main() {
   testWidgets('SEED source renders the SEED pill', (tester) async {
     useDesktopSurface(tester);
     Api.instance = FakeApi(forcedSource: DataSource.seed);
-    await tester.pumpWidget(const SpoofVaneApp());
+    await tester.pumpWidget(_console());
     await tester.pumpAndSettle();
     expect(find.text('SEED'), findsOneWidget);
   });
 
   testWidgets('nav rail collapses and expands', (tester) async {
     useDesktopSurface(tester);
-    await tester.pumpWidget(const SpoofVaneApp());
+    await tester.pumpWidget(_console());
     await tester.pumpAndSettle();
     // Expanded: full label visible.
     expect(find.text('Campaign Clusters'), findsOneWidget);

@@ -50,7 +50,7 @@ cannot be the reviewer who approves its takedown.
 
 | ID | Route | Title | minRole | In rail | Flutter screen | Status |
 |----|-------|-------|---------|---------|----------------|--------|
-| P01 | /login | Sign in | viewer | no | `LoginScreen` | ⬜ planned |
+| P01 | /login | Sign in | viewer | no | `LoginScreen` | 🟢 built (demo SSO + role picker) |
 | P02 | / | Dashboard | viewer | yes | `DashboardScreen` | 🟢 built |
 | P03 | /brands | Brands | analyst | yes | `BrandsScreen` | 🟢 built |
 | P04 | /brands/:id | Brand detail | analyst | no | `BrandDetailScreen` | ⬜ planned |

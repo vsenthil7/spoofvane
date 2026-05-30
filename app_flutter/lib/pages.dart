@@ -15,6 +15,7 @@ import 'screens/brands_screen.dart';
 import 'screens/cost_screen.dart';
 import 'screens/audit_screen.dart';
 import 'screens/review_queue_screen.dart';
+import 'screens/login_screen.dart';
 import 'screens/placeholder_screen.dart';
 
 /// One console page: registry metadata + the screen builder it routes to.
@@ -61,7 +62,7 @@ PageMeta _planned({
 
 /// All 21 canonical pages, in spec order.
 final List<PageMeta> kPages = <PageMeta>[
-  _planned(id: 'P01', route: '/login', title: 'Sign in', minRole: Role.viewer, nav: false, icon: Icons.login_outlined),
+  PageMeta(id: 'P01', route: '/login', title: 'Sign in', minRole: Role.viewer, nav: false, icon: Icons.login_outlined, builder: (_) => const LoginScreen()),
   PageMeta(id: 'P02', route: '/', title: 'Dashboard', minRole: Role.viewer, nav: true, icon: Icons.dashboard_outlined, builder: (_) => const DashboardScreen()),
   PageMeta(id: 'P03', route: '/brands', title: 'Brands', minRole: Role.analyst, nav: true, icon: Icons.business_outlined, builder: (_) => const BrandsScreen()),
   _planned(id: 'P04', route: '/brands/:id', title: 'Brand detail', minRole: Role.analyst, nav: false, icon: Icons.business_outlined),

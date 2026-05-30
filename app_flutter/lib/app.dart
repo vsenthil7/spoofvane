@@ -9,6 +9,7 @@ import 'roles.dart';
 import 'theme.dart';
 import 'widgets/nav_rail.dart';
 import 'widgets/source_pill.dart';
+import 'screens/login_screen.dart';
 
 class SpoofVaneApp extends StatelessWidget {
   const SpoofVaneApp({super.key});
@@ -18,7 +19,7 @@ class SpoofVaneApp extends StatelessWidget {
       title: 'SpoofVane',
       debugShowCheckedModeBanner: false,
       theme: buildSvTheme(),
-      home: const Console(),
+      home: const LoginScreen(),
     );
   }
 }
