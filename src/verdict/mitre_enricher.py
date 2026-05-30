@@ -31,6 +31,41 @@ class MitreEnrichment:
     d3fend: list[str] = field(default_factory=list)
 
 
+# v07 D5 — per-surface ATT&CK technique mapping. Each v07 width surface has a
+# characteristic technique set, so a finding from any surface is TTP-tagged even
+# when no explicit capability tags are present.
+SURFACE_TECHNIQUES = {
+    "domain": ["T1583.001", "T1566.002"],          # Acquire Domains / Spearphishing Link
+    "social": ["T1585.001", "T1656"],              # Social Media Accounts / Impersonation
+    "appstore": ["T1660", "T1204.002"],            # Phishing (mobile) / Malicious File
+    "marketplace": ["T1583.008", "T1657"],         # Malvertising / Financial Theft
+    "darkweb": ["T1597.002", "T1593.003"],         # Purchase Technical Data / Search
+    "credleak": ["T1589.001", "T1078"],            # Credentials / Valid Accounts
+    "easm": ["T1595.002", "T1590"],                # Vuln Scanning / Gather Victim Network
+    "rtp": ["T1557", "T1539"],                     # AiTM / Steal Web Session Cookie
+    "deepfake": ["T1656"],                          # Impersonation
+    "email_auth": ["T1566.002", "T1598.003"],      # Spearphishing Link / via Service
+}
+
+
+def enrich_for_surface(surface: str, capabilities: list[str] | None = None,
+                       family: str | None = None) -> MitreEnrichment:
+    """v07 D5 — surface-aware enrichment. Seeds techniques from the surface's
+    characteristic set, then layers capability/family-driven techniques on top
+    via the existing enrich() logic. Distinct surfaces yield distinct TTP sets."""
+    base = enrich(capabilities or [], family=family)
+    techs = list(SURFACE_TECHNIQUES.get(surface, []))
+    for t in base.techniques:
+        if t not in techs:
+            techs.append(t)
+    d3: list[str] = []
+    for t in techs:
+        for d in D3FEND_MAP.get(t, []):
+            if d not in d3:
+                d3.append(d)
+    return MitreEnrichment(techniques=techs, d3fend=d3)
+
+
 def enrich(capabilities: list[str], family: str | None = None) -> MitreEnrichment:
     techs: list[str] = []
     caps = list(capabilities)
