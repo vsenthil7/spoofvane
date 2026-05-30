@@ -378,10 +378,11 @@ freshness/dedup, auto-report) + deferred console-page/route/seed/RBAC layering.
 |-------|------|--------|-------------|
 | 042 | D1 — cross-surface signal fusion into composite | 🟢 REAL | `tests/depth/test_signal_fusion.py` (7 tests: no-aux==pure-visual backward-compat, strong-aux raises/low-aux lowers composite, unknown-key ignored, clamp [0,1], multi-aux all used); `src/scoring/signal_fusion.py` wired into `composite.score(aux_signals=...)`; full suite 511 pass / 0 regressions proves visual-only path unchanged |
 | 043 | D5 — per-surface MITRE ATT&CK TTP mapping | 🟢 REAL | `tests/depth/test_mitre_surface.py` (6 tests: distinct surfaces distinct TTPs, surface+capability layering, D3FEND derived, unknown-surface fallback, dedup, all-surfaces-mapped); `enrich_for_surface()` + SURFACE_TECHNIQUES in `src/verdict/mitre_enricher.py` |
+| 044 | D7 — unified cross-surface freshness + dedup | 🟢 REAL | `tests/depth/test_unified_dedup.py` (6 tests: same entity across 3 surfaces collapses w/ union sources + freshest ts, distinct stay separate, social @ + url www/scheme normalized, stale never overwrites fresh, ranked by sightings, empty); `src/discovery/unified_dedup.py` |
 
-**Phase 4 depth progress: 2 of 8 (D1, D5). Remaining: D2 per-family calibrators,
-D3 active-learning, D4 ensemble diversity, D6 multi-region cloaking,
-D7 unified freshness/dedup, D8 auto-report.**
+**Phase 4 depth progress: 3 of 8 (D1, D5, D7). Remaining: D2 per-family
+calibrators, D3 active-learning, D4 ensemble diversity, D6 multi-region cloaking,
+D8 auto-report.**
 
 ---
 
