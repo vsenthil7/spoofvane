@@ -100,11 +100,41 @@ void main() {
     expect(down.source.value, DataSource.seed);
   });
 
-  test('always-seed endpoints return seed + tag SEED', () async {
-    final api = clientReturning({});
-    expect(await api.deepfakes(), isNotEmpty);
-    expect(await api.clusters(), isNotEmpty);
-    expect(await api.cost(), isNotEmpty);
-    expect(api.source.value, DataSource.seed);
+  test('deepfakes/clusters/cost: live success when backend has data', () async {
+    final api = clientReturning({
+      '/api/deepfakes': () => [
+            {'id': 'df1', 'brandId': 'b', 'url': 'u', 'verdict': 'phish', 'composite': 0.9, 'family': 'deepfake'}
+          ],
+      '/api/clusters': () => [
+            {'id': 1, 'members': ['df1'], 'risk': 0.8}
+          ],
+      '/api/cost': () => [
+            {'product': 'serp', 'usd': 4.2}
+          ],
+    });
+    expect((await api.deepfakes()).single.family, 'deepfake');
+    expect((await api.clusters()).single.risk, 0.8);
+    expect((await api.cost()).single.product, 'serp');
+    expect(api.source.value, DataSource.live);
+  });
+
+  test('deepfakes/clusters/cost: empty or error falls back to seed', () async {
+    // 404 everywhere -> seed.
+    final down = clientReturning({});
+    expect(await down.deepfakes(), isNotEmpty);
+    expect(await down.clusters(), isNotEmpty);
+    expect(await down.cost(), isNotEmpty);
+    expect(down.source.value, DataSource.seed);
+
+    // Reachable but empty payload -> also seed (treated as no-live-data).
+    final empty = clientReturning({
+      '/api/deepfakes': () => [],
+      '/api/clusters': () => [],
+      '/api/cost': () => [],
+    });
+    expect(await empty.deepfakes(), isNotEmpty);
+    expect(await empty.clusters(), isNotEmpty);
+    expect(await empty.cost(), isNotEmpty);
+    expect(empty.source.value, DataSource.seed);
   });
 }

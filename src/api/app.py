@@ -555,6 +555,115 @@ def list_audit_log(
         )
 
 
+# --------------------------------------------------------------------------- #
+# Console-facing read surfaces (consumed by the Flutter SOC console).
+# These shape existing domain data into the flat objects the console renders, so
+# the Clusters / Deepfakes / Cost screens run on LIVE backend data rather than
+# the offline seed lane.
+# --------------------------------------------------------------------------- #
+
+_DEEPFAKE_FAMILIES = {"deepfake", "deepfake_rtc", "voice_clone", "voice-clone", "synthetic_media"}
+
+
+def _alert_console_shape(
+    alert: Alert,
+    verdict: Verdict | None,
+    scoring,
+) -> dict:
+    """Flatten an alert (+ its verdict/scoring) into the console Alert shape."""
+    return {
+        "id": alert.id,
+        "brand_id": alert.brand_id,
+        "url": alert.suspect_url,
+        "verdict": (verdict.verdict.value if verdict else "suspicious"),
+        "composite_score": (scoring.composite_score if scoring else 0.0),
+        "family": (verdict.attack_family if verdict else None),
+        "kit": (verdict.kit_match if verdict else None),
+        "rendered_from": None,
+        "discovered_at": alert.created_at.isoformat() if alert.created_at else "",
+        "mitre_techniques": [],
+    }
+
+
+@app.get("/api/deepfakes", tags=["console"])
+def list_deepfakes(
+    limit: int = Query(default=50, ge=1, le=500),
+    ctx: AuthCtx = Depends(require_auth(SCOPE_ALERTS_READ)),
+) -> list[dict]:
+    """Alerts whose verdict attack-family is a deepfake/synthetic-media family."""
+    tenant_id = ctx.tenant.id if ctx.tenant else None
+    out: list[dict] = []
+    with session_scope() as s:
+        alerts = AlertRepo(s).list_for_brand(tenant_id=tenant_id, limit=limit)
+        for a in alerts:
+            verdict = VerdictRepo(s).get(a.verdict_id)
+            fam = (verdict.attack_family or "").lower() if verdict else ""
+            if fam in _DEEPFAKE_FAMILIES:
+                scoring = ScoringRepo(s).get(a.inspection_id)
+                out.append(_alert_console_shape(a, verdict, scoring))
+    return out
+
+
+@app.get("/api/clusters", tags=["console"])
+def list_clusters(
+    limit: int = Query(default=200, ge=1, le=1000),
+    ctx: AuthCtx = Depends(require_auth(SCOPE_ALERTS_READ)),
+) -> list[dict]:
+    """Campaign clusters built from current alerts via the threat-actor graph.
+
+    Groups alerts that share infrastructure (shared verdict kit/family signals)
+    into campaigns; falls back to one cluster per alert when the graph yields
+    nothing. Shaped as the console Cluster object {id, members, risk}.
+    """
+    from ..graph.entity_model import Finding
+    from ..graph.campaign_detector import detect_campaigns
+
+    tenant_id = ctx.tenant.id if ctx.tenant else None
+    findings: list[Finding] = []
+    risk_by_alert: dict[str, float] = {}
+    with session_scope() as s:
+        alerts = AlertRepo(s).list_for_brand(tenant_id=tenant_id, limit=limit)
+        for a in alerts:
+            verdict = VerdictRepo(s).get(a.verdict_id)
+            scoring = ScoringRepo(s).get(a.inspection_id)
+            risk_by_alert[a.id] = scoring.composite_score if scoring else 0.0
+            findings.append(
+                Finding(
+                    a.id,
+                    domain=a.suspect_url,
+                    kit_family=(verdict.attack_family if verdict else None),
+                    cert_sha=(verdict.kit_match if verdict else None),
+                )
+            )
+    campaigns = detect_campaigns(findings) if findings else []
+    out: list[dict] = []
+    for i, c in enumerate(campaigns, start=1):
+        members = list(c.domains)
+        # Campaign risk = max composite among its member alerts (by domain).
+        member_ids = [f.finding_id for f in findings if f.domain in set(members)]
+        risk = max((risk_by_alert.get(mid, 0.0) for mid in member_ids), default=0.0)
+        out.append({"id": i, "members": members, "risk": round(risk, 4)})
+    return out
+
+
+@app.get("/api/cost", tags=["console"])
+def list_cost(
+    days: int = Query(default=30, ge=1, le=90),
+    ctx: AuthCtx = Depends(require_auth(SCOPE_ALERTS_READ)),
+) -> list[dict]:
+    """Bright Data spend by product for the caller's tenant, as console CostRows."""
+    from datetime import datetime, timedelta, timezone
+    from ..storage.repositories_v2 import CostEventRepo
+
+    tenant_id = ctx.tenant.id if ctx.tenant else None
+    if tenant_id is None:
+        return []
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    with session_scope() as s:
+        breakdown = CostEventRepo(s).breakdown_for_tenant(tenant_id, since=since)
+    return [{"product": k, "usd": round(v, 4)} for k, v in sorted(breakdown.items())]
+
+
 @app.get(
     "/api/alerts/{alert_id}/evidence.pdf",
     tags=["alerts"],

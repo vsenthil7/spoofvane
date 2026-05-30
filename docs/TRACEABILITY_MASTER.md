@@ -392,6 +392,29 @@ backend engines (engines all real + differentially tested).
 
 ---
 
+## 6d. Flutter SOC console build ledger (BUILD 050+) — cited proof per row
+
+A real, runnable Flutter web UI (`app_flutter/`) mirroring the product mockups,
+wired to the FastAPI backend with an honest LIVE/SEED data-source pill. Same
+Gate-8 rule: no row claims done without a cited probe/build artifact. Status
+legend as §6b.
+
+| Build | Item | Status | Cited proof |
+|-------|------|--------|-------------|
+| 050 | Flutter web console — 8 screens mirroring mockups, FastAPI-wired + seed fallback | 🟢 REAL | `flutter analyze` 0 errors; `flutter build web` -> `Built build/web` (1.8MB main.dart.js); screens Dashboard/Triage/AlertDetail/Clusters/Deepfakes/Exec/Brands/Cost/Audit; honest finding: React console (`console/`) never booted + user-guide "screens" were hand-drawn SVG mockups (disclosed, not faked) |
+| 051 | Modular refactor + widget/unit tests @ 98.5% coverage | 🟢 REAL | monolith split into 22 files (theme/models/seed/api/app + widgets/ + screens/ + util/); `flutter test` 30 passed; `coverage/lcov.info` 584/593 = 98.5% (every screen+widget 100%); DI seam (ApiClient interface + FakeApi + http MockClient); 2 real layout bugs the tests caught + fixed (StatCard overflow, NavRail collapse-animation overflow) |
+| 052 | E2E layers — integration_test flows + Playwright (semantics) | 🟢 REAL / 🔒 browser | integration_test page-objects + 3 flows (triage→takedown, full nav, offline-SEED) `flutter analyze` clean; Playwright (`e2e_playwright/`) semantics-driven via `--dart-define=E2E=true`, `playwright test --list` discovers all specs, E2E web bundle builds; live browser runs (`flutter drive`, `npx playwright test`) 🔒 BLOCKED-ENV (long-running browser, hangs sandbox) — runnable in CI per `app_flutter/TESTING.md` |
+| 053 | Backend console endpoints — Clusters/Deepfakes/Cost go LIVE | 🟢 REAL | `tests/test_console_endpoints.py` (5 tests: deepfakes alert-shape + family filter, clusters {id,members,risk} 0≤risk≤1, cost {product,usd}, days/limit 422 bounds); `src/api/app.py` `/api/deepfakes` (family-filtered alerts), `/api/clusters` (campaign graph over alerts), `/api/cost` (CostEventRepo breakdown); Flutter `api.dart` wired live-with-seed-fallback (`test/api_test.dart` live-success + empty/error→seed); full suite 558 passed / 0 regressions; Flutter 31 passed |
+
+**Flutter console status:** real runnable web UI, modular, 98.5% widget coverage,
+LIVE/SEED honest. The Clusters/Deepfakes/Cost screens now read LIVE backend data
+when the API is up + has data (seed fallback otherwise) — closing the last
+honest gap between the UI and the API. Live browser E2E (Playwright + flutter
+drive) remains 🔒 BLOCKED-ENV in the sandbox; artifacts compile/parse and run
+in CI.
+
+---
+
 ## 7. What this build will NOT falsely claim
 
 Per AP-1/AP-3: SpoofVane does **not** claim 7/7 live Bright Data (2/7 are

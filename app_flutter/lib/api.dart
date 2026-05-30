@@ -124,22 +124,39 @@ class HttpApiClient implements ApiClient {
         seedAlerts.firstWhere((a) => a.id == id, orElse: () => seedAlerts.first),
       );
 
-  // Endpoints the backend doesn't expose yet -> always seed (tagged honestly).
+  // These endpoints now exist on the backend (/api/deepfakes, /api/clusters,
+  // /api/cost). They go LIVE when the backend is reachable + has data, and fall
+  // back to seed (tagged SEED) otherwise.
   @override
   Future<List<Alert>> deepfakes() => _withSeed<List<Alert>>(
-        () async => throw Exception('no /api/deepfakes endpoint'),
+        () async {
+          final rows =
+              _asList(await _getJson('/api/deepfakes')).map(Alert.fromJson).toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
         seedDeepfakes,
       );
 
   @override
   Future<List<Cluster>> clusters() => _withSeed<List<Cluster>>(
-        () async => throw Exception('no /api/clusters endpoint'),
+        () async {
+          final rows =
+              _asList(await _getJson('/api/clusters')).map(Cluster.fromJson).toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
         seedClusters,
       );
 
   @override
   Future<List<CostRow>> cost() => _withSeed<List<CostRow>>(
-        () async => throw Exception('no /api/cost endpoint'),
+        () async {
+          final rows =
+              _asList(await _getJson('/api/cost')).map(CostRow.fromJson).toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
         seedCost,
       );
 
