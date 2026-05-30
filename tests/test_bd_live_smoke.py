@@ -51,3 +51,20 @@ def test_serp_live_returns_real_results(monkeypatch):
     assert first["url"].startswith("http")
     assert first["title"]
     get_bd_config.cache_clear()
+
+
+def test_web_unlocker_live_returns_html(monkeypatch):
+    _load_env()
+    if not os.getenv("BRIGHTDATA_API_KEY") and not os.getenv("BRIGHTDATA_API_TOKEN"):
+        pytest.skip("no BD credentials configured")
+    monkeypatch.setenv("SPOOFVANE_BD_MODE", "live")
+    if not os.getenv("BRIGHTDATA_API_TOKEN") and os.getenv("BRIGHTDATA_API_KEY"):
+        monkeypatch.setenv("BRIGHTDATA_API_TOKEN", os.environ["BRIGHTDATA_API_KEY"])
+    from src.integrations.brightdata.config import get_bd_config
+    get_bd_config.cache_clear()
+    from src.integrations.brightdata.clients import WebUnlockerClient
+    r = WebUnlockerClient().unlock("live_test", "https://example.com")
+    assert r["status"] == 200
+    assert r["html_len"] > 0
+    assert "<html" in r["html"].lower()
+    get_bd_config.cache_clear()

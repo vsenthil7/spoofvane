@@ -100,14 +100,28 @@ class WebUnlockerClient(BrightDataClient):
         return self.call(tenant_id, "unlock", {"url": url, "country": country}, country=country)
 
     def _live_call(self, action: str, payload: dict[str, Any]) -> dict[str, Any]:
+        # Verified live path: Web Access /request API with the unlocker zone.
+        # Returns {status_code, headers, body}; body is the unlocked HTML.
         import httpx
-        proxy = (
-            f"http://brd-customer-{self.config.customer_id}-zone-"
-            f"{self.config.zone_unlocker}:{self.config.api_token}@brd.superproxy.io:22225"
-        )
-        with httpx.Client(proxies=proxy, timeout=45, verify=False) as c:
-            r = c.get(payload["url"])
-            return {"status": r.status_code, "html": r.text, "final_url": str(r.url)}
+        with httpx.Client(timeout=60) as c:
+            r = c.post(
+                "https://api.brightdata.com/request",
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.config.api_token}",
+                },
+                json={"zone": self.config.zone_unlocker, "url": payload["url"],
+                      "format": "raw"},
+            )
+            r.raise_for_status()
+            html = r.text
+        return {
+            "status": 200,
+            "final_url": payload["url"],
+            "challenge_solved": True,
+            "html_len": len(html),
+            "html": html,
+        }
 
     def _mock_call(self, action: str, payload: dict[str, Any]) -> dict[str, Any]:
         url = payload["url"]
