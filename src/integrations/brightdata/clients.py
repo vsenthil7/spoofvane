@@ -35,18 +35,44 @@ class SerpClient(BrightDataClient):
         )
 
     def _live_call(self, action: str, payload: dict[str, Any]) -> dict[str, Any]:
+        # Verified live path: Bright Data Web Access /request API with the SERP
+        # zone (brd_json=1). Returns {status_code, headers, body}; body holds the
+        # parsed Google JSON ({general, organic, ...}). We normalize to the same
+        # shape as _mock_call so callers are mode-agnostic.
+        import json as _json
         import httpx
         q = quote(payload["query"])
         eng = payload.get("engine", "google")
         url = f"https://www.{eng}.com/search?q={q}&brd_json=1"
-        proxy = (
-            f"http://brd-customer-{self.config.customer_id}-zone-"
-            f"{self.config.zone_serp}:{self.config.api_token}@brd.superproxy.io:22225"
-        )
-        with httpx.Client(proxies=proxy, timeout=30, verify=False) as c:
-            r = c.get(url)
+        with httpx.Client(timeout=60) as c:
+            r = c.post(
+                "https://api.brightdata.com/request",
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.config.api_token}",
+                },
+                json={"zone": self.config.zone_serp, "url": url, "format": "json"},
+            )
             r.raise_for_status()
-            return r.json()
+            outer = r.json()
+        body = outer.get("body", outer)
+        if isinstance(body, str):
+            try:
+                body = _json.loads(body)
+            except _json.JSONDecodeError:
+                body = {}
+        organic = body.get("organic", []) if isinstance(body, dict) else []
+        results = [
+            {
+                "rank": o.get("rank", i + 1),
+                "title": o.get("title", ""),
+                "url": o.get("link") or o.get("url", ""),
+                "source": f"serp_brd_{eng}",
+            }
+            for i, o in enumerate(organic)
+        ]
+        return {"engine": eng, "query": payload["query"],
+                "result_count": len(results), "results": results}
 
     def _mock_call(self, action: str, payload: dict[str, Any]) -> dict[str, Any]:
         q = payload["query"]
