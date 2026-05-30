@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'roles.dart';
 import 'screens/dashboard_screen.dart';
+import 'screens/live_scan_screen.dart';
 import 'screens/triage_screen.dart';
 import 'screens/clusters_screen.dart';
 import 'screens/deepfake_screen.dart';
@@ -76,6 +77,7 @@ PageMeta _planned({
 final List<PageMeta> kPages = <PageMeta>[
   PageMeta(id: 'P01', route: '/login', title: 'Sign in', minRole: Role.viewer, nav: false, icon: Icons.login_outlined, builder: (_) => const LoginScreen()),
   PageMeta(id: 'P02', route: '/', title: 'Dashboard', minRole: Role.viewer, nav: true, icon: Icons.dashboard_outlined, builder: (_) => const DashboardScreen()),
+  PageMeta(id: 'P26', route: '/scan', title: 'Live Scan', minRole: Role.analyst, nav: true, icon: Icons.radar_outlined, builder: (_) => const LiveScanScreen()),
   PageMeta(id: 'P03', route: '/brands', title: 'Brands', minRole: Role.analyst, nav: true, icon: Icons.business_outlined, builder: (_) => const BrandsScreen()),
   _planned(id: 'P04', route: '/brands/:id', title: 'Brand detail', minRole: Role.analyst, nav: false, icon: Icons.business_outlined),
   PageMeta(id: 'P05', route: '/triage', title: 'Triage Queue', minRole: Role.analyst, nav: true, icon: Icons.flag_outlined, builder: (_) => const TriageScreen()),

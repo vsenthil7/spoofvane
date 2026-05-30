@@ -132,6 +132,10 @@ app.include_router(ops_router)
 from .console_router import router as console_router  # noqa: E402
 app.include_router(console_router)
 
+# Live "Scan this URL now" endpoint (DEMO-1): BD live-fetch -> live LLM verdict.
+from .scan_router import router as scan_router  # noqa: E402
+app.include_router(scan_router)
+
 # Audit middleware — records every mutating request (hash-chained)
 from .audit_middleware import AuditMiddleware  # noqa: E402
 app.add_middleware(AuditMiddleware)

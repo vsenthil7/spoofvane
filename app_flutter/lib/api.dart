@@ -38,6 +38,7 @@ abstract class ApiClient {
   Future<List<UsageMetric>> usage();
   Future<List<Invoice>> invoices();
   Future<List<ApiKey>> apiKeys();
+  Future<ScanResult> scan(String url, String brand, {bool demo = false});
 }
 
 /// Global accessor. Production code reads `Api.instance`; tests assign a fake to
@@ -331,5 +332,75 @@ class HttpApiClient implements ApiClient {
           return rows;
         },
         seedApiKeys,
+      );
+
+  // Live "Scan this URL now" (DEMO-1): POST /api/scan runs a REAL Bright Data
+  // fetch + a REAL multi-LLM ensemble verdict. No seed fallback — on failure it
+  // returns a ScanResult with mode='error' carrying the real reason, so the demo
+  // never shows a fake "live" result. Longer timeout (real BD + LLM calls).
+  //
+  // When [demo] is true we return a canned sample result WITHOUT calling the
+  // backend, so a presenter can show the result shape with no spend / no
+  // network (clearly tagged demo via mode != 'live').
+  @override
+  Future<ScanResult> scan(String url, String brand, {bool demo = false}) async {
+    if (demo) return _demoScan(url, brand);
+    try {
+      final r = await _client
+          .post(
+            Uri.parse('$_base/api/scan'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'url': url, 'brand': brand}),
+          )
+          .timeout(const Duration(seconds: 60));
+      if (r.statusCode >= 200 && r.statusCode < 300) {
+        source.value = DataSource.live;
+        return ScanResult.fromJson(jsonDecode(r.body) as Map<String, dynamic>);
+      }
+      return ScanResult(
+          mode: 'error', url: url, stage: 'http',
+          error: 'Backend returned HTTP ${r.statusCode}');
+    } catch (e) {
+      return ScanResult(
+          mode: 'error', url: url, stage: 'network',
+          error: 'Could not reach the backend: $e');
+    }
+  }
+
+  // A canned multi-LLM ensemble result for offline/demo mode. mode='demo' so
+  // the UI clearly marks it as sample data, never as a live call.
+  ScanResult _demoScan(String url, String brand) => ScanResult(
+        mode: 'demo',
+        url: url,
+        host: Uri.tryParse(url.startsWith('http') ? url : 'https://$url')?.host ?? url,
+        brand: brand,
+        fetchProduct: 'Bright Data Web Unlocker',
+        fetchStatus: 200,
+        htmlLen: 18432,
+        fetchLatencyMs: 1180,
+        verdict: Verdict.phish,
+        confidence: 0.86,
+        severity: 'critical',
+        evidence: const [
+          'Login form posts credentials to an off-brand domain.',
+          'Brand logo is pixel-matched to the canonical asset.',
+          'Domain registered 3 days ago via a bulk registrar.',
+        ],
+        suggestedAction: 'takedown',
+        model: 'claude-sonnet-4-6',
+        members: [
+          ScanMember(name: 'Claude', model: 'claude-sonnet-4-6', verdict: Verdict.phish, confidence: 0.92, latencyMs: 4600, tokensIn: 1180, tokensOut: 240, costUsd: 0.0071),
+          ScanMember(name: 'GPT', model: 'gpt-4o', verdict: Verdict.phish, confidence: 0.88, latencyMs: 1700, tokensIn: 1180, tokensOut: 210, costUsd: 0.0050),
+          ScanMember(name: 'Gemini', model: 'gemini-1.5-pro', verdict: Verdict.suspicious, confidence: 0.71, latencyMs: 2100, tokensIn: 1180, tokensOut: 190, costUsd: 0.0024),
+        ],
+        modelsUsed: const ['Claude', 'GPT', 'Gemini'],
+        dissent: true,
+        agreementRatio: 0.667,
+        llmLatencyMs: 8400,
+        tokensIn: 3540,
+        tokensOut: 640,
+        llmCostUsd: 0.0145,
+        totalCostUsd: 0.016,
+        totalLatencyMs: 9580,
       );
 }

@@ -511,3 +511,147 @@ class ApiKey {
         active: (j['active'] ?? true) == true,
       );
 }
+
+/// One model's independent vote within the live ensemble (DEMO-1).
+class ScanMember {
+  final String name; // Claude | GPT | Gemini
+  final String model; // claude-sonnet-4-6, gpt-4o, ...
+  final Verdict verdict;
+  final double confidence;
+  final int latencyMs;
+  final int tokensIn;
+  final int tokensOut;
+  final double costUsd;
+
+  ScanMember({
+    required this.name,
+    required this.model,
+    required this.verdict,
+    required this.confidence,
+    required this.latencyMs,
+    required this.tokensIn,
+    required this.tokensOut,
+    required this.costUsd,
+  });
+
+  factory ScanMember.fromJson(Map<String, dynamic> j) => ScanMember(
+        name: (j['name'] ?? '').toString(),
+        model: (j['model'] ?? '').toString(),
+        verdict: verdictFrom(j['verdict']?.toString()),
+        confidence: ((j['confidence'] ?? 0) as num).toDouble(),
+        latencyMs: (j['latency_ms'] ?? 0) as int,
+        tokensIn: (j['tokens_in'] ?? 0) as int,
+        tokensOut: (j['tokens_out'] ?? 0) as int,
+        costUsd: ((j['cost_usd'] ?? 0) as num).toDouble(),
+      );
+}
+
+/// Result of the live "Scan this URL now" loop (POST /api/scan, DEMO-1).
+/// [mode] is 'live' on success or 'error' when the live path could not run
+/// (we never silently mock — the whole point is to prove the live loop).
+class ScanResult {
+  final String mode; // live | error
+  final String url;
+  final String host;
+  final String brand;
+  // Fetch leg (Bright Data).
+  final String fetchProduct;
+  final int fetchStatus;
+  final int htmlLen;
+  final int fetchLatencyMs;
+  // Merged ensemble verdict.
+  final Verdict verdict;
+  final double confidence;
+  final String severity;
+  final List<String> evidence;
+  final String suggestedAction;
+  final String model;
+  final int llmLatencyMs;
+  final int tokensIn;
+  final int tokensOut;
+  final double llmCostUsd;
+  final double totalCostUsd;
+  final int totalLatencyMs;
+  // Ensemble detail.
+  final List<ScanMember> members;
+  final List<String> modelsUsed;
+  final bool dissent;
+  final double agreementRatio;
+  final List<String> skipped; // "Gemini: suspended" style notes
+  // Error path.
+  final String stage; // fetch | verdict | ''
+  final String error;
+
+  ScanResult({
+    required this.mode,
+    required this.url,
+    this.host = '',
+    this.brand = '',
+    this.fetchProduct = '',
+    this.fetchStatus = 0,
+    this.htmlLen = 0,
+    this.fetchLatencyMs = 0,
+    this.verdict = Verdict.unknown,
+    this.confidence = 0,
+    this.severity = '',
+    this.evidence = const [],
+    this.suggestedAction = '',
+    this.model = '',
+    this.llmLatencyMs = 0,
+    this.tokensIn = 0,
+    this.tokensOut = 0,
+    this.llmCostUsd = 0,
+    this.totalCostUsd = 0,
+    this.totalLatencyMs = 0,
+    this.members = const [],
+    this.modelsUsed = const [],
+    this.dissent = false,
+    this.agreementRatio = 1,
+    this.skipped = const [],
+    this.stage = '',
+    this.error = '',
+  });
+
+  bool get isLive => mode == 'live';
+
+  factory ScanResult.fromJson(Map<String, dynamic> j) {
+    final fetch = (j['fetch'] ?? const {}) as Map<String, dynamic>;
+    final rawMembers = (j['members'] ?? const []) as List;
+    final rawSkipped = (j['skipped'] ?? const []) as List;
+    return ScanResult(
+      mode: (j['mode'] ?? 'error').toString(),
+      url: (j['url'] ?? '').toString(),
+      host: (j['host'] ?? '').toString(),
+      brand: (j['brand'] ?? '').toString(),
+      fetchProduct: (fetch['product'] ?? '').toString(),
+      fetchStatus: (fetch['status'] ?? 0) is int ? (fetch['status'] ?? 0) as int : 0,
+      htmlLen: (fetch['html_len'] ?? 0) as int,
+      fetchLatencyMs: (fetch['latency_ms'] ?? 0) as int,
+      verdict: verdictFrom(j['verdict']?.toString()),
+      confidence: ((j['confidence'] ?? 0) as num).toDouble(),
+      severity: (j['severity'] ?? '').toString(),
+      evidence: ((j['evidence'] ?? const []) as List).map((e) => e.toString()).toList(),
+      suggestedAction: (j['suggested_action'] ?? '').toString(),
+      model: (j['model'] ?? '').toString(),
+      llmLatencyMs: (j['llm_latency_ms'] ?? 0) as int,
+      tokensIn: (j['tokens_in'] ?? 0) as int,
+      tokensOut: (j['tokens_out'] ?? 0) as int,
+      llmCostUsd: ((j['llm_cost_usd'] ?? 0) as num).toDouble(),
+      totalCostUsd: ((j['total_cost_usd'] ?? 0) as num).toDouble(),
+      totalLatencyMs: (j['total_latency_ms'] ?? 0) as int,
+      members: rawMembers
+          .map((m) => ScanMember.fromJson(m as Map<String, dynamic>))
+          .toList(),
+      modelsUsed:
+          ((j['models_used'] ?? const []) as List).map((e) => e.toString()).toList(),
+      dissent: (j['dissent'] ?? false) == true,
+      agreementRatio: ((j['agreement_ratio'] ?? 1) as num).toDouble(),
+      skipped: rawSkipped.map((s) {
+        if (s is Map) return '${s['model']}: ${s['reason']}';
+        return s.toString();
+      }).toList(),
+      stage: (j['stage'] ?? '').toString(),
+      error: (j['error'] ?? '').toString(),
+    );
+  }
+}
