@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import '../app.dart';
 import '../roles.dart';
 import '../theme.dart';
+import 'register_screen.dart';
+import 'pricing_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -154,6 +156,40 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: _enter,
                     child: const Text('Sign in',
                         style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: TextButton(
+                          key: const Key('login-to-register'),
+                          style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                          onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (_) => const RegisterScreen())),
+                          child: const Text('Create account',
+                              style: TextStyle(color: SvColors.cyan, fontSize: 12)),
+                        ),
+                      ),
+                      const Text('·',
+                          style: TextStyle(color: SvColors.faint, fontSize: 12)),
+                      Flexible(
+                        child: TextButton(
+                          key: const Key('login-to-pricing'),
+                          style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                          onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (_) => const PricingScreen())),
+                          child: const Text('View pricing',
+                              style: TextStyle(color: SvColors.cyan, fontSize: 12)),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -388,3 +388,126 @@ class DemoHealthRow {
         detail: (j['detail'] ?? '').toString(),
       );
 }
+
+/// A public pricing plan (Pricing page). [priceMonthly] < 0 means "custom".
+class PricingPlan {
+  final String id;
+  final String name;
+  final double priceMonthly; // USD/mo billed annually; <0 = custom/contact
+  final double priceMonthlyMonthly; // USD/mo billed monthly; <0 = custom
+  final String tagline;
+  final List<String> features;
+  final bool highlighted; // the "most popular" plan
+  final String cta;
+
+  PricingPlan({
+    required this.id,
+    required this.name,
+    required this.priceMonthly,
+    required this.priceMonthlyMonthly,
+    required this.tagline,
+    required this.features,
+    this.highlighted = false,
+    this.cta = 'Start free trial',
+  });
+
+  bool get isCustom => priceMonthly < 0;
+
+  factory PricingPlan.fromJson(Map<String, dynamic> j) => PricingPlan(
+        id: (j['id'] ?? '').toString(),
+        name: (j['name'] ?? '').toString(),
+        priceMonthly: ((j['priceMonthly'] ?? j['price_monthly'] ?? -1) as num).toDouble(),
+        priceMonthlyMonthly:
+            ((j['priceMonthlyMonthly'] ?? j['price_monthly_monthly'] ?? -1) as num).toDouble(),
+        tagline: (j['tagline'] ?? '').toString(),
+        features:
+            ((j['features'] ?? const []) as List).map((e) => e.toString()).toList(),
+        highlighted: (j['highlighted'] ?? false) == true,
+        cta: (j['cta'] ?? 'Start free trial').toString(),
+      );
+}
+
+/// One metered usage line on the Usage page (this billing period).
+class UsageMetric {
+  final String name; // e.g. Scans, Takedowns, Brands, Bright Data spend
+  final double used;
+  final double included; // plan allowance; <0 = unlimited
+  final String unit; // '', 'USD', etc
+
+  UsageMetric({
+    required this.name,
+    required this.used,
+    required this.included,
+    this.unit = '',
+  });
+
+  bool get unlimited => included < 0;
+  double get ratio => unlimited || included == 0 ? 0 : (used / included).clamp(0, 1);
+  bool get overage => !unlimited && used > included;
+
+  factory UsageMetric.fromJson(Map<String, dynamic> j) => UsageMetric(
+        name: (j['name'] ?? '').toString(),
+        used: ((j['used'] ?? 0) as num).toDouble(),
+        included: ((j['included'] ?? -1) as num).toDouble(),
+        unit: (j['unit'] ?? '').toString(),
+      );
+}
+
+/// A billing invoice (Billing page).
+class Invoice {
+  final String id; // e.g. INV-2026-0042
+  final String date;
+  final double amountUsd;
+  final String status; // paid | due | failed
+
+  Invoice({
+    required this.id,
+    required this.date,
+    required this.amountUsd,
+    required this.status,
+  });
+
+  factory Invoice.fromJson(Map<String, dynamic> j) => Invoice(
+        id: (j['id'] ?? '').toString(),
+        date: (j['date'] ?? '').toString(),
+        amountUsd: ((j['amountUsd'] ?? j['amount_usd'] ?? 0) as num).toDouble(),
+        status: (j['status'] ?? '').toString(),
+      );
+}
+
+/// An API key (market-standard API keys screen). The secret is only the masked
+/// prefix + last4 once created; the full secret is shown once at creation.
+class ApiKey {
+  final String id;
+  final String name; // human label, e.g. "CI pipeline"
+  final String prefix; // e.g. sv_live_8f2c
+  final String last4;
+  final String scope; // read | read_write | admin
+  final String created;
+  final String lastUsed; // '' = never
+  final bool active;
+
+  ApiKey({
+    required this.id,
+    required this.name,
+    required this.prefix,
+    required this.last4,
+    required this.scope,
+    required this.created,
+    required this.lastUsed,
+    this.active = true,
+  });
+
+  String get masked => '$prefix' '${'•' * 8}' '$last4';
+
+  factory ApiKey.fromJson(Map<String, dynamic> j) => ApiKey(
+        id: (j['id'] ?? '').toString(),
+        name: (j['name'] ?? '').toString(),
+        prefix: (j['prefix'] ?? '').toString(),
+        last4: (j['last4'] ?? '').toString(),
+        scope: (j['scope'] ?? 'read').toString(),
+        created: (j['created'] ?? '').toString(),
+        lastUsed: (j['lastUsed'] ?? j['last_used'] ?? '').toString(),
+        active: (j['active'] ?? true) == true,
+      );
+}

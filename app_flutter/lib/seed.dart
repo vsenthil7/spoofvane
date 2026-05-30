@@ -89,5 +89,99 @@ final seedDemoHealth = <DemoHealthRow>[
   DemoHealthRow(check: 'Clusters detected', ok: true, detail: '78 campaigns'),
   DemoHealthRow(check: 'Cost events', ok: true, detail: '6 Bright Data products'),
   DemoHealthRow(check: 'Deepfake-family alerts', ok: false, detail: '0 — UI falls back to SEED (honest)'),
-  DemoHealthRow(check: '21-page coverage', ok: true, detail: '15/21 screens real, 6 placeholders'),
+  DemoHealthRow(check: '21-page coverage', ok: true, detail: '21/21 screens real'),
+];
+
+// Pricing tiers set from market norms for brand-protection / anti-phishing SaaS
+// (positioning vs ZeroFox, Bolster, Red Sift OnDMARC, Doppel, PhishLabs). Annual
+// prices shown; monthly billing is ~20% higher per month.
+final seedPricing = <PricingPlan>[
+  PricingPlan(
+    id: 'free',
+    name: 'Free',
+    priceMonthly: 0,
+    priceMonthlyMonthly: 0,
+    tagline: 'Protect a single brand and try the platform.',
+    cta: 'Get started',
+    features: [
+      '1 protected brand',
+      '100 scans / month',
+      'Phishing + lookalike detection',
+      'Community support',
+      '7-day evidence retention',
+    ],
+  ),
+  PricingPlan(
+    id: 'pro',
+    name: 'Pro',
+    priceMonthly: 499,
+    priceMonthlyMonthly: 599,
+    tagline: 'For growing teams defending a handful of brands.',
+    cta: 'Start free trial',
+    features: [
+      '3 protected brands',
+      '5,000 scans / month',
+      'Automated takedowns',
+      'Campaign clustering',
+      'Email support (next business day)',
+      '90-day evidence retention',
+    ],
+  ),
+  PricingPlan(
+    id: 'business',
+    name: 'Business',
+    priceMonthly: 1999,
+    priceMonthlyMonthly: 2399,
+    tagline: 'Full-surface defense with deepfake & exec protection.',
+    highlighted: true,
+    cta: 'Start free trial',
+    features: [
+      '15 protected brands',
+      '50,000 scans / month',
+      'Deepfake & executive protection',
+      'SSO (OIDC) + RBAC',
+      'Multi-region cloaking detection',
+      'Priority support (4h SLA)',
+      '1-year evidence retention',
+    ],
+  ),
+  PricingPlan(
+    id: 'enterprise',
+    name: 'Enterprise',
+    priceMonthly: -1,
+    priceMonthlyMonthly: -1,
+    tagline: 'Compliance-grade defense for regulated organisations.',
+    cta: 'Contact sales',
+    features: [
+      'Unlimited brands & scans',
+      'SAML + SCIM provisioning',
+      'SOC 2 / ISO 27001 / DORA / NIS2 evidence',
+      'Data residency choice',
+      'Dedicated CSM + 1h SLA',
+      'Custom agent governance & kill-switch',
+      'Unlimited evidence retention',
+    ],
+  ),
+];
+
+final seedUsage = <UsageMetric>[
+  UsageMetric(name: 'Scans', used: 38420, included: 50000),
+  UsageMetric(name: 'Takedowns', used: 41, included: -1),
+  UsageMetric(name: 'Protected brands', used: 6, included: 15),
+  UsageMetric(name: 'Deepfake checks', used: 1200, included: 5000),
+  UsageMetric(name: 'Bright Data spend', used: 168.94, included: 500, unit: 'USD'),
+  UsageMetric(name: 'API calls', used: 92140, included: 100000),
+];
+
+final seedInvoices = <Invoice>[
+  Invoice(id: 'INV-2026-0042', date: '2026-05-01T00:00:00Z', amountUsd: 1999.00, status: 'paid'),
+  Invoice(id: 'INV-2026-0031', date: '2026-04-01T00:00:00Z', amountUsd: 1999.00, status: 'paid'),
+  Invoice(id: 'INV-2026-0020', date: '2026-03-01T00:00:00Z', amountUsd: 1999.00, status: 'paid'),
+  Invoice(id: 'INV-2026-0009', date: '2026-02-01T00:00:00Z', amountUsd: 1999.00, status: 'paid'),
+];
+
+final seedApiKeys = <ApiKey>[
+  ApiKey(id: 'key_ci', name: 'CI pipeline', prefix: 'sv_live_8f2c', last4: 'a91b', scope: 'read_write', created: '2026-03-12T10:00:00Z', lastUsed: '2026-05-30T07:55:00Z'),
+  ApiKey(id: 'key_siem', name: 'SIEM export', prefix: 'sv_live_4b7e', last4: '32cf', scope: 'read', created: '2026-04-02T14:20:00Z', lastUsed: '2026-05-29T23:10:00Z'),
+  ApiKey(id: 'key_old', name: 'Legacy webhook', prefix: 'sv_live_1a0d', last4: '77ee', scope: 'read', created: '2025-11-20T09:00:00Z', lastUsed: '', active: false),
 ];

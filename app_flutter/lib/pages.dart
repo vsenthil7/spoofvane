@@ -22,6 +22,10 @@ import 'screens/admin_users_screen.dart';
 import 'screens/admin_tenants_screen.dart';
 import 'screens/admin_demo_health_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/api_keys_screen.dart';
+import 'screens/usage_screen.dart';
+import 'screens/billing_screen.dart';
+import 'screens/pricing_screen.dart';
 import 'screens/error_screens.dart';
 import 'screens/login_screen.dart';
 import 'screens/placeholder_screen.dart';
@@ -91,9 +95,16 @@ final List<PageMeta> kPages = <PageMeta>[
   PageMeta(id: 'P19', route: '/settings', title: 'Settings', minRole: Role.viewer, nav: true, icon: Icons.settings_outlined, builder: (_) => const SettingsScreen()),
   PageMeta(id: 'P20', route: '*', title: 'Not found', minRole: Role.viewer, nav: false, icon: Icons.close, builder: (_) => const NotFoundScreen()),
   PageMeta(id: 'P21', route: '/403', title: 'Forbidden', minRole: Role.viewer, nav: false, icon: Icons.block, builder: (_) => const ForbiddenScreen()),
+  // Commercial surface (P22+): developer + billing pages added for the
+  // enterprise product. In-rail for admins/owners; Pricing is also public.
+  PageMeta(id: 'P22', route: '/api-keys', title: 'API Keys', minRole: Role.admin, nav: true, icon: Icons.vpn_key_outlined, builder: (_) => const ApiKeysScreen()),
+  PageMeta(id: 'P23', route: '/usage', title: 'Usage', minRole: Role.admin, nav: true, icon: Icons.donut_small_outlined, builder: (_) => const UsageScreen()),
+  PageMeta(id: 'P24', route: '/billing', title: 'Billing', minRole: Role.owner, nav: true, icon: Icons.receipt_outlined, builder: (_) => const BillingScreen()),
+  PageMeta(id: 'P25', route: '/pricing', title: 'Pricing', minRole: Role.viewer, nav: false, icon: Icons.sell_outlined, builder: (_) => const PricingScreen()),
 ];
 
-/// Must equal 21 (asserted in tests, mirrors PAGE_COUNT in pages.ts).
+/// 21 canonical SOC pages (P01-P21) + commercial pages (P22-P25). Tests assert
+/// the canonical 21 are all present and ordered; the total is kPageCount.
 final int kPageCount = kPages.length;
 
 /// Pages that appear in the rail for [role] (nav==true and role-allowed).

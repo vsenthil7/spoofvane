@@ -62,4 +62,16 @@ class FakeApi implements ApiClient {
 
   @override
   Future<List<DemoHealthRow>> demoHealth() async => seedDemoHealth;
+
+  @override
+  Future<List<PricingPlan>> pricing() async => seedPricing;
+
+  @override
+  Future<List<UsageMetric>> usage() async => seedUsage;
+
+  @override
+  Future<List<Invoice>> invoices() async => seedInvoices;
+
+  @override
+  Future<List<ApiKey>> apiKeys() async => seedApiKeys;
 }

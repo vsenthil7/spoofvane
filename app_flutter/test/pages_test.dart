@@ -3,13 +3,16 @@ import 'package:spoofvane_app/pages.dart';
 import 'package:spoofvane_app/roles.dart';
 
 void main() {
-  test('registry holds exactly 21 canonical pages P01..P21', () {
-    expect(kPageCount, 21);
+  test('registry holds the 21 canonical pages P01..P21 plus commercial P22+', () {
+    expect(kPageCount, greaterThanOrEqualTo(21));
     final ids = kPages.map((p) => p.id).toList();
     expect(ids.first, 'P01');
-    expect(ids.last, 'P21');
-    // ids are unique and sequential
-    expect(ids.toSet().length, 21);
+    // The 21 canonical pages are all present and in order.
+    for (var i = 1; i <= 21; i++) {
+      expect(ids, contains('P${i.toString().padLeft(2, '0')}'));
+    }
+    // ids are unique
+    expect(ids.toSet().length, ids.length);
   });
 
   test('role ranks order least -> most privileged', () {

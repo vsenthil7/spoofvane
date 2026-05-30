@@ -34,6 +34,10 @@ abstract class ApiClient {
   Future<List<AdminUser>> adminUsers();
   Future<List<Tenant>> tenants();
   Future<List<DemoHealthRow>> demoHealth();
+  Future<List<PricingPlan>> pricing();
+  Future<List<UsageMetric>> usage();
+  Future<List<Invoice>> invoices();
+  Future<List<ApiKey>> apiKeys();
 }
 
 /// Global accessor. Production code reads `Api.instance`; tests assign a fake to
@@ -260,5 +264,54 @@ class HttpApiClient implements ApiClient {
           return rows;
         },
         seedDemoHealth,
+      );
+
+  // Commercial endpoints not wired to Flutter yet -> honest SEED (tagged).
+  @override
+  Future<List<PricingPlan>> pricing() => _withSeed<List<PricingPlan>>(
+        () async {
+          final rows = _asList(await _getJson('/api/pricing'))
+              .map(PricingPlan.fromJson)
+              .toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
+        seedPricing,
+      );
+
+  @override
+  Future<List<UsageMetric>> usage() => _withSeed<List<UsageMetric>>(
+        () async {
+          final rows = _asList(await _getJson('/api/usage'))
+              .map(UsageMetric.fromJson)
+              .toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
+        seedUsage,
+      );
+
+  @override
+  Future<List<Invoice>> invoices() => _withSeed<List<Invoice>>(
+        () async {
+          final rows = _asList(await _getJson('/api/billing/invoices'))
+              .map(Invoice.fromJson)
+              .toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
+        seedInvoices,
+      );
+
+  @override
+  Future<List<ApiKey>> apiKeys() => _withSeed<List<ApiKey>>(
+        () async {
+          final rows = _asList(await _getJson('/api/api-keys'))
+              .map(ApiKey.fromJson)
+              .toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
+        seedApiKeys,
       );
 }
