@@ -353,6 +353,7 @@ Same Gate-8 rule: no row claims done without a cited probe. Status legend as §6
 | 033 | v07 W5 — credential-leak / stealer-log | 🟢 REAL | `tests/depth/test_credleak.py` (7 tests: validated vs not, validation-never-locks, admin-gated lockout, NHI redacted, live BLOCKED-ENV) |
 | 034 | v07 W7 — external attack-surface mgmt (EASM) | 🟢 REAL | `tests/depth/test_easm.py` (6 tests: exposed vs hardened score, two-domain inventories, shadow-IT flag, subsidiary pivot, live BLOCKED-ENV) |
 | 035 | v07 W12 — threat-actor & campaign graph (keystone) | 🟢 REAL | `tests/depth/test_graph.py` (6 tests incl. acceptance gate 4: shared cert+kit => one campaign, unrelated separate, cert pivot) |
+| 036 | v07 W6 — takedown orchestration network | 🟢 REAL | `tests/depth/test_takedown_orchestration.py` (7 tests: domain->registrar+host+safebrowsing routing, social/app distinct, auto-vs-legal escalation, SLA clock + illegal-transition guard) |
 
 **Bright Data live status (verified 2026-05-30):** 4 zones created & Active
 (`spoofvane_serp`/`_unlocker`/`_sb`/`_res`). **2 of 7 products LIVE-VERIFIED**
@@ -360,9 +361,10 @@ Same Gate-8 rule: no row claims done without a cited probe. Status legend as §6
 🔒 BLOCKED-ENV pending wiring/verification (replay covers all credential-free).
 KYC not yet verified + trial account → live usage may be capped.
 
-**v07 width progress: 8 of 14 surfaces (W1,W2,W3,W11,W4,W5,W7,W12).** Phase 1
-(fast wins) + Phase 2 (intelligence) complete. Remaining: W6 takedown, W8
-RTP+decoy, W9 exec, W10 deepfake-RTC, W13 channels, W14 compliance + D1–D8 depth.
+**v07 width progress: 9 of 14 surfaces (W1,W2,W3,W11,W4,W5,W7,W12,W6).** Phase 1
+(fast wins) + Phase 2 (intelligence) complete; Phase 3 (differentiators) started
+with W6. Remaining: W8 RTP+decoy, W9 exec, W10 deepfake-RTC, W13 channels,
+W14 compliance + D1–D8 depth.
 
 ---
 
