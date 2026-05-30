@@ -358,6 +358,7 @@ Same Gate-8 rule: no row claims done without a cited probe. Status legend as §6
 | 038 | v07 W10 — deepfake real-time comms guard | 🟢 REAL / 🔒 onnx | `tests/depth/test_deepfake_rtc.py` (5 tests: synthetic vs genuine distinct prob, liveness live-vs-replay, C2PA trusted/tampered/absent); ONNX weights + live RTC 🔒 BLOCKED-ENV |
 | 039 | v07 W9 — executive/VIP protection suite | 🟢 REAL | `tests/depth/test_execprotect.py` (6 tests: VIP registry tiers, two-execs-distinct-dossiers, doxxing input-dependent, physical threats ranked+synthetic, physical live BLOCKED-ENV, dossier determinism); builds on v06 src/osint/ |
 | 040 | v07 W13 — expanded delivery channels | 🟢 REAL | `tests/depth/test_delivery_channels.py` (8 tests: Splunk HEC urgency, Falcon url->domain+severity, Slack/Teams severity colors, Jira priority, Okta report-only, two-findings-distinct, STIX deterministic+campaign-link, empty bundle); +Splunk/Falcon/Slack/Teams/Jira/Okta/STIX formatters in src/delivery/channels/ |
+| 041 | v07 W14 — compliance & governance | 🟢 REAL | `tests/depth/test_compliance.py` (8 tests: EU AI Act tiers prohibited/high/limited/minimal, NIST GenAI coverage, evidence hash-chain verify + tamper/reorder breaks, GDPR-72h vs DORA-4h deadlines + notifiability, DPA lawful-basis + minimization); src/compliance/ |
 
 **Bright Data live status (verified 2026-05-30):** 4 zones created & Active
 (`spoofvane_serp`/`_unlocker`/`_sb`/`_res`). **2 of 7 products LIVE-VERIFIED**
@@ -365,8 +366,11 @@ Same Gate-8 rule: no row claims done without a cited probe. Status legend as §6
 🔒 BLOCKED-ENV pending wiring/verification (replay covers all credential-free).
 KYC not yet verified + trial account → live usage may be capped.
 
-**v07 width progress: 13 of 14 surfaces (W1,W2,W3,W11,W4,W5,W7,W12,W6,W8,W10,W9,W13).**
-Remaining: W14 compliance + D1–D8 depth.
+**v07 width progress: 14 of 14 surfaces COMPLETE**
+(W1,W2,W3,W11,W4,W5,W7,W12,W6,W8,W10,W9,W13,W14). All four phases of v07 width
+done. Remaining v07 work: Phase 4 depth D1–D8 (wire new signals into composite
+scoring, per-family calibrators, MITRE TTP, multi-region cloaking, unified
+freshness/dedup, auto-report) + deferred console-page/route/seed/RBAC layering.
 
 ---
 
