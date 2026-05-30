@@ -36,7 +36,7 @@ class NavRail extends StatelessWidget {
       duration: const Duration(milliseconds: 160),
       width: collapsed ? kRailCollapsed : kRailExpanded,
       clipBehavior: Clip.hardEdge,
-      decoration: const BoxDecoration(color: SvColors.panel),
+      decoration: const BoxDecoration(color: SvColors.sidebar),
       // Pin the inner content to the EXPANDED width and align left, so the row
       // children always lay out at a stable width and are simply clipped as the
       // outer width animates — no RenderFlex overflow at intermediate widths.
@@ -96,15 +96,15 @@ class NavRail extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: sel ? SvColors.cyan.withOpacity(0.13) : null,
+            color: sel ? SvColors.blue.withOpacity(0.16) : null,
             borderRadius: BorderRadius.circular(6),
-            border: sel ? Border.all(color: SvColors.cyan.withOpacity(0.4)) : null,
+            border: sel ? Border.all(color: SvColors.blue.withOpacity(0.45)) : null,
           ),
           child: Row(
             mainAxisAlignment:
                 collapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
             children: [
-              Icon(n.icon, size: 18, color: sel ? SvColors.cyan : SvColors.faint),
+              Icon(n.icon, size: 18, color: sel ? SvColors.blue : SvColors.faint),
               if (!collapsed) ...[
                 const SizedBox(width: 10),
                 Expanded(
