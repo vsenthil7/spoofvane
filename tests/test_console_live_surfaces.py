@@ -114,3 +114,27 @@ class TestDemoHealth:
         # The 21-page coverage check is always present and true.
         cov = next((row for row in body if "coverage" in row["check"]), None)
         assert cov is not None and cov["ok"] is True
+
+
+class TestReview:
+    def test_review_returns_200_list(self, client):
+        r = client.get("/api/review")
+        assert r.status_code == 200
+        body = r.json()
+        assert isinstance(body, list)
+        # When present, every item carries the console ReviewItem shape.
+        for it in body:
+            assert {"id", "action", "target_url", "verdict", "raised_by", "ts"} <= set(it)
+
+
+class TestApiKeys:
+    def test_api_keys_returns_200_list_without_secrets(self, client):
+        r = client.get("/api/api-keys")
+        assert r.status_code == 200
+        body = r.json()
+        assert isinstance(body, list)
+        for k in body:
+            assert {"id", "name", "prefix", "last4", "scope", "active"} <= set(k)
+            # Never expose secret material.
+            assert "secret" not in k and "secret_hash" not in k
+            assert k["scope"] in {"read", "read_write", "admin"}

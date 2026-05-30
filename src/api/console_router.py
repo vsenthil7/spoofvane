@@ -207,3 +207,82 @@ def demo_health() -> list[dict]:
         {"check": "Cost events", "ok": cost_n > 0, "detail": f"{cost_n} BD products"},
         {"check": "21-page coverage", "ok": True, "detail": "21/21 screens real"},
     ]
+
+
+# --------------------------------------------------------------------------- #
+# Review queue — real HITL items when present (else empty -> client SEED)
+# --------------------------------------------------------------------------- #
+
+
+@router.get("/review")
+def review_queue(limit: int = Query(default=100, ge=1, le=500)) -> list[dict]:
+    """Pending HITL review items shaped for the console ReviewItem object.
+
+    Reads the real review queue (src.common.review.list_queue) for the most
+    recent account. Returns [] when there are no pending items, so the console
+    transparently falls back to its SEED lane rather than showing fabricated
+    rows. Goes LIVE automatically once the pipeline enqueues review items.
+    """
+    from sqlalchemy import select
+    from ..common import review
+    from ..storage.identity_models import AccountRow
+
+    out: list[dict] = []
+    with session_scope() as s:
+        account = s.scalars(select(AccountRow).limit(1)).first()
+        if account is None:
+            return []
+        items = review.list_queue(s, account_id=account.id, state="pending", limit=limit)
+    for it in items:
+        out.append({
+            "id": it["id"],
+            "action": "takedown.submit",
+            "target_url": it.get("suspect_url", ""),
+            "verdict": it.get("ai_verdict", "suspicious"),
+            "raised_by": it.get("decided_by") or "pipeline",
+            "ts": it.get("created_at", ""),
+        })
+    return out
+
+
+# --------------------------------------------------------------------------- #
+# API keys — real ApiKeyRepo rows when present (else empty -> client SEED)
+# --------------------------------------------------------------------------- #
+
+
+@router.get("/api-keys")
+def api_keys() -> list[dict]:
+    """API keys for the most-recent tenant, shaped for the console ApiKey object.
+
+    Reads the real ApiKeyRepo. Only ever exposes the masked prefix/last4 + scope
+    + timestamps (never a secret). Returns [] when the tenant has no keys, so
+    the console falls back to SEED. Goes LIVE once keys are issued via the
+    auth-gated admin key-issuance endpoint.
+    """
+    from ..storage.repositories_v2 import ApiKeyRepo, TenantRepo
+
+    out: list[dict] = []
+    with session_scope() as s:
+        tenants = TenantRepo(s).list_all()
+        if not tenants:
+            return []
+        keys = ApiKeyRepo(s).list_for_tenant(tenants[-1].id)
+        for k in keys:
+            # The stored secret_hash is never exposed; we surface a stable
+            # masked prefix derived from the key id (no secret material).
+            prefix = f"sv_live_{k.id[:4]}"
+            last4 = k.id[-4:] if len(k.id) >= 4 else k.id
+            scope = "admin" if any(sc == "admin:*" for sc in k.scopes) else (
+                "read_write" if any("write" in sc or "triage" in sc for sc in k.scopes)
+                else "read")
+            out.append({
+                "id": k.id,
+                "name": k.name,
+                "prefix": prefix,
+                "last4": last4,
+                "scope": scope,
+                "created": k.created_at.isoformat() if k.created_at else "",
+                "last_used": k.last_used_at.isoformat() if k.last_used_at else "",
+                "active": k.is_active,
+            })
+    return out

@@ -178,7 +178,8 @@ class HttpApiClient implements ApiClient {
         seedAudit,
       );
 
-  // No Flutter-wired backend review endpoint yet -> honest SEED (tagged).
+  // Review is LIVE-when-present: /api/review serves real pending HITL items
+  // (build 066); empty -> honest SEED fallback.
   @override
   Future<List<ReviewItem>> reviewQueue() => _withSeed<List<ReviewItem>>(
         () async {
@@ -311,6 +312,8 @@ class HttpApiClient implements ApiClient {
         seedInvoices,
       );
 
+  // API keys is LIVE-when-present: /api/api-keys serves real ApiKeyRepo rows
+  // (masked, never secrets; build 066); empty -> honest SEED fallback.
   @override
   Future<List<ApiKey>> apiKeys() => _withSeed<List<ApiKey>>(
         () async {
