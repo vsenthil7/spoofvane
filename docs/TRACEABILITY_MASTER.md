@@ -336,9 +336,38 @@ The unambiguous BD figure is **7 client classes / 23 methods** (the earlier
 
 ---
 
+## 6c. v07 width/intelligence build ledger (BUILD 026+) — cited proof per row
+
+v07 "make the platform huge" — width surfaces + the BD live-lane milestone.
+Same Gate-8 rule: no row claims done without a cited probe. Status legend as §6b.
+
+| Build | Item | Status | Cited proof |
+|-------|------|--------|-------------|
+| 026 | v07 W1 — social-impersonation engine (10 platforms) | 🟢 REAL | `tests/depth/test_social.py` (6 tests: near-clone vs unrelated avatar, homoglyph handle, two-brand distinct, live BLOCKED-ENV) |
+| 027 | v07 W2 — app-store fraud (7 stores) | 🟢 REAL | `tests/depth/test_appstore.py` (6 tests: clone vs benign risk, cross-store correlation, dev reputation) |
+| 028 | v07 W3 — marketplace/counterfeit (6 marketplaces) | 🟢 REAL | `tests/depth/test_marketplace.py` (6 tests: counterfeit vs authorized language, price anomaly, distinct verdict) |
+| 029 | v07 W11 — email auth DMARC/SPF/DKIM/BIMI | 🟢 REAL | `tests/depth/test_email_auth.py` (6 tests: spoof fails/legit passes, DMARC aggregate, BIMI valid/invalid, lookalike) |
+| 030 | BD SERP live lane | 🟢 REAL (LIVE-VERIFIED) | `tests/test_bd_live_smoke.py::test_serp_live_returns_real_results` — HTTP 200, 10 real Google organic results (opt-in `SPOOFVANE_BD_LIVE_TEST=1`) |
+| 031 | BD Web Unlocker live lane | 🟢 REAL (LIVE-VERIFIED) | `tests/test_bd_live_smoke.py::test_web_unlocker_live_returns_html` — real unlocked HTML |
+| 032 | v07 W4 — dark-web intelligence (5 sources) | 🟢 REAL | `tests/depth/test_darkweb.py` (6 tests: fresh vs stale risk, Constella dedup, actor profiles, SYNTHETIC-only safety, live BLOCKED-ENV) |
+| 033 | v07 W5 — credential-leak / stealer-log | 🟢 REAL | `tests/depth/test_credleak.py` (7 tests: validated vs not, validation-never-locks, admin-gated lockout, NHI redacted, live BLOCKED-ENV) |
+
+**Bright Data live status (verified 2026-05-30):** 4 zones created & Active
+(`spoofvane_serp`/`_unlocker`/`_sb`/`_res`). **2 of 7 products LIVE-VERIFIED**
+(SERP, Web Unlocker) via the `/request` API; the other 5 live lanes remain
+🔒 BLOCKED-ENV pending wiring/verification (replay covers all credential-free).
+KYC not yet verified + trial account → live usage may be capped.
+
+**v07 width progress: 6 of 14 surfaces (W1,W2,W3,W11,W4,W5).** Remaining:
+W7 EASM, W12 graph, W6 takedown, W8 RTP+decoy, W9 exec, W10 deepfake-RTC,
+W13 channels, W14 compliance + D1–D8 depth.
+
+---
+
 ## 7. What this build will NOT falsely claim
 
-Per AP-1/AP-3: SpoofVane v0.5 does **not** claim 7/7 live Bright Data, 100/100
+Per AP-1/AP-3: SpoofVane does **not** claim 7/7 live Bright Data (2/7 are
+LIVE-VERIFIED — SERP + Web Unlocker; the rest are replay + BLOCKED-ENV), 100/100
 coverage, 87/87 real modules, 21/21 pixel-parity pages, SLSA-L3, or a verified
 demo recording. Those remain PLANNED or BLOCKED-ENV. The build claims exactly
 what its tests and runtime artefacts prove, and this document is the ledger of
