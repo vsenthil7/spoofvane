@@ -21,6 +21,8 @@ import 'screens/admin_agents_screen.dart';
 import 'screens/admin_users_screen.dart';
 import 'screens/admin_tenants_screen.dart';
 import 'screens/admin_demo_health_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/error_screens.dart';
 import 'screens/login_screen.dart';
 import 'screens/placeholder_screen.dart';
 
@@ -86,9 +88,9 @@ final List<PageMeta> kPages = <PageMeta>[
   PageMeta(id: 'P16', route: '/admin/users', title: 'Users', minRole: Role.admin, nav: true, icon: Icons.group_outlined, builder: (_) => const AdminUsersScreen()),
   PageMeta(id: 'P17', route: '/admin/tenants', title: 'Tenants', minRole: Role.owner, nav: true, icon: Icons.apartment_outlined, builder: (_) => const AdminTenantsScreen()),
   PageMeta(id: 'P18', route: '/admin/demo-health', title: 'Demo health', minRole: Role.admin, nav: true, icon: Icons.favorite_outline, builder: (_) => const AdminDemoHealthScreen()),
-  _planned(id: 'P19', route: '/settings', title: 'Settings', minRole: Role.viewer, nav: true, icon: Icons.settings_outlined),
-  _planned(id: 'P20', route: '*', title: 'Not found', minRole: Role.viewer, nav: false, icon: Icons.close),
-  _planned(id: 'P21', route: '/403', title: 'Forbidden', minRole: Role.viewer, nav: false, icon: Icons.block),
+  PageMeta(id: 'P19', route: '/settings', title: 'Settings', minRole: Role.viewer, nav: true, icon: Icons.settings_outlined, builder: (_) => const SettingsScreen()),
+  PageMeta(id: 'P20', route: '*', title: 'Not found', minRole: Role.viewer, nav: false, icon: Icons.close, builder: (_) => const NotFoundScreen()),
+  PageMeta(id: 'P21', route: '/403', title: 'Forbidden', minRole: Role.viewer, nav: false, icon: Icons.block, builder: (_) => const ForbiddenScreen()),
 ];
 
 /// Must equal 21 (asserted in tests, mirrors PAGE_COUNT in pages.ts).

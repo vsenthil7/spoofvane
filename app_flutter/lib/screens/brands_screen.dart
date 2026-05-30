@@ -5,6 +5,7 @@ import '../models.dart';
 import '../theme.dart';
 import '../widgets/panel.dart';
 import '../widgets/screen_title.dart';
+import 'brand_detail_screen.dart';
 
 class BrandsScreen extends StatefulWidget {
   const BrandsScreen({super.key});
@@ -30,29 +31,37 @@ class _BrandsScreenState extends State<BrandsScreen> {
             const ScreenTitle('Brand Management'),
             ...brands.map((b) => Padding(
                   padding: const EdgeInsets.only(bottom: 12),
-                  child: Panel(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(b.name,
-                                  style: const TextStyle(
-                                      color: SvColors.text, fontSize: 14)),
-                              const SizedBox(height: 4),
-                              Text(b.loginUrl,
-                                  style: const TextStyle(
-                                      color: SvColors.muted,
-                                      fontFamily: 'monospace',
-                                      fontSize: 12)),
-                            ],
+                  child: InkWell(
+                    key: Key('brand-row-${b.id}'),
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => BrandDetailScreen(brand: b))),
+                    child: Panel(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(b.name,
+                                    style: const TextStyle(
+                                        color: SvColors.text, fontSize: 14)),
+                                const SizedBox(height: 4),
+                                Text(b.loginUrl,
+                                    style: const TextStyle(
+                                        color: SvColors.muted,
+                                        fontFamily: 'monospace',
+                                        fontSize: 12)),
+                              ],
+                            ),
                           ),
-                        ),
-                        Text('${b.targetCountry} · thr ${b.scoreThreshold}',
-                            style: const TextStyle(
-                                color: SvColors.faint, fontSize: 12)),
-                      ],
+                          Text('${b.targetCountry} · thr ${b.scoreThreshold}',
+                              style: const TextStyle(
+                                  color: SvColors.faint, fontSize: 12)),
+                          const SizedBox(width: 8),
+                          const Icon(Icons.chevron_right,
+                              color: SvColors.faint, size: 18),
+                        ],
+                      ),
                     ),
                   ),
                 )),

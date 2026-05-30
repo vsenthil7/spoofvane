@@ -27,6 +27,9 @@ test.describe("rail navigation", () => {
     await shell.navigateTo("Compliance");
     await expect(shell.contentHasText("frameworks")).toBeVisible();
 
+    await shell.navigateTo("Settings");
+    await expect(shell.contentHasText("Profile")).toBeVisible();
+
     await shell.navigateTo("Audit Log");
     await expect(shell.contentHasText("Audit")).toBeVisible();
   });

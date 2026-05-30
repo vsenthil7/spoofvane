@@ -53,7 +53,7 @@ cannot be the reviewer who approves its takedown.
 | P01 | /login | Sign in | viewer | no | `LoginScreen` | 🟢 built (demo SSO + role picker) |
 | P02 | / | Dashboard | viewer | yes | `DashboardScreen` | 🟢 built |
 | P03 | /brands | Brands | analyst | yes | `BrandsScreen` | 🟢 built |
-| P04 | /brands/:id | Brand detail | analyst | no | `BrandDetailScreen` | ⬜ planned |
+| P04 | /brands/:id | Brand detail | analyst | no | `BrandDetailScreen` | 🟢 built |
 | P05 | /triage | Triage queue | analyst | yes | `TriageScreen` | 🟢 built |
 | P06 | /alerts/:id | Alert detail (10 tabs) | analyst | no | `AlertDetailScreen` | 🟢 built (10 tabs) |
 | P07 | /clusters | Clusters | analyst | yes | `ClustersScreen` | 🟢 built (LIVE) |
@@ -68,13 +68,14 @@ cannot be the reviewer who approves its takedown.
 | P16 | /admin/users | Users | admin | yes | `AdminUsersScreen` | 🟢 built (RBAC + MFA) |
 | P17 | /admin/tenants | Tenants | owner | yes | `AdminTenantsScreen` | 🟢 built (multi-tenant) |
 | P18 | /admin/demo-health | Demo health | admin | yes | `AdminDemoHealthScreen` | 🟢 built (seed/coverage) |
-| P19 | /settings | Settings | viewer | yes | `SettingsScreen` | ⬜ planned |
-| P20 | * | Not found | viewer | no | `NotFoundScreen` | ⬜ planned |
-| P21 | /403 | Forbidden | viewer | no | `ForbiddenScreen` | ⬜ planned |
+| P19 | /settings | Settings | viewer | yes | `SettingsScreen` | 🟢 built (profile/MFA/API keys) |
+| P20 | * | Not found | viewer | no | `NotFoundScreen` | 🟢 built (404) |
+| P21 | /403 | Forbidden | viewer | no | `ForbiddenScreen` | 🟢 built (403) |
 
-The Flutter app currently ships 8 of the 21 screens (the analyst day-to-day
-core). This document is the build map for the remaining 13; each lands modularly
-with its own widget tests, keeping coverage ≥ 98%.
+The Flutter app now ships all 21 screens (real, modular, role-gated). Every
+screen lands with its own widget tests, keeping coverage high; data-backed
+screens read LIVE backend data when the API is up and fall back to clearly
+tagged SEED otherwise.
 
 ## 4. The Alert detail (P06) tab structure
 
