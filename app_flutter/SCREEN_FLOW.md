@@ -64,10 +64,10 @@ cannot be the reviewer who approves its takedown.
 | P12 | /review | Review queue | reviewer | yes | `ReviewQueueScreen` | 🟢 built (SoD-gated) |
 | P13 | /cost | Cost | admin | yes | `CostScreen` | 🟢 built (LIVE) |
 | P14 | /compliance | Compliance | auditor | yes | `ComplianceScreen` | 🟢 built (SOC2/ISO/DORA/NIS2) |
-| P15 | /admin/agents | Agents | admin | yes | `AdminAgentsScreen` | ⬜ planned |
-| P16 | /admin/users | Users | admin | yes | `AdminUsersScreen` | ⬜ planned |
-| P17 | /admin/tenants | Tenants | owner | yes | `AdminTenantsScreen` | ⬜ planned |
-| P18 | /admin/demo-health | Demo health | admin | yes | `AdminDemoHealthScreen` | ⬜ planned |
+| P15 | /admin/agents | Agents | admin | yes | `AdminAgentsScreen` | 🟢 built (registry + kill-switch) |
+| P16 | /admin/users | Users | admin | yes | `AdminUsersScreen` | 🟢 built (RBAC + MFA) |
+| P17 | /admin/tenants | Tenants | owner | yes | `AdminTenantsScreen` | 🟢 built (multi-tenant) |
+| P18 | /admin/demo-health | Demo health | admin | yes | `AdminDemoHealthScreen` | 🟢 built (seed/coverage) |
 | P19 | /settings | Settings | viewer | yes | `SettingsScreen` | ⬜ planned |
 | P20 | * | Not found | viewer | no | `NotFoundScreen` | ⬜ planned |
 | P21 | /403 | Forbidden | viewer | no | `ForbiddenScreen` | ⬜ planned |

@@ -50,4 +50,16 @@ class FakeApi implements ApiClient {
 
   @override
   Future<List<ComplianceControl>> compliance() async => seedCompliance;
+
+  @override
+  Future<List<Agent>> agents() async => seedAgents;
+
+  @override
+  Future<List<AdminUser>> adminUsers() async => seedAdminUsers;
+
+  @override
+  Future<List<Tenant>> tenants() async => seedTenants;
+
+  @override
+  Future<List<DemoHealthRow>> demoHealth() async => seedDemoHealth;
 }

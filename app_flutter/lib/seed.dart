@@ -60,3 +60,34 @@ final seedCompliance = <ComplianceControl>[
   ComplianceControl(framework: 'DORA', controlId: 'Art.28', title: 'Third-party risk (Bright Data)', status: ControlStatus.met, evidence: 'Sub-processor DPA on file; usage capped per tenant'),
   ComplianceControl(framework: 'NIS2', controlId: 'Art.21', title: 'Cyber risk-management measures', status: ControlStatus.gap, evidence: 'Risk register WIP; board sign-off outstanding'),
 ];
+
+final seedAgents = <Agent>[
+  Agent(id: 'ag_discovery', name: 'discovery', tenant: 'DemoTenant', running: true, runsToday: 42, budgetUsd: 120, spentUsd: 38.40),
+  Agent(id: 'ag_inspector', name: 'inspector', tenant: 'DemoTenant', running: true, runsToday: 100, budgetUsd: 200, spentUsd: 92.10),
+  Agent(id: 'ag_takedown', name: 'takedown-router', tenant: 'DemoTenant', running: true, runsToday: 7, budgetUsd: 60, spentUsd: 12.00),
+  Agent(id: 'ag_deepfake', name: 'deepfake-scanner', tenant: 'DemoTenant', running: false, runsToday: 0, budgetUsd: 80, spentUsd: 0.0),
+];
+
+final seedAdminUsers = <AdminUser>[
+  AdminUser(id: 'u_owner', email: 'owner@demotenant.io', role: 'owner', mfaEnabled: true, lastActive: '2026-05-29T08:55:00Z'),
+  AdminUser(id: 'u_admin', email: 'admin@demotenant.io', role: 'admin', mfaEnabled: true, lastActive: '2026-05-29T09:40:00Z'),
+  AdminUser(id: 'u_kim', email: 'analyst.kim@demotenant.io', role: 'analyst', mfaEnabled: true, lastActive: '2026-05-29T09:32:00Z'),
+  AdminUser(id: 'u_lee', email: 'analyst.lee@demotenant.io', role: 'analyst', mfaEnabled: false, lastActive: '2026-05-29T09:40:00Z'),
+  AdminUser(id: 'u_osei', email: 'reviewer.osei@demotenant.io', role: 'reviewer', mfaEnabled: true, lastActive: '2026-05-29T09:44:00Z'),
+  AdminUser(id: 'u_aud', email: 'auditor@demotenant.io', role: 'auditor', mfaEnabled: true, lastActive: '2026-05-28T17:10:00Z'),
+];
+
+final seedTenants = <Tenant>[
+  Tenant(id: 't_demo', name: 'DemoTenant', plan: 'enterprise', region: 'eu-west', seats: 25, active: true),
+  Tenant(id: 't_acme', name: 'Acme Corp', plan: 'business', region: 'us-east', seats: 12, active: true),
+  Tenant(id: 't_globex', name: 'Globex', plan: 'pro', region: 'ap-south', seats: 4, active: false),
+];
+
+final seedDemoHealth = <DemoHealthRow>[
+  DemoHealthRow(check: 'Brands seeded', ok: true, detail: '6 brands'),
+  DemoHealthRow(check: 'Alerts seeded', ok: true, detail: '86–94 alerts per run'),
+  DemoHealthRow(check: 'Clusters detected', ok: true, detail: '78 campaigns'),
+  DemoHealthRow(check: 'Cost events', ok: true, detail: '6 Bright Data products'),
+  DemoHealthRow(check: 'Deepfake-family alerts', ok: false, detail: '0 — UI falls back to SEED (honest)'),
+  DemoHealthRow(check: '21-page coverage', ok: true, detail: '15/21 screens real, 6 placeholders'),
+];

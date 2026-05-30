@@ -287,3 +287,104 @@ class ComplianceControl {
         evidence: (j['evidence'] ?? '').toString(),
       );
 }
+
+/// An autonomous agent in the registry (P15) with a governance budget.
+class Agent {
+  final String id;
+  final String name; // e.g. discovery, inspector, takedown-router
+  final String tenant;
+  final bool running;
+  final int runsToday;
+  final double budgetUsd; // monthly governance budget
+  final double spentUsd; // spent this month
+
+  Agent({
+    required this.id,
+    required this.name,
+    required this.tenant,
+    required this.running,
+    required this.runsToday,
+    required this.budgetUsd,
+    required this.spentUsd,
+  });
+
+  double get budgetRatio => budgetUsd <= 0 ? 0 : (spentUsd / budgetUsd).clamp(0, 1);
+
+  factory Agent.fromJson(Map<String, dynamic> j) => Agent(
+        id: (j['id'] ?? '').toString(),
+        name: (j['name'] ?? '').toString(),
+        tenant: (j['tenant'] ?? '').toString(),
+        running: (j['running'] ?? false) == true,
+        runsToday: (j['runsToday'] ?? j['runs_today'] ?? 0) as int,
+        budgetUsd: ((j['budgetUsd'] ?? j['budget_usd'] ?? 0) as num).toDouble(),
+        spentUsd: ((j['spentUsd'] ?? j['spent_usd'] ?? 0) as num).toDouble(),
+      );
+}
+
+/// A user in RBAC management (P16).
+class AdminUser {
+  final String id;
+  final String email;
+  final String role; // one of the six role names
+  final bool mfaEnabled;
+  final String lastActive;
+
+  AdminUser({
+    required this.id,
+    required this.email,
+    required this.role,
+    required this.mfaEnabled,
+    required this.lastActive,
+  });
+
+  factory AdminUser.fromJson(Map<String, dynamic> j) => AdminUser(
+        id: (j['id'] ?? '').toString(),
+        email: (j['email'] ?? '').toString(),
+        role: (j['role'] ?? '').toString(),
+        mfaEnabled: (j['mfaEnabled'] ?? j['mfa_enabled'] ?? false) == true,
+        lastActive: (j['lastActive'] ?? j['last_active'] ?? '').toString(),
+      );
+}
+
+/// A tenant in multi-tenant management (P17).
+class Tenant {
+  final String id;
+  final String name;
+  final String plan; // free | pro | business | enterprise
+  final String region; // data-residency region
+  final int seats;
+  final bool active;
+
+  Tenant({
+    required this.id,
+    required this.name,
+    required this.plan,
+    required this.region,
+    required this.seats,
+    required this.active,
+  });
+
+  factory Tenant.fromJson(Map<String, dynamic> j) => Tenant(
+        id: (j['id'] ?? '').toString(),
+        name: (j['name'] ?? '').toString(),
+        plan: (j['plan'] ?? '').toString(),
+        region: (j['region'] ?? '').toString(),
+        seats: (j['seats'] ?? 0) as int,
+        active: (j['active'] ?? true) == true,
+      );
+}
+
+/// A demo-health row (P18): seed completeness / coverage check.
+class DemoHealthRow {
+  final String check;
+  final bool ok;
+  final String detail;
+
+  DemoHealthRow({required this.check, required this.ok, required this.detail});
+
+  factory DemoHealthRow.fromJson(Map<String, dynamic> j) => DemoHealthRow(
+        check: (j['check'] ?? '').toString(),
+        ok: (j['ok'] ?? false) == true,
+        detail: (j['detail'] ?? '').toString(),
+      );
+}

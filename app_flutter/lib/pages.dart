@@ -17,6 +17,10 @@ import 'screens/audit_screen.dart';
 import 'screens/review_queue_screen.dart';
 import 'screens/takedowns_screen.dart';
 import 'screens/compliance_screen.dart';
+import 'screens/admin_agents_screen.dart';
+import 'screens/admin_users_screen.dart';
+import 'screens/admin_tenants_screen.dart';
+import 'screens/admin_demo_health_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/placeholder_screen.dart';
 
@@ -78,10 +82,10 @@ final List<PageMeta> kPages = <PageMeta>[
   PageMeta(id: 'P12', route: '/review', title: 'Review queue', minRole: Role.reviewer, nav: true, icon: Icons.check_circle_outline, builder: (_) => const ReviewQueueScreen()),
   PageMeta(id: 'P13', route: '/cost', title: 'Cost Attribution', minRole: Role.admin, nav: true, icon: Icons.payments_outlined, builder: (_) => const CostScreen()),
   PageMeta(id: 'P14', route: '/compliance', title: 'Compliance', minRole: Role.auditor, nav: true, icon: Icons.gavel_outlined, builder: (_) => const ComplianceScreen()),
-  _planned(id: 'P15', route: '/admin/agents', title: 'Agents', minRole: Role.admin, nav: true, icon: Icons.settings_suggest_outlined),
-  _planned(id: 'P16', route: '/admin/users', title: 'Users', minRole: Role.admin, nav: true, icon: Icons.group_outlined),
-  _planned(id: 'P17', route: '/admin/tenants', title: 'Tenants', minRole: Role.owner, nav: true, icon: Icons.apartment_outlined),
-  _planned(id: 'P18', route: '/admin/demo-health', title: 'Demo health', minRole: Role.admin, nav: true, icon: Icons.favorite_outline),
+  PageMeta(id: 'P15', route: '/admin/agents', title: 'Agents', minRole: Role.admin, nav: true, icon: Icons.settings_suggest_outlined, builder: (_) => const AdminAgentsScreen()),
+  PageMeta(id: 'P16', route: '/admin/users', title: 'Users', minRole: Role.admin, nav: true, icon: Icons.group_outlined, builder: (_) => const AdminUsersScreen()),
+  PageMeta(id: 'P17', route: '/admin/tenants', title: 'Tenants', minRole: Role.owner, nav: true, icon: Icons.apartment_outlined, builder: (_) => const AdminTenantsScreen()),
+  PageMeta(id: 'P18', route: '/admin/demo-health', title: 'Demo health', minRole: Role.admin, nav: true, icon: Icons.favorite_outline, builder: (_) => const AdminDemoHealthScreen()),
   _planned(id: 'P19', route: '/settings', title: 'Settings', minRole: Role.viewer, nav: true, icon: Icons.settings_outlined),
   _planned(id: 'P20', route: '*', title: 'Not found', minRole: Role.viewer, nav: false, icon: Icons.close),
   _planned(id: 'P21', route: '/403', title: 'Forbidden', minRole: Role.viewer, nav: false, icon: Icons.block),

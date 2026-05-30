@@ -30,6 +30,10 @@ abstract class ApiClient {
   Future<List<ReviewItem>> reviewQueue();
   Future<List<Takedown>> takedowns();
   Future<List<ComplianceControl>> compliance();
+  Future<List<Agent>> agents();
+  Future<List<AdminUser>> adminUsers();
+  Future<List<Tenant>> tenants();
+  Future<List<DemoHealthRow>> demoHealth();
 }
 
 /// Global accessor. Production code reads `Api.instance`; tests assign a fake to
@@ -208,5 +212,53 @@ class HttpApiClient implements ApiClient {
           return rows;
         },
         seedCompliance,
+      );
+
+  // Admin endpoints not wired to Flutter yet -> honest SEED (tagged).
+  @override
+  Future<List<Agent>> agents() => _withSeed<List<Agent>>(
+        () async {
+          final rows =
+              _asList(await _getJson('/api/admin/agents')).map(Agent.fromJson).toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
+        seedAgents,
+      );
+
+  @override
+  Future<List<AdminUser>> adminUsers() => _withSeed<List<AdminUser>>(
+        () async {
+          final rows = _asList(await _getJson('/api/admin/users'))
+              .map(AdminUser.fromJson)
+              .toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
+        seedAdminUsers,
+      );
+
+  @override
+  Future<List<Tenant>> tenants() => _withSeed<List<Tenant>>(
+        () async {
+          final rows = _asList(await _getJson('/api/admin/tenants'))
+              .map(Tenant.fromJson)
+              .toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
+        seedTenants,
+      );
+
+  @override
+  Future<List<DemoHealthRow>> demoHealth() => _withSeed<List<DemoHealthRow>>(
+        () async {
+          final rows = _asList(await _getJson('/api/admin/demo-health'))
+              .map(DemoHealthRow.fromJson)
+              .toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
+        seedDemoHealth,
       );
 }

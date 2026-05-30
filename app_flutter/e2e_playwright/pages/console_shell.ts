@@ -40,6 +40,21 @@ export class ConsoleShell {
     }
   }
 
+  /** Coordinate-click any semantic node containing [text]. Returns true if a
+   *  node was found and clicked. */
+  async clickByText(text: string): Promise<boolean> {
+    const node = this.page.locator(`flt-semantics:has-text("${text}")`).last();
+    if (await node.count()) {
+      const box = await node.boundingBox();
+      if (box) {
+        await this.page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+        await this.page.waitForTimeout(400);
+        return true;
+      }
+    }
+    return false;
+  }
+
   /** Click the Flutter "Enable accessibility" placeholder so the semantics DOM
    *  is populated. Safe to call repeatedly. */
   async enableAccessibility(): Promise<void> {
