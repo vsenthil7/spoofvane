@@ -26,12 +26,50 @@ from src.inspection.browser import get_inspector
 from src.storage.db import session_scope
 from src.storage.init_db import init_db
 from src.storage.repositories import BrandRepo
+from src.storage.repositories_v2 import CostEventRepo, TenantRepo
+from src.common.tenants import Tenant, TenantPlan
 
 log = get_logger(__name__)
 
 
 DEMO_BRAND_NAME = "DemoBank"
 DEMO_LOGIN_URL = "https://login.demobank.example/signin"
+DEMO_TENANT_NAME = "DemoTenant"
+
+# Realistic Bright Data product spend for the cost-attribution screen.
+_DEMO_COST_EVENTS = [
+    ("serp", 4.21),
+    ("unlocker", 9.84),
+    ("scraping_browser", 12.50),
+    ("residential", 6.10),
+    ("web_scraper", 3.40),
+    ("datasets", 2.15),
+]
+
+
+def ensure_demo_tenant_costs() -> None:
+    """Create a demo tenant (if absent) and record realistic Bright Data cost
+    events against it, so /api/cost serves LIVE data instead of empty.
+    Idempotent: skips recording if the tenant already has cost events."""
+    with session_scope() as s:
+        trepo = TenantRepo(s)
+        tenant = trepo.get_by_name(DEMO_TENANT_NAME)
+        if tenant is None:
+            tenant = trepo.create(
+                Tenant(
+                    id=gen_brand_id(),
+                    name=DEMO_TENANT_NAME,
+                    plan=TenantPlan.ENTERPRISE,
+                    daily_spend_cap_usd=500.0,
+                )
+            )
+            log.info("seed.tenant_created", tenant_id=tenant.id)
+        crepo = CostEventRepo(s)
+        # Only seed once: if a breakdown already exists, leave it.
+        if not crepo.breakdown_for_tenant(tenant.id):
+            for kind, usd in _DEMO_COST_EVENTS:
+                crepo.record(kind=kind, usd_amount=usd, tenant_id=tenant.id)
+            log.info("seed.cost_events", tenant_id=tenant.id, n=len(_DEMO_COST_EVENTS))
 
 
 def ensure_demo_brand() -> Brand:
@@ -78,6 +116,7 @@ def ensure_demo_brand() -> Brand:
 def main() -> int:
     init_db()  # safe to re-run
     brand = ensure_demo_brand()
+    ensure_demo_tenant_costs()
     print(f"✓ Brand ready: {brand.name} ({brand.id})")
     print(f"  canonical screenshot: {brand.canonical_screenshot_hash}")
     print(f"  canonical dom:        {brand.canonical_dom_hash}")

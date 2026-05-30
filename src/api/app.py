@@ -651,15 +651,23 @@ def list_cost(
     days: int = Query(default=30, ge=1, le=90),
     ctx: AuthCtx = Depends(require_auth(SCOPE_ALERTS_READ)),
 ) -> list[dict]:
-    """Bright Data spend by product for the caller's tenant, as console CostRows."""
-    from datetime import datetime, timedelta, timezone
-    from ..storage.repositories_v2 import CostEventRepo
+    """Bright Data spend by product for the caller's tenant, as console CostRows.
 
-    tenant_id = ctx.tenant.id if ctx.tenant else None
-    if tenant_id is None:
-        return []
+    When the caller is authenticated to a tenant, spend is scoped to it. In the
+    no-auth dev/demo lane (no tenant on the context) this falls back to the most
+    recently created tenant so the cost screen shows live demo data.
+    """
+    from datetime import datetime, timedelta, timezone
+    from ..storage.repositories_v2 import CostEventRepo, TenantRepo
+
     since = datetime.now(timezone.utc) - timedelta(days=days)
     with session_scope() as s:
+        tenant_id = ctx.tenant.id if ctx.tenant else None
+        if tenant_id is None:
+            tenants = TenantRepo(s).list_all()
+            if not tenants:
+                return []
+            tenant_id = tenants[-1].id  # most-recently created (demo lane)
         breakdown = CostEventRepo(s).breakdown_for_tenant(tenant_id, since=since)
     return [{"product": k, "usd": round(v, 4)} for k, v in sorted(breakdown.items())]
 
