@@ -204,7 +204,8 @@ class HttpApiClient implements ApiClient {
         seedTakedowns,
       );
 
-  // No Flutter-wired backend compliance endpoint yet -> honest SEED (tagged).
+  // Compliance is LIVE: /api/compliance serves real controls from the NIST AI
+  // RMF + compliance modules (build 065). Seed remains the offline fallback.
   @override
   Future<List<ComplianceControl>> compliance() =>
       _withSeed<List<ComplianceControl>>(
@@ -218,7 +219,7 @@ class HttpApiClient implements ApiClient {
         seedCompliance,
       );
 
-  // Admin endpoints not wired to Flutter yet -> honest SEED (tagged).
+  // Agents/Users not yet served by the backend -> honest SEED (tagged).
   @override
   Future<List<Agent>> agents() => _withSeed<List<Agent>>(
         () async {
@@ -242,10 +243,12 @@ class HttpApiClient implements ApiClient {
         seedAdminUsers,
       );
 
+  // Tenants is LIVE: /api/console/tenants serves real TenantRepo rows (build
+  // 065). Seed remains the offline fallback.
   @override
   Future<List<Tenant>> tenants() => _withSeed<List<Tenant>>(
         () async {
-          final rows = _asList(await _getJson('/api/admin/tenants'))
+          final rows = _asList(await _getJson('/api/console/tenants'))
               .map(Tenant.fromJson)
               .toList();
           if (rows.isEmpty) throw Exception('empty -> seed');
@@ -254,10 +257,12 @@ class HttpApiClient implements ApiClient {
         seedTenants,
       );
 
+  // Demo-health is LIVE: /api/console/demo-health computes coverage from the DB
+  // (build 065). Seed remains the offline fallback.
   @override
   Future<List<DemoHealthRow>> demoHealth() => _withSeed<List<DemoHealthRow>>(
         () async {
-          final rows = _asList(await _getJson('/api/admin/demo-health'))
+          final rows = _asList(await _getJson('/api/console/demo-health'))
               .map(DemoHealthRow.fromJson)
               .toList();
           if (rows.isEmpty) throw Exception('empty -> seed');
@@ -266,7 +271,8 @@ class HttpApiClient implements ApiClient {
         seedDemoHealth,
       );
 
-  // Commercial endpoints not wired to Flutter yet -> honest SEED (tagged).
+  // Pricing is LIVE: /api/pricing serves the backend tier catalogue
+  // (src.common.pricing, build 065). Seed remains the offline fallback.
   @override
   Future<List<PricingPlan>> pricing() => _withSeed<List<PricingPlan>>(
         () async {
@@ -279,6 +285,8 @@ class HttpApiClient implements ApiClient {
         seedPricing,
       );
 
+  // Usage is LIVE: /api/usage computes metered consumption vs plan allowance
+  // from real cost/alert data (build 065). Seed remains the offline fallback.
   @override
   Future<List<UsageMetric>> usage() => _withSeed<List<UsageMetric>>(
         () async {

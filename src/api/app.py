@@ -127,6 +127,11 @@ app.include_router(auth_router)
 from .ops_router import router as ops_router  # noqa: E402
 app.include_router(ops_router)
 
+# Console read-surfaces (LIVE data for the Flutter console: pricing, compliance,
+# tenants, usage, demo-health). Dev/no-auth lane mirroring /api/deepfakes etc.
+from .console_router import router as console_router  # noqa: E402
+app.include_router(console_router)
+
 # Audit middleware — records every mutating request (hash-chained)
 from .audit_middleware import AuditMiddleware  # noqa: E402
 app.add_middleware(AuditMiddleware)
