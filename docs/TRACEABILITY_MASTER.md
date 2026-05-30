@@ -527,6 +527,61 @@ in `SPOOFVANE_BD_MODE=live` against the real key + 4 zones in `.env`.
 
 ---
 
+## 6g. Multi-tenant service / BYOK / cost / health-check pending mini-sprints
+
+Raised by the product owner (30 May, 22:40–22:49) as real product gaps. These are
+product-architecture mini-sprints, **all ⬜ PLANNED — not yet built**, tracked
+here so they are never dropped. They answer: how does each tenant choose and pay
+for LLM/BD services, bring their own keys, and how is everything audited.
+
+| # | Mini-sprint | Status | Detail / acceptance |
+|---|-------------|--------|---------------------|
+| MT-1 | **Real service-call tests (not just health checks)** | ⬜ PLANNED | Current `test_bd_live_smoke.py` makes real calls for SERP/Unlocker/WebScraper/Datasets but Scraping-Browser is only a TCP **health-check** (port reachable), not a real CDP render. Add: (a) a real Playwright-over-CDP render through `brd.superproxy.io:9222` asserting a real screenshot/DOM; (b) a live **LLM** test (Anthropic + OpenAI keys are in `.env`) asserting a real verdict round-trip; (c) functional + negative cases for each. Distinguish "health-check" (is it reachable) from "service test" (does the product actually work end-to-end). |
+| MT-2 | **Health-check / service-status page** | ⬜ PLANNED | A console page (and `/api/health/services`) showing each external service (BD SERP/Unlocker/Scraping-Browser/Residential/WebScraper/Datasets/MCP + Anthropic + OpenAI) with: configured? reachable? last successful call? mode (live/replay/mock)? Per-tenant view (their configured services) + platform view. The existing Demo-Health screen is seed-coverage only — this is live service status. |
+| MT-3 | **Per-tenant BYOK (bring-your-own-key) provisioning** | ⬜ PLANNED | Backend `byok` (G11) exists but there is no tenant-facing flow. Tenant adds *their own* BD token + zones and/or *their own* Anthropic/OpenAI key, stored encrypted per-tenant (never in shared `.env`). The pipeline/clients must resolve credentials per-tenant at call time, not from the global config. We must NOT share the platform's keys with tenants. |
+| MT-4 | **Per-tenant service selection (which LLM / which BD products)** | ⬜ PLANNED | A settings surface where each tenant toggles which services they use (e.g. Claude vs GPT vs Gemini for verdicts; which BD products for discovery/inspection) and which mode (live with their key / platform-managed / replay-demo). Drives the ensemble + discovery config per tenant. |
+| MT-5 | **Cost model for tenants who don't want to manage keys** | ⬜ PLANNED | Two billing modes: (a) **BYOK** — tenant pays BD/Anthropic directly, we meter usage only; (b) **platform-managed** — we use our keys on their behalf and bill them our cost + margin via the existing `cost_tracker` (G9) + Usage/Billing screens. Generic default plan for tenants who "don't want to worry": platform-managed with per-plan included allowances + overage (allowances already in `src/common/pricing.py PLAN_ALLOWANCES`). Need real per-tenant cost attribution wired from real metered calls (currently cost events are seeded). |
+| MT-6 | **Affiliate / programmatic sub-account provisioning** | ⬜ PLANNED | Investigate whether BD + the LLM providers expose an affiliate / reseller / programmatic sub-account API so SpoofVane can create a managed sub-account/zone per tenant automatically (so each tenant is metered + billed under their own provider sub-account). If available: wire programmatic user/zone creation per tenant at onboarding. If not: fall back to MT-5 platform-managed metering. Document each provider's actual capability. |
+| MT-7 | **Configurable mock/live/replay per service via settings** | ⬜ PLANNED | `SPOOFVANE_BD_MODE` is currently a single global env var (live/replay/mock). Make mode selectable **per service per tenant** via settings (DB-backed), not one global flag — e.g. tenant A uses live BD + replay LLM; tenant B uses platform-managed everything. Keep both mock and live paths (already exist in every client) and switch by config. |
+| MT-8 | **External-call audit storage (configurable layout)** | ⬜ PLANNED | Every outbound request/response to an external service (LLM + each BD product) is stored for auditing. Two configurable layouts the tenant chooses: (a) **flat filename** `<product>_<tenant>_<service>_<LLM/BDname>_<YYYYMMDD>_<HHMM>` in one audit folder; (b) **organised** — `audit/<tenant>/<service>/…` separate folder per tenant/service. Tenant-configurable (some want one folder, some want it organised). Must capture both the sent payload and received response, with secrets redacted. Builds on the existing hash-chained audit (G3) + evidence-provenance (`src/compliance/evidence_provenance.py`). |
+| MT-9 | **Web Scraper + MCP full setup** | ⬜ PLANNED | Web Scraper currently runs via the live `/request` lane (verified) — the dedicated BD Datasets/Scraper *dataset* product (`/datasets/v3/*`) needs enabling on the account if structured-dataset scraping is wanted. MCP Server needs an actual SSE/MCP client (the endpoint is reachable but is a streaming protocol) + the correct MCP auth handshake. Document exactly what to enable in the BD dashboard for each. |
+
+### 6g.1 Bright Data Residential proxy — step-by-step to go live (BD-1)
+
+Observed from the dashboard (zone `spoofvane_res`, id `hl_b3e17b72`): **Active,
+Residential, $8/GB, Security = "Not secured", No limit, Sum $0.** The live call
+currently returns `407 Auth failed` because the zone is not yet authenticated for
+this host. Steps to make product 6/7 (Residential) live:
+
+1. **Open the zone:** brightdata.com → Proxy Infrastructure → My Proxies →
+   `spoofvane_res`.
+2. **Get the zone password:** in the zone's *Access parameters* / *Overview*
+   tab there is a **Password** field (this is the zone password, which is
+   DIFFERENT from the account API token). Copy it.
+3. **Set the access method** (one of):
+   - **Password auth:** note the zone username
+     `brd-customer-hl_b3e17b72-zone-spoofvane_res` + the zone password.
+   - **Allowlisted IP:** under the zone's *Security* / *Whitelisted IPs* add
+     this host's public IP (since the zone shows "Not secured", BD may require
+     either a password or an IP allowlist before it authenticates).
+4. **Add to `.env`** (gitignored): `BRIGHTDATA_ZONE_RES_PASSWORD=<zone password>`
+   (new var — the code currently reuses the API token, which is why it 407s).
+5. **Wire the client:** `ResidentialProxyClient._live_call` builds the proxy as
+   `brd-customer-<cid>-zone-<zone>-country-<cc>:<PASSWORD>@brd.superproxy.io:22225`
+   — change the password part from `self.config.api_token` to the new
+   `zone_res_password` config field.
+6. **Verify:** run `SPOOFVANE_BD_LIVE_TEST=1 pytest tests/test_bd_live_smoke.py`
+   with a real residential test hitting `https://geo.brdtest.com/welcome.txt`
+   (BD's own proxy-check endpoint) → expect HTTP 200 + a body showing the exit
+   IP's country. Then 6/7 products are live-verified.
+
+> Note: this is documented (not executed) per the owner's "step by step for
+> pending BD" + "keep as pending" instruction. The code change is one config
+> field + one line in the client; the blocker is purely the zone password/IP
+> allowlist, which must be set in the tenant/owner's BD dashboard.
+
+---
+
 ## 7. What this build will NOT falsely claim
 
 Per AP-1/AP-3: SpoofVane does **not** claim 7/7 live Bright Data (5/7 are
