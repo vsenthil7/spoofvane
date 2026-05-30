@@ -51,8 +51,8 @@ class AlertDetailPage {
   final WidgetTester tester;
   AlertDetailPage(this.tester);
 
-  Finder get summary => find.text('Summary');
-  Finder get ensembleTrace => find.text('Verdict trace (ensemble)');
+  Finder get summary => find.byKey(const Key('tab-Summary'));
+  Finder get ensembleTrace => find.byKey(const Key('tab-Verdict trace'));
   Finder get takedownButton => find.byKey(const Key('takedown-button'));
 
   Future<void> requestTakedown() async {

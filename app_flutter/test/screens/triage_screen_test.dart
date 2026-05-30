@@ -28,6 +28,8 @@ void main() {
     await tester.tap(find.byKey(const Key('alert-row-alert_seed_001')));
     await tester.pumpAndSettle();
     expect(find.byType(AlertDetailScreen), findsOneWidget);
-    expect(find.text('Verdict trace (ensemble)'), findsOneWidget);
+    // Lands on the 10-tab detail; the Summary + Verdict-trace tabs are present.
+    expect(find.byKey(const Key('tab-Summary')), findsOneWidget);
+    expect(find.byKey(const Key('tab-Verdict trace')), findsOneWidget);
   });
 }

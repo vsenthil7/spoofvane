@@ -55,7 +55,7 @@ cannot be the reviewer who approves its takedown.
 | P03 | /brands | Brands | analyst | yes | `BrandsScreen` | 🟢 built |
 | P04 | /brands/:id | Brand detail | analyst | no | `BrandDetailScreen` | ⬜ planned |
 | P05 | /triage | Triage queue | analyst | yes | `TriageScreen` | 🟢 built |
-| P06 | /alerts/:id | Alert detail (10 tabs) | analyst | no | `AlertDetailScreen` | 🟡 partial (single view → 10 tabs) |
+| P06 | /alerts/:id | Alert detail (10 tabs) | analyst | no | `AlertDetailScreen` | 🟢 built (10 tabs) |
 | P07 | /clusters | Clusters | analyst | yes | `ClustersScreen` | 🟢 built (LIVE) |
 | P08 | /deepfakes | Deepfakes | analyst | yes | `DeepfakeScreen` | 🟢 built |
 | P09 | /exec-protection | Exec protection | analyst | yes | `ExecScreen` | 🟢 built |
