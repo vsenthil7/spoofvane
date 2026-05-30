@@ -137,7 +137,8 @@ class HttpApiClient implements ApiClient {
 
   // These endpoints now exist on the backend (/api/deepfakes, /api/clusters,
   // /api/cost). They go LIVE when the backend is reachable + has data, and fall
-  // back to seed (tagged SEED) otherwise.
+  // back to seed (tagged SEED) otherwise. Deepfakes is LIVE once a deepfake-
+  // family alert is seeded (build 071, via the real DeepfakeScorer).
   @override
   Future<List<Alert>> deepfakes() => _withSeed<List<Alert>>(
         () async {

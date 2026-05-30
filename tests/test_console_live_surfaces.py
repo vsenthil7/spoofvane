@@ -190,3 +190,20 @@ class TestBillingInvoices:
             assert inv["status"] in {"due", "paid", "failed"}
             assert inv["id"].startswith("INV-")
             assert inv["amount_usd"] > 0  # subscription fee + real BD spend
+
+
+class TestDeepfakes:
+    def test_deepfakes_shape_when_present(self, client):
+        # Endpoint is always 200; rows appear once a deepfake-family alert is
+        # seeded (ensure_demo_deepfake_alert relabels a real alert via the real
+        # DeepfakeScorer). Shape is asserted whether or not rows are present.
+        r = client.get("/api/deepfakes")
+        assert r.status_code == 200
+        body = r.json()
+        assert isinstance(body, list)
+        for d in body:
+            assert {"id", "brand_id", "url", "verdict", "composite_score",
+                    "family"} <= set(d)
+            assert (d.get("family") or "").lower() in {
+                "deepfake", "deepfake_rtc", "voice_clone",
+                "voice-clone", "synthetic_media"}

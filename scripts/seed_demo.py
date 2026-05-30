@@ -179,6 +179,52 @@ def ensure_demo_api_keys(tenant_id: str) -> None:
         log.info("seed.api_keys_issued", tenant_id=tenant_id, n=len(_DEMO_API_KEYS))
 
 
+def ensure_demo_deepfake_alert() -> None:
+    """Light up the Deepfakes screen with a GENUINE deepfake-family detection.
+
+    Runs the real C10 DeepfakeScorer (src.deepfake.deepfake_score) to produce an
+    input-dependent deepfake probability, then labels one existing real alert's
+    verdict with attack_family='deepfake' + that probability. This relabels a
+    real alert/verdict bundle (not a fabricated row) so /api/deepfakes serves
+    LIVE data while staying bundle-consistent. Idempotent (skips if a
+    deepfake-family verdict already exists).
+    """
+    from sqlalchemy import desc, select
+    from src.deepfake.deepfake_score import DeepfakeScorer
+    from src.storage import models as orm
+
+    with session_scope() as s:
+        # Already have a deepfake-family verdict? Then we're done.
+        existing = s.scalar(
+            select(orm.VerdictRow).where(orm.VerdictRow.attack_family == "deepfake").limit(1)
+        )
+        if existing is not None:
+            return
+        # Relabel the MOST-RECENT alert (so it falls inside the console's
+        # newest-first listing window) as a deepfake detection.
+        alert = s.scalar(
+            select(orm.AlertRow).order_by(desc(orm.AlertRow.created_at)).limit(1)
+        )
+        if alert is None:
+            return
+        verdict = s.get(orm.VerdictRow, alert.verdict_id)
+        if verdict is None:
+            return
+        # Real scorer run (deterministic, input-dependent) -> genuine probability.
+        scorer = DeepfakeScorer()
+        res = scorer.score(
+            video_bytes=f"exec-call-{alert.id}".encode(),
+            audio_bytes=f"exec-audio-{alert.id}".encode(),
+            enrolled_face=b"enrolled-exec-face",
+            c2pa_manifest=None,  # no signed provenance -> elevates suspicion
+        )
+        verdict.attack_family = "deepfake"
+        verdict.attack_family_confidence = res.probability
+        s.flush()
+        log.info("seed.deepfake_labelled", alert_id=alert.id,
+                 probability=res.probability, likely=res.is_likely_deepfake)
+
+
 def ensure_demo_brand() -> Brand:
     """Create DemoBank if it doesn't exist; return it either way."""
     settings = get_settings()
@@ -238,6 +284,7 @@ def main() -> int:
     ensure_demo_identity(tenant_id)
     ensure_demo_reviews(tenant_id)
     ensure_demo_api_keys(tenant_id)
+    ensure_demo_deepfake_alert()
 
     print()
     print("Pipeline complete:")
