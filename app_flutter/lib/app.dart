@@ -1,19 +1,14 @@
 // App root: theme, the Console shell (nav rail + top bar + content), and the
-// nav registry that maps each rail entry to its screen.
+// page registry (lib/pages.dart) that maps each rail entry to its screen with
+// role-gating.
 import 'package:flutter/material.dart';
 
 import 'api.dart';
+import 'pages.dart';
+import 'roles.dart';
 import 'theme.dart';
 import 'widgets/nav_rail.dart';
 import 'widgets/source_pill.dart';
-import 'screens/dashboard_screen.dart';
-import 'screens/triage_screen.dart';
-import 'screens/clusters_screen.dart';
-import 'screens/deepfake_screen.dart';
-import 'screens/exec_screen.dart';
-import 'screens/brands_screen.dart';
-import 'screens/cost_screen.dart';
-import 'screens/audit_screen.dart';
 
 class SpoofVaneApp extends StatelessWidget {
   const SpoofVaneApp({super.key});
@@ -28,34 +23,11 @@ class SpoofVaneApp extends StatelessWidget {
   }
 }
 
-/// One nav entry: rail metadata + the screen builder it routes to.
-class ConsolePage {
-  final NavEntry nav;
-  final WidgetBuilder builder;
-  const ConsolePage(this.nav, this.builder);
-}
-
-final consolePages = <ConsolePage>[
-  ConsolePage(const NavEntry('Dashboard', Icons.dashboard_outlined),
-      (_) => const DashboardScreen()),
-  ConsolePage(const NavEntry('Triage Queue', Icons.flag_outlined),
-      (_) => const TriageScreen()),
-  ConsolePage(const NavEntry('Campaign Clusters', Icons.hub_outlined),
-      (_) => const ClustersScreen()),
-  ConsolePage(const NavEntry('Deepfake Feed', Icons.smart_display_outlined),
-      (_) => const DeepfakeScreen()),
-  ConsolePage(const NavEntry('Exec Protection', Icons.shield_outlined),
-      (_) => const ExecScreen()),
-  ConsolePage(const NavEntry('Brand Management', Icons.business_outlined),
-      (_) => const BrandsScreen()),
-  ConsolePage(const NavEntry('Cost Attribution', Icons.payments_outlined),
-      (_) => const CostScreen()),
-  ConsolePage(const NavEntry('Audit Log', Icons.receipt_long_outlined),
-      (_) => const AuditScreen()),
-];
-
 class Console extends StatefulWidget {
-  const Console({super.key});
+  /// Role the console renders for (drives nav visibility). Defaults to analyst
+  /// for the demo; a real login (P01) would set this.
+  final Role role;
+  const Console({super.key, this.role = Role.analyst});
   @override
   State<Console> createState() => _ConsoleState();
 }
@@ -63,6 +35,8 @@ class Console extends StatefulWidget {
 class _ConsoleState extends State<Console> {
   int _selected = 0;
   bool _collapsed = false;
+
+  late final List<PageMeta> _pages = navPagesFor(widget.role);
 
   @override
   void initState() {
@@ -77,7 +51,9 @@ class _ConsoleState extends State<Console> {
       body: Row(
         children: [
           NavRail(
-            items: consolePages.map((p) => p.nav).toList(),
+            items: _pages
+                .map((p) => NavEntry(p.title, p.icon))
+                .toList(),
             selected: _selected,
             collapsed: _collapsed,
             onSelect: (i) => setState(() => _selected = i),
@@ -86,12 +62,12 @@ class _ConsoleState extends State<Console> {
           Expanded(
             child: Column(
               children: [
-                _TopBar(),
+                _TopBar(role: widget.role),
                 Expanded(
                   child: Container(
                     color: SvColors.bg,
                     padding: const EdgeInsets.all(24),
-                    child: consolePages[_selected].builder(context),
+                    child: _pages[_selected].builder(context),
                   ),
                 ),
               ],
@@ -104,6 +80,8 @@ class _ConsoleState extends State<Console> {
 }
 
 class _TopBar extends StatelessWidget {
+  final Role role;
+  const _TopBar({required this.role});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -130,6 +108,15 @@ class _TopBar extends StatelessWidget {
           const SizedBox(width: 16),
           const SourcePill(),
           const SizedBox(width: 12),
+          // Current role chip (surfaces the role the console is gated to).
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+                color: SvColors.chip, borderRadius: BorderRadius.circular(14)),
+            child: Text(roleLabel(role),
+                style: const TextStyle(color: SvColors.cyan, fontSize: 11)),
+          ),
+          const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             decoration: BoxDecoration(

@@ -405,6 +405,8 @@ legend as §6b.
 | 051 | Modular refactor + widget/unit tests @ 98.5% coverage | 🟢 REAL | monolith split into 22 files (theme/models/seed/api/app + widgets/ + screens/ + util/); `flutter test` 30 passed; `coverage/lcov.info` 584/593 = 98.5% (every screen+widget 100%); DI seam (ApiClient interface + FakeApi + http MockClient); 2 real layout bugs the tests caught + fixed (StatCard overflow, NavRail collapse-animation overflow) |
 | 052 | E2E layers — integration_test flows + Playwright (semantics) | 🟢 REAL / 🔒 browser | integration_test page-objects + 3 flows (triage→takedown, full nav, offline-SEED) `flutter analyze` clean; Playwright (`e2e_playwright/`) semantics-driven via `--dart-define=E2E=true`, `playwright test --list` discovers all specs, E2E web bundle builds; live browser runs (`flutter drive`, `npx playwright test`) 🔒 BLOCKED-ENV (long-running browser, hangs sandbox) — runnable in CI per `app_flutter/TESTING.md` |
 | 053 | Backend console endpoints — Clusters/Deepfakes/Cost go LIVE | 🟢 REAL | `tests/test_console_endpoints.py` (5 tests: deepfakes alert-shape + family filter, clusters {id,members,risk} 0≤risk≤1, cost {product,usd}, days/limit 422 bounds); `src/api/app.py` `/api/deepfakes` (family-filtered alerts), `/api/clusters` (campaign graph over alerts), `/api/cost` (CostEventRepo breakdown); Flutter `api.dart` wired live-with-seed-fallback (`test/api_test.dart` live-success + empty/error→seed); full suite 558 passed / 0 regressions; Flutter 31 passed |
+| 054 | Live demo data — seed tenant + BD cost events; /api/cost LIVE | 🟢 REAL | `scripts/seed_demo.py::ensure_demo_tenant_costs` (Enterprise tenant $500 cap + 6 BD cost events, idempotent); `/api/cost` falls back to most-recent tenant in no-auth dev lane; OBSERVED via TestClient against seeded DB: /api/alerts→50, /api/clusters→78 real campaigns, /api/cost→6 rows; /api/deepfakes→0 (honest: no deepfake-family alerts, UI→SEED); 558 passed |
+| 055 | 21-page Flutter screen-flow + role-gated registry | 🟢 REAL | `app_flutter/SCREEN_FLOW.md` (full IA derived from canonical spec, not ported); `lib/pages.dart` 21-page registry (P01–P21: id/route/title/minRole/nav/icon) mirroring `console/src/lib/pages.ts`; `lib/roles.dart` 6-role SoD rank gate; `lib/app.dart` shell reads registry + role-filters rail; 8/21 screens real, 13 honest placeholders (`PlaceholderScreen`); `test/pages_test.dart` (9 tests: 21-count, rank order, viewer/analyst/owner nav gating, non-nav pages); flutter test 40 passed; analyze 0 errors |
 
 **Flutter console status:** real runnable web UI, modular, 98.5% widget coverage,
 LIVE/SEED honest. The Clusters/Deepfakes/Cost screens now read LIVE backend data
@@ -412,6 +414,24 @@ when the API is up + has data (seed fallback otherwise) — closing the last
 honest gap between the UI and the API. Live browser E2E (Playwright + flutter
 drive) remains 🔒 BLOCKED-ENV in the sandbox; artifacts compile/parse and run
 in CI.
+
+---
+
+## 6e. Demo-data lifecycle ledger (BUILD 054+) — cited proof per row
+
+The demo dataset must survive updates, be fully regenerable, and never be lost.
+The durable store is **code + a committed JSON fixture**, never the binary
+sqlite blob (which stays gitignored to avoid churn/merge conflicts).
+
+| Build | Item | Status | Cited proof |
+|-------|------|--------|-------------|
+| 055 | `scripts/manage_demo.py` lifecycle manager | 🟢 REAL | 6 subcommands: `status` (row counts, no mutation), `seed` (idempotent regenerate via seed_demo), `reset [--yes] [--no-seed]` (backup→drop_all→create_all→re-seed), `nuke [--yes]` (delete db file + backup), `export`/`import` (durable JSON fixture). Destructive ops require --yes or TTY confirm; every one takes a timestamped backup to `data/backups/`. OBSERVED: status→real counts; reset→94 fresh alerts; export→import round-trip restored 1 tenant/1 brand/106 cost rows exactly |
+| 055 | Committed demo fixture (durable store) | 🟢 REAL | `data/fixtures/demo_dataset.json` checked in (gitignore negation: `data/*` ignored but fixture tracked; `*.db` + `data/backups/` stay ignored — verified `git check-ignore`: fixture TRACKED, db IGNORED); `tests/test_manage_demo.py` (4 tests: status no-mutate, export→wipe→import exact restore, import idempotent insert-or-skip, missing-fixture graceful); backend suite 562 passed / 0 regressions |
+
+**Demo-data guarantee:** `python -m scripts.manage_demo reset` rebuilds the
+entire demo from scratch (brand + 160 discovered / 100 inspected / ~94 alerts +
+tenant + 6 BD cost events); the committed fixture pins the durable tenant/brand/
+cost rows so they are restorable after any wipe. No binary DB is committed.
 
 ---
 

@@ -1,0 +1,91 @@
+{
+  "exported_at": "2026-05-30T09:17:49.275054+00:00",
+  "tables": {
+    "tenants": [
+      {
+        "id": "brand_01KSW2P10655VWD27MHKN6K3MD",
+        "name": "DemoTenant",
+        "plan": "enterprise",
+        "daily_spend_cap_usd": 500.0,
+        "daily_inspect_cap": null,
+        "created_at": "2026-05-30T09:15:45.542903"
+      }
+    ],
+    "brands": [
+      {
+        "id": "brand_01KSW2P0ZB23EM80DV9SPDFD9G",
+        "name": "DemoBank",
+        "login_url": "https://login.demobank.example/signin",
+        "payment_url": null,
+        "logo_path": null,
+        "target_country": "US",
+        "brand_keywords": [
+          "demobank",
+          "demo-bank",
+          "demo bank"
+        ],
+        "canonical_screenshot_hash": "830e0694f5f00f48beeaa4324a611d0e5a83d7d47c31a26a146971f7f58cb521",
+        "canonical_dom_hash": "4b36d7ef4c9973dd7c553cdbc1d3082e91f0dd9298c3249289bd1eb984e3c2da",
+        "score_threshold": 0.65,
+        "tenant_id": null,
+        "created_at": "2026-05-30T09:15:45.515320"
+      }
+    ],
+    "cost_events": [
+      {
+        "id": "alrt_01KSW2P10APJXHT890494DW9YC",
+        "tenant_id": "brand_01KSW2P10655VWD27MHKN6K3MD",
+        "brand_id": null,
+        "kind": "serp",
+        "quantity": 1.0,
+        "usd_amount": 4.21,
+        "occurred_at": "2026-05-30T09:15:45.547194"
+      },
+      {
+        "id": "alrt_01KSW2P10BDY4AH64QDDQ3WZM8",
+        "tenant_id": "brand_01KSW2P10655VWD27MHKN6K3MD",
+        "brand_id": null,
+        "kind": "unlocker",
+        "quantity": 1.0,
+        "usd_amount": 9.84,
+        "occurred_at": "2026-05-30T09:15:45.547194"
+      },
+      {
+        "id": "alrt_01KSW2P10BCCQ9YMK39YWYRJ3N",
+        "tenant_id": "brand_01KSW2P10655VWD27MHKN6K3MD",
+        "brand_id": null,
+        "kind": "scraping_browser",
+        "quantity": 1.0,
+        "usd_amount": 12.5,
+        "occurred_at": "2026-05-30T09:15:45.547194"
+      },
+      {
+        "id": "alrt_01KSW2P10BJW8CDZ82YK5EZCJW",
+        "tenant_id": "brand_01KSW2P10655VWD27MHKN6K3MD",
+        "brand_id": null,
+        "kind": "residential",
+        "quantity": 1.0,
+        "usd_amount": 6.1,
+        "occurred_at": "2026-05-30T09:15:45.547194"
+      },
+      {
+        "id": "alrt_01KSW2P10BX4BMWRK5VVWZ4G07",
+        "tenant_id": "brand_01KSW2P10655VWD27MHKN6K3MD",
+        "brand_id": null,
+        "kind": "web_scraper",
+        "quantity": 1.0,
+        "usd_amount": 3.4,
+        "occurred_at": "2026-05-30T09:15:45.548195"
+      },
+      {
+        "id": "alrt_01KSW2P10CAFWAJ2Y12AXMJ9ND",
+        "tenant_id": "brand_01KSW2P10655VWD27MHKN6K3MD",
+        "brand_id": null,
+        "kind": "datasets",
+        "quantity": 1.0,
+        "usd_amount": 2.15,
+        "occurred_at": "2026-05-30T09:15:45.548195"
+      }
+    ]
+  }
+}

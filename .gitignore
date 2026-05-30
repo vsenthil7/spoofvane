@@ -4,7 +4,11 @@ __pycache__/
 .coverage
 htmlcov/
 *.db
-data/
+data/*
+# ...but keep the committed demo-dataset fixture (durable, regenerable store)
+!data/fixtures/
+data/fixtures/*
+!data/fixtures/demo_dataset.json
 _backup/
 **/_backup/
 _cov.txt
