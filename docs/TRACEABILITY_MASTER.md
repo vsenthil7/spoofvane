@@ -382,9 +382,10 @@ freshness/dedup, auto-report) + deferred console-page/route/seed/RBAC layering.
 | 045 | D6 — multi-region cloaking classifier | 🟢 REAL | `tests/depth/test_cloaking_classifier.py` (6 tests: geo_targeted minority=attack, consistent, block_page, fragmented, distinct-inputs-distinct-patterns, empty); `src/inspection/cloaking_classifier.py` (scales N regions atop existing multi_region.py) |
 | 046 | D2 — per-family calibrators | 🟢 REAL | `tests/depth/test_family_calibration.py` (6 tests: family=None==global, unfitted-family falls back to global, fitted-family differs + 'platt:crypto' label, distinct families distinct curves, save/load round-trip, fit shifts params); `src/scoring/family_calibration.py` (per-family Platt fits persisted under data/calibration/families/, graceful global fallback) |
 | 047 | D4 — ensemble provider diversity | 🟢 REAL | `tests/depth/test_diversity.py` (7 tests: unanimous=>1.0 mult, split discounts graduated, 3-way>2-1 entropy, agreement_ratio, empty/single, merger surfaces metrics, dissent<unanimous); `src/verdict/diversity.py` wired into VerdictMerger (graduated multiplier replaces flat 0.7 dissent discount) |
+| 048 | D3 — active-learning sample selection (all surfaces) | 🟢 REAL | `tests/depth/test_al_sampling.py` (6 tests: uncertain chosen over confident, diversify spreads across surfaces vs no-diversify clustering, budget respected, zero/empty, distinct-batches-distinct, least-confident tiebreak); `src/scoring/al_sampling.py` (uncertainty + diversity sampling under review budget; complements the existing feedback tuner) |
 
-**Phase 4 depth progress: 6 of 8 (D1, D5, D7, D6, D2, D4). Remaining: D3
-active-learning, D8 auto-report.**
+**Phase 4 depth progress: 7 of 8 (D1, D5, D7, D6, D2, D4, D3). Remaining: D8
+auto-report.**
 
 ---
 
