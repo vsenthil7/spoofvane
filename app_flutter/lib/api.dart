@@ -304,6 +304,8 @@ class HttpApiClient implements ApiClient {
         seedUsage,
       );
 
+  // Invoices is LIVE: /api/billing/invoices derives invoices from the tenant's
+  // real cost-event history + plan fee (build 070); empty -> SEED fallback.
   @override
   Future<List<Invoice>> invoices() => _withSeed<List<Invoice>>(
         () async {

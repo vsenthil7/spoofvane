@@ -177,3 +177,16 @@ class TestTakedowns:
             assert t["state"] in {"draft", "submitted", "acknowledged",
                                   "resolved", "rejected"}
             assert t["reference_id"].startswith("TKD-")
+
+
+class TestBillingInvoices:
+    def test_invoices_shape_and_derivation(self, client):
+        r = client.get("/api/billing/invoices")
+        assert r.status_code == 200
+        body = r.json()
+        assert isinstance(body, list)
+        for inv in body:
+            assert {"id", "date", "amount_usd", "status"} <= set(inv)
+            assert inv["status"] in {"due", "paid", "failed"}
+            assert inv["id"].startswith("INV-")
+            assert inv["amount_usd"] > 0  # subscription fee + real BD spend
