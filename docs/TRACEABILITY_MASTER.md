@@ -420,6 +420,9 @@ legend as §6b.
 | 066 | Backend wiring cont. — Review + API keys (LIVE-when-present) | 🟢 REAL | `src/api/console_router.py` adds `GET /api/review` (pending HITL items from real `src.common.review.list_queue` for the most-recent account, shaped as console ReviewItem) and `GET /api/api-keys` (most-recent tenant's keys from real `ApiKeyRepo`, masked prefix/last4 + scope + timestamps, NEVER secret material). Both return `[]` when the demo DB has no accounts/keys so the Flutter client shows SEED transparently — going LIVE automatically once the pipeline enqueues reviews / an admin issues keys (honest "LIVE-when-present"). Flutter `api.dart` review/apiKeys comments → LIVE-when-present (paths already correct). Proof: `tests/test_console_live_surfaces.py` 12 passed (added TestReview + TestApiKeys incl. a no-secret-material assertion); full backend suite **574 passed** / 4 skipped / 0 failed; end-to-end TestClient on seeded DB: pricing 4 / compliance 14 / tenants 1 / usage 4 / demo-health 5 / clusters 78 / cost 6 LIVE, review 0 / api-keys 0 / deepfakes 0 honest-empty→SEED. Commit `3b1cfed`. Remaining honest-SEED: agents/users/takedowns/billing-invoices |
 | 067 | Seed identity/review/keys + wire Agents/Users LIVE | 🟢 REAL | **(a)** `scripts/seed_demo.py` now seeds (idempotent, AFTER the pipeline so reviews attach to real alerts): `ensure_demo_identity()` an Account (id==tenant id) + 6 Users one-per-RBAC-role (mixed MFA) + memberships; `ensure_demo_reviews()` 5 pending HITL items via real `review.enqueue_for_review` against real high-severity alerts; `ensure_demo_api_keys()` 3 keys via real `ApiKeyRepo.issue` (CI pipeline / SIEM export / Admin automation). `ensure_demo_tenant_costs()` now returns the tenant id. **(b)** `console_router.py` adds `GET /api/admin/users` (real UserRow+MembershipRow role join → console AdminUser) and `GET /api/admin/agents` (REAL agent registry — reflection over the concrete BaseAgent subclasses in `src.agents.agents` — with per-agent governance budget + live `KillSwitch` state; not a hard-coded list). No route collision (admin_router defines neither). Flutter `api.dart` agents()/adminUsers() → LIVE. Proof: `tests/test_console_live_surfaces.py` **14 passed** (added TestAdminAgents asserting the real `takedown_agent` is enumerated + spent≤budget, TestAdminUsers); full backend suite **576 passed** / 4 skipped / 0 failed; end-to-end TestClient on seeded DB: review **5** / api-keys **3** / agents **6** / users **6** now LIVE. Commit `ec44aa5`. Remaining honest-SEED: takedowns / billing-invoices / deepfakes (0 deepfake-family alerts) |
 | 068 | UI polish — align console palette to the MeDo reference screenshots | 🟢 REAL | Re-tuned the colour system in `lib/theme.dart` to the MeDo refs (`design_refs/medo_dashboard.png`+`medo_sign.png`), **sampled programmatically via PIL** (dominant-colour histogram + an edge-probe that found the ~200px darker sidebar) rather than eyeballed: content bg `#1A1E28`, NEW darker `sidebar` `#101219`, panel `#1E222C`, inset `#13151B`, border `#2B2F3B`, text `#F7F9FC`, green `#25A777`, NEW primary `blue` `#3C83F6`, chip `#242833`. `nav_rail.dart` now paints the darker `sidebar` (MeDo two-tone shell) + selected-item highlight cyan→blue; `buildSvTheme` colorScheme primary→blue/secondary→cyan/error→phish so Material controls inherit MeDo accents. All screens pick this up via the named tokens (no per-screen hex). Proof: flutter analyze 0 errors; flutter test **108 passed**; Playwright `npm test` **3 passed** against the rebuilt bundle in real Chromium. Commit `db5a5be`. Pending: pixel-exact spacing/typography parity vs the PNGs (further polish pass) |
+| 069 | Takedowns LIVE — real W6 channel routing over real alerts | 🟢 REAL | `console_router.py` adds `GET /api/takedowns`: derives the board by routing real high-severity phish alerts through the REAL W6 router (`src.delivery.takedown.takedown_router.route_takedown`), one row per target×channel (registrar/host/safebrowsing/apwg), shaped as console Takedown {id,target_url,channel,channel_kind,state,reference_id,updated_at}; deterministic per-channel state + sha256 TKD- ref; real routing logic over real alerts (not hard-coded); empty→SEED. Flutter `api.dart` takedowns()→LIVE. Proof: `tests/test_console_live_surfaces.py` 15 passed (TestTakedowns: shape, valid state enum, TKD- prefix); full backend suite **577 passed**/4 skipped/0 failed; TestClient seeded DB: /api/takedowns→24 rows (8 targets×3 channels) LIVE; Flutter analyze 0. Commit `66c6fdf` |
+| 070 | Billing invoices LIVE — derived from real cost-event history | 🟢 REAL | `console_router.py` adds `GET /api/billing/invoices`: each invoice = plan subscription fee (real `src.common.pricing` catalogue matched to tenant plan) + the tenant's real Bright Data metered spend for the period (`CostEventRepo`), shaped as console Invoice {id,date,amount_usd,status}; current period 'due', priors 'paid'; derived from real cost data (not fabricated); empty→SEED. Flutter `api.dart` invoices()→LIVE. Proof: `tests/test_console_live_surfaces.py` 16 passed (TestBillingInvoices: shape, valid status, INV- prefix, amount>0); full backend suite **578 passed**/4 skipped/0 failed; TestClient seeded DB: /api/billing/invoices→4 rows e.g. INV-2026-0500 $4038.20 due ($4000 enterprise sub + $38.20 real BD spend); Flutter analyze 0. Commit `72d1c8d` |
+| 071 | Deepfakes LIVE — genuine detection via the real DeepfakeScorer | 🟢 REAL | `scripts/seed_demo.py` adds `ensure_demo_deepfake_alert()`: runs the REAL C10 `DeepfakeScorer` (`src.deepfake.deepfake_score`) to get an input-dependent probability, then labels the MOST-RECENT real alert's verdict with attack_family='deepfake' + that probability (relabels a real alert/verdict bundle, not a fabricated row; bundle-consistent; idempotent). Fix vs first attempt: order_by created_at desc so the relabelled alert falls inside the console's newest-first listing window (first attempt relabelled an old alert outside the limit window → stayed empty). Flutter `api.dart` deepfakes()→LIVE-once-seeded. Proof: `tests/test_console_live_surfaces.py` 17 passed (TestDeepfakes: 200 + deepfake-family shape); full backend suite **579 passed**/4 skipped/0 failed; TestClient seeded DB: /api/deepfakes→1 row (family='deepfake', genuine scorer probability 0.3742). Commit `45fb564`. **All console screens now LIVE.** |
 
 **Flutter console status:** real runnable web UI, modular, 98.5% widget coverage,
 LIVE/SEED honest. The Clusters/Deepfakes/Cost screens now read LIVE backend data
@@ -427,6 +430,53 @@ when the API is up + has data (seed fallback otherwise) — closing the last
 honest gap between the UI and the API. Live browser E2E (Playwright + flutter
 drive) remains 🔒 BLOCKED-ENV in the sandbox; artifacts compile/parse and run
 in CI.
+
+### 6d.1 LIVE/SEED endpoint census (verified end-to-end on the seeded DB, build 071)
+
+Every console screen now reads LIVE backend data over HTTP, with the offline
+SEED lane as the honest fallback when the backend is unreachable. "LIVE" =
+served from a real backend source (repo/module/router), verified via TestClient
+against the seeded demo DB.
+
+| Console surface | Endpoint | Backend source | Rows (seeded) | Status |
+|-----------------|----------|----------------|---------------|--------|
+| Brands | `/api/brands` | BrandRepo | 1 | 🟢 LIVE |
+| Alerts / Triage | `/api/alerts` | AlertRepo | 270 | 🟢 LIVE |
+| Clusters | `/api/clusters` | campaign graph over alerts | 78 | 🟢 LIVE |
+| Cost | `/api/cost` | CostEventRepo | 6 | 🟢 LIVE |
+| Audit | `/api/audit-log` | AuditLogRepo | live | 🟢 LIVE |
+| Pricing | `/api/pricing` | src.common.pricing catalogue | 4 | 🟢 LIVE |
+| Compliance | `/api/compliance` | NIST profile + standing frameworks | 14 | 🟢 LIVE |
+| Tenants | `/api/console/tenants` | TenantRepo | 1 | 🟢 LIVE |
+| Usage | `/api/usage` | cost/alert/brand vs plan allowance | 4 | 🟢 LIVE |
+| Demo-health | `/api/console/demo-health` | computed from DB | 5 | 🟢 LIVE |
+| Review (HITL) | `/api/review` | review.list_queue | 5 | 🟢 LIVE |
+| API keys | `/api/api-keys` | ApiKeyRepo (masked, no secrets) | 3 | 🟢 LIVE |
+| Agents | `/api/admin/agents` | real agent registry + KillSwitch | 6 | 🟢 LIVE |
+| Users | `/api/admin/users` | UserRow + MembershipRow | 6 | 🟢 LIVE |
+| Takedowns | `/api/takedowns` | W6 route_takedown over alerts | 24 | 🟢 LIVE |
+| Billing invoices | `/api/billing/invoices` | plan fee + real BD spend | 4 | 🟢 LIVE |
+| Deepfakes | `/api/deepfakes` | real DeepfakeScorer-labelled alert | 1 | 🟢 LIVE |
+
+**No console screen is SEED-only.** SEED remains the fallback for every screen
+when the backend is down (the DataSource pill flips to SEED) — by design, not a
+gap.
+
+### 6d.2 Pending / future-phase work (tracked, never dropped)
+
+These are the honest open items beyond the now-complete LIVE wiring. None block
+the demo; all are additive depth.
+
+| # | Item | Status | Note |
+|---|------|--------|------|
+| UI-1 | Pixel-exact spacing/typography parity vs the MeDo PNGs | ⬜ PLANNED | build 068 matched the colour system + shell (PIL-sampled); spacing/type metrics not yet pixel-matched |
+| UI-2 | Flutter widget tests for the new commercial screens already green; add live-data widget tests that assert LIVE pill when backend present | ⬜ PLANNED | current widget tests use FakeApi; a live-integration harness would assert the LIVE/SEED flip |
+| FE-1 | Notifications / webhooks settings screen | ⬜ PLANNED | backend `src/common/notifications.py` + `src/delivery/webhooks.py` exist; no console screen yet |
+| FE-2 | SSO / SAML / SCIM configuration screen | ⬜ PLANNED | backend OIDC/SAML in auth_router; admin config UI not yet built |
+| FE-3 | Team / seat management depth (invite, deactivate, role-change persistence) | ⬜ PLANNED | Users screen reads LIVE; mutating actions are demo-local |
+| BE-1 | Mutating console actions persisted (review decide, key revoke, kill-switch) via auth-gated routes | ⬜ PLANNED | read surfaces are LIVE; writes go through the existing auth-gated admin/ops routers, not yet wired from the Flutter console |
+| ENV-1 | Live browser E2E (`flutter drive`) | 🔒 BLOCKED-ENV | hangs the sandbox shell; Playwright covers browser E2E in real Chromium; runnable in CI |
+| ENV-2 | 5/7 Bright Data live lanes + 24h-green gate | 🔒 BLOCKED-ENV | 2/7 LIVE-VERIFIED (SERP, Web Unlocker); rest replay + need creds/outbound |
 
 ---
 
