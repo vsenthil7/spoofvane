@@ -1,4 +1,8 @@
-build/  
-.dart_tool/  
-.flutter-plugins  
-.flutter-plugins-dependencies  
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+coverage/
+e2e_playwright/node_modules/
+e2e_playwright/test-results/
+e2e_playwright/playwright-report/
