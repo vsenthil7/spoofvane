@@ -26,15 +26,18 @@ This shows the UI in **SEED mode** (no backend behind a static server), so every
 screen renders with realistic offline data and the pill reads **SEED**.
 
 ### 2. Live — run against the real backend
-In one terminal start the API (seed it first so screens have LIVE data):
+Needs **two terminals**.
+
+**Terminal 1** — from the **repo root** (`...\spoofvane`), seed + start the API:
 
 ```bash
-# repo root
 .venv\Scripts\python -m scripts.seed_demo          # seed brand+alerts+tenant+users+reviews+keys
 .venv\Scripts\python -m uvicorn src.api.app:app --reload   # serves http://localhost:8000
 ```
 
-In another terminal run the Flutter app pointed at it:
+**Terminal 2** — you MUST `cd app_flutter` first (that is where `pubspec.yaml`
+lives; running `flutter run` from the repo root fails with
+"No pubspec.yaml file found"):
 
 ```bash
 cd app_flutter
