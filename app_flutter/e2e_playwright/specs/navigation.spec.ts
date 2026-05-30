@@ -24,6 +24,9 @@ test.describe("rail navigation", () => {
     await shell.navigateTo("Takedowns");
     await expect(shell.contentHasText("channels")).toBeVisible();
 
+    await shell.navigateTo("Compliance");
+    await expect(shell.contentHasText("frameworks")).toBeVisible();
+
     await shell.navigateTo("Audit Log");
     await expect(shell.contentHasText("Audit")).toBeVisible();
   });

@@ -49,3 +49,14 @@ final seedTakedowns = <Takedown>[
   Takedown(id: 'td_004', targetUrl: 'https://globex-portal-update.cc/', channel: 'AWS', channelKind: 'hosting', state: TakedownState.rejected, referenceId: 'AWS-ABUSE-99812', updatedAt: '2026-05-29T11:45:00Z'),
   Takedown(id: 'td_005', targetUrl: 'https://globex-portal-update.cc/', channel: 'GoDaddy', channelKind: 'registrar', state: TakedownState.draft, referenceId: '—', updatedAt: '2026-05-29T09:50:00Z'),
 ];
+
+final seedCompliance = <ComplianceControl>[
+  ComplianceControl(framework: 'SOC 2', controlId: 'CC6.1', title: 'Logical access controls', status: ControlStatus.met, evidence: 'RBAC + SSO enforced; access reviews quarterly'),
+  ComplianceControl(framework: 'SOC 2', controlId: 'CC7.2', title: 'Security event monitoring', status: ControlStatus.met, evidence: 'Hash-chained audit log; alerting on anomalies'),
+  ComplianceControl(framework: 'SOC 2', controlId: 'CC8.1', title: 'Change management', status: ControlStatus.partial, evidence: 'CI gates in place; formal CAB pending'),
+  ComplianceControl(framework: 'ISO 27001', controlId: 'A.12.4', title: 'Logging and monitoring', status: ControlStatus.met, evidence: 'Tamper-evident audit trail retained 1y'),
+  ComplianceControl(framework: 'ISO 27001', controlId: 'A.9.2', title: 'User access management', status: ControlStatus.met, evidence: 'Joiner/mover/leaver workflow; SoD enforced'),
+  ComplianceControl(framework: 'DORA', controlId: 'Art.17', title: 'ICT incident management', status: ControlStatus.partial, evidence: 'Runbooks drafted; major-incident drill scheduled'),
+  ComplianceControl(framework: 'DORA', controlId: 'Art.28', title: 'Third-party risk (Bright Data)', status: ControlStatus.met, evidence: 'Sub-processor DPA on file; usage capped per tenant'),
+  ComplianceControl(framework: 'NIS2', controlId: 'Art.21', title: 'Cyber risk-management measures', status: ControlStatus.gap, evidence: 'Risk register WIP; board sign-off outstanding'),
+];

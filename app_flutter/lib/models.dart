@@ -234,3 +234,56 @@ Color takedownStateColor(TakedownState s) {
       return const Color(0xFF93A1B8);
   }
 }
+
+/// A compliance control's status within a framework (SOC 2 / ISO 27001 / etc).
+enum ControlStatus { met, partial, gap, notApplicable }
+
+ControlStatus controlStatusFrom(String? s) {
+  switch ((s ?? '').toLowerCase()) {
+    case 'met':
+      return ControlStatus.met;
+    case 'partial':
+      return ControlStatus.partial;
+    case 'gap':
+      return ControlStatus.gap;
+    default:
+      return ControlStatus.notApplicable;
+  }
+}
+
+Color controlStatusColor(ControlStatus s) {
+  switch (s) {
+    case ControlStatus.met:
+      return const Color(0xFF3DDC84);
+    case ControlStatus.partial:
+      return const Color(0xFFFFB020);
+    case ControlStatus.gap:
+      return const Color(0xFFFF4D57);
+    case ControlStatus.notApplicable:
+      return const Color(0xFF5E6E88);
+  }
+}
+
+class ComplianceControl {
+  final String framework; // SOC 2 | ISO 27001 | DORA | NIS2
+  final String controlId; // e.g. CC6.1, A.12.4
+  final String title;
+  final ControlStatus status;
+  final String evidence; // short evidence reference
+
+  ComplianceControl({
+    required this.framework,
+    required this.controlId,
+    required this.title,
+    required this.status,
+    required this.evidence,
+  });
+
+  factory ComplianceControl.fromJson(Map<String, dynamic> j) => ComplianceControl(
+        framework: (j['framework'] ?? '').toString(),
+        controlId: (j['controlId'] ?? j['control_id'] ?? '').toString(),
+        title: (j['title'] ?? '').toString(),
+        status: controlStatusFrom(j['status']?.toString()),
+        evidence: (j['evidence'] ?? '').toString(),
+      );
+}

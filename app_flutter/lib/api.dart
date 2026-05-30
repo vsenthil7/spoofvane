@@ -29,6 +29,7 @@ abstract class ApiClient {
   Future<List<AuditRow>> audit();
   Future<List<ReviewItem>> reviewQueue();
   Future<List<Takedown>> takedowns();
+  Future<List<ComplianceControl>> compliance();
 }
 
 /// Global accessor. Production code reads `Api.instance`; tests assign a fake to
@@ -193,5 +194,19 @@ class HttpApiClient implements ApiClient {
           return rows;
         },
         seedTakedowns,
+      );
+
+  // No Flutter-wired backend compliance endpoint yet -> honest SEED (tagged).
+  @override
+  Future<List<ComplianceControl>> compliance() =>
+      _withSeed<List<ComplianceControl>>(
+        () async {
+          final rows = _asList(await _getJson('/api/compliance'))
+              .map(ComplianceControl.fromJson)
+              .toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
+        seedCompliance,
       );
 }

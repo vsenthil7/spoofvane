@@ -63,7 +63,7 @@ cannot be the reviewer who approves its takedown.
 | P11 | /audit | Audit | auditor | yes | `AuditScreen` | 🟢 built |
 | P12 | /review | Review queue | reviewer | yes | `ReviewQueueScreen` | 🟢 built (SoD-gated) |
 | P13 | /cost | Cost | admin | yes | `CostScreen` | 🟢 built (LIVE) |
-| P14 | /compliance | Compliance | auditor | yes | `ComplianceScreen` | ⬜ planned |
+| P14 | /compliance | Compliance | auditor | yes | `ComplianceScreen` | 🟢 built (SOC2/ISO/DORA/NIS2) |
 | P15 | /admin/agents | Agents | admin | yes | `AdminAgentsScreen` | ⬜ planned |
 | P16 | /admin/users | Users | admin | yes | `AdminUsersScreen` | ⬜ planned |
 | P17 | /admin/tenants | Tenants | owner | yes | `AdminTenantsScreen` | ⬜ planned |
