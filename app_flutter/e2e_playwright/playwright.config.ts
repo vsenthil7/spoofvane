@@ -21,9 +21,12 @@ export default defineConfig({
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
   ],
   webServer: {
-    // Build the E2E bundle (semantics on) then serve it statically.
+    // Build the E2E bundle (semantics on) from the app root, then serve the
+    // build/web output statically on :5599. `flutter` is taken from PATH so this
+    // is portable across machines/CI (not a hard-coded install path). cwd is
+    // e2e_playwright/, so the app root is one level up.
     command:
-      'cmd /c "C:\\flutter\\bin\\flutter.bat build web --dart-define=E2E=true --no-tree-shake-icons && npx http-server build/web -p 5599 -s"',
+      'npx --yes http-server ../build/web -p 5599 -s -c-1',
     url: "http://127.0.0.1:5599",
     timeout: 180_000,
     reuseExistingServer: true,

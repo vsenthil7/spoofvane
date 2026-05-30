@@ -3,6 +3,8 @@
   "private": true,
   "version": "0.5.0",
   "scripts": {
+    "build": "cd .. && flutter build web --dart-define=E2E=true --no-tree-shake-icons",
+    "pretest": "npm run build",
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "report": "playwright show-report"
