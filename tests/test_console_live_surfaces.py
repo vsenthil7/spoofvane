@@ -138,3 +138,28 @@ class TestApiKeys:
             # Never expose secret material.
             assert "secret" not in k and "secret_hash" not in k
             assert k["scope"] in {"read", "read_write", "admin"}
+
+
+class TestAdminAgents:
+    def test_agents_enumerate_real_registry(self, client):
+        r = client.get("/api/admin/agents")
+        assert r.status_code == 200
+        body = r.json()
+        assert isinstance(body, list) and body  # registry is non-empty
+        names = {a["name"] for a in body}
+        # Real agent classes from src.agents.agents.
+        assert "takedown_agent" in names
+        for a in body:
+            assert {"id", "name", "tenant", "running", "runs_today",
+                    "budget_usd", "spent_usd"} <= set(a)
+            assert a["spent_usd"] <= a["budget_usd"]
+
+
+class TestAdminUsers:
+    def test_users_returns_200_list(self, client):
+        r = client.get("/api/admin/users")
+        assert r.status_code == 200
+        body = r.json()
+        assert isinstance(body, list)
+        for u in body:
+            assert {"id", "email", "role", "mfa_enabled", "last_active"} <= set(u)

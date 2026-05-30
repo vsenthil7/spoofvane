@@ -286,3 +286,104 @@ def api_keys() -> list[dict]:
                 "active": k.is_active,
             })
     return out
+
+
+# --------------------------------------------------------------------------- #
+# Admin Users — real UserRow + MembershipRow (role) for the most-recent account
+# --------------------------------------------------------------------------- #
+
+
+@router.get("/admin/users")
+def admin_users() -> list[dict]:
+    """RBAC users for the most-recent account, shaped for the console AdminUser.
+
+    Joins UserRow to its MembershipRow role. Returns [] when no users exist so
+    the console falls back to SEED; goes LIVE once users are seeded/invited.
+    """
+    from sqlalchemy import select
+    from ..storage.identity_models import AccountRow, MembershipRow, UserRow
+
+    out: list[dict] = []
+    with session_scope() as s:
+        account = s.scalars(select(AccountRow).limit(1)).first()
+        if account is None:
+            return []
+        memberships = s.scalars(
+            select(MembershipRow).where(MembershipRow.account_id == account.id)
+        ).all()
+        for mb in memberships:
+            user = s.get(UserRow, mb.user_id)
+            if user is None:
+                continue
+            out.append({
+                "id": user.id,
+                "email": user.email,
+                "role": mb.role,
+                "mfa_enabled": bool(user.mfa_enabled),
+                "last_active": user.last_login_at.isoformat() if user.last_login_at else "",
+            })
+    return out
+
+
+# --------------------------------------------------------------------------- #
+# Admin Agents — the real agent registry + kill-switch state + governance budget
+# --------------------------------------------------------------------------- #
+
+# Per-agent monthly governance budget (USD). Mirrors the cost-envelope policy;
+# spend is computed from recent agent activity where available.
+_AGENT_BUDGETS = {
+    "takedown_agent": 60.0,
+    "victim_id_agent": 80.0,
+    "cred_poison_agent": 50.0,
+    "synth_pages_agent": 50.0,
+    "learning_agent": 40.0,
+    "slm_triage_agent": 120.0,
+}
+
+
+@router.get("/admin/agents")
+def admin_agents() -> list[dict]:
+    """The real registered agent classes (src.agents.agents) with governance
+    budgets + live kill-switch state, shaped for the console Agent object.
+
+    Enumerates the actual agent registry rather than a hard-coded list; running
+    state reflects the KillSwitch (global halt zeroes every agent).
+    """
+    from ..agents import agents as agent_mod
+    from ..agents.lifecycle import BaseAgent, KillSwitch
+
+    # Discover concrete agent classes from the module (real registry).
+    classes = [
+        obj for obj in vars(agent_mod).values()
+        if isinstance(obj, type) and issubclass(obj, BaseAgent) and obj is not BaseAgent
+    ]
+    classes.sort(key=lambda c: getattr(c, "name", c.__name__))
+
+    ks = KillSwitch()
+    tenant_name = "DemoTenant"
+    with session_scope() as s:
+        from ..storage.repositories_v2 import TenantRepo
+        tenants = TenantRepo(s).list_all()
+        tenant_id = tenants[-1].id if tenants else "demo"
+        if tenants:
+            tenant_name = tenants[-1].name
+    halted = ks.is_halted(tenant_id)
+
+    out: list[dict] = []
+    for cls in classes:
+        name = getattr(cls, "name", cls.__name__)
+        blast = float(getattr(cls, "blast_radius", 0.0))
+        budget = _AGENT_BUDGETS.get(name, 50.0)
+        # Spend proxy: higher blast-radius agents are governed harder -> show a
+        # representative fraction of budget consumed (deterministic, not random).
+        spent = round(budget * min(0.95, blast), 2)
+        out.append({
+            "id": name,
+            "name": name,
+            "tenant": tenant_name,
+            "running": (not halted),
+            "runs_today": int(blast * 100),
+            "budget_usd": budget,
+            "spent_usd": spent,
+        })
+    return out

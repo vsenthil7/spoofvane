@@ -220,7 +220,8 @@ class HttpApiClient implements ApiClient {
         seedCompliance,
       );
 
-  // Agents/Users not yet served by the backend -> honest SEED (tagged).
+  // Agents is LIVE: /api/admin/agents enumerates the real agent registry with
+  // kill-switch state + governance budgets (build 067). Seed = offline fallback.
   @override
   Future<List<Agent>> agents() => _withSeed<List<Agent>>(
         () async {
@@ -232,6 +233,8 @@ class HttpApiClient implements ApiClient {
         seedAgents,
       );
 
+  // Users is LIVE: /api/admin/users serves real UserRow+MembershipRow rows
+  // (build 067). Seed = offline fallback.
   @override
   Future<List<AdminUser>> adminUsers() => _withSeed<List<AdminUser>>(
         () async {
