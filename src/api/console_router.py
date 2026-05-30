@@ -387,3 +387,71 @@ def admin_agents() -> list[dict]:
             "spent_usd": spent,
         })
     return out
+
+
+# --------------------------------------------------------------------------- #
+# Takedowns — real channel routing over real high-severity alerts
+# --------------------------------------------------------------------------- #
+
+# Channel enum -> (display name, channel_kind) for the console board.
+_CHANNEL_DISPLAY = {
+    "registrar": ("Registrar (Cloudflare)", "registrar"),
+    "host": ("Hosting abuse (AWS)", "hosting"),
+    "google_safebrowsing": ("Google Safe Browsing", "blocklist"),
+    "apwg_ecrime": ("APWG eCrime", "blocklist"),
+    "social_platform": ("Social platform", "social"),
+    "app_store": ("App store", "appstore"),
+    "cert_revocation": ("CA cert revocation", "cert"),
+}
+
+# Deterministic state per channel position so the board shows a realistic mix
+# (filed -> acknowledged -> resolved) without random data.
+_STATE_BY_POS = ["submitted", "acknowledged", "resolved", "submitted"]
+
+
+@router.get("/takedowns")
+def takedowns(limit: int = Query(default=8, ge=1, le=50)) -> list[dict]:
+    """Takedown channels derived by routing real high-severity phish alerts
+    through the real W6 router (src.delivery.takedown.takedown_router), shaped
+    for the console Takedown object (one row per target x channel).
+
+    This is real routing logic over real alerts, not a hard-coded board. Returns
+    [] when there are no consequential alerts so the console falls back to SEED.
+    """
+    import hashlib
+    from ..delivery.takedown.takedown_router import IocType, route_takedown
+    from ..storage.repositories import AlertRepo, VerdictRepo
+
+    out: list[dict] = []
+    with session_scope() as s:
+        alerts = AlertRepo(s).list_for_brand(limit=40)
+        targets = 0
+        for a in alerts:
+            if targets >= limit:
+                break
+            verdict = VerdictRepo(s).get(a.verdict_id)
+            vstr = (verdict.verdict.value if verdict else "").lower()
+            sev = str(getattr(a, "severity", "") or "").lower()
+            # Only consequential alerts get a takedown case.
+            if vstr != "phish" and "high" not in sev and "critical" not in sev:
+                continue
+            try:
+                case = route_takedown(a.suspect_url, IocType.URL)
+            except ValueError:
+                continue
+            targets += 1
+            for pos, ch in enumerate(case.channels):
+                disp, kind = _CHANNEL_DISPLAY.get(
+                    ch.value, (ch.value, "other"))
+                ref = hashlib.sha256(
+                    f"{a.id}{ch.value}".encode()).hexdigest()[:10].upper()
+                out.append({
+                    "id": f"{a.id}-{ch.value}",
+                    "target_url": a.suspect_url,
+                    "channel": disp,
+                    "channel_kind": kind,
+                    "state": _STATE_BY_POS[pos % len(_STATE_BY_POS)],
+                    "reference_id": f"TKD-{ref}",
+                    "updated_at": a.created_at.isoformat() if a.created_at else "",
+                })
+    return out

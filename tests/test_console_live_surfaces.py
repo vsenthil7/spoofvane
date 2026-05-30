@@ -163,3 +163,17 @@ class TestAdminUsers:
         assert isinstance(body, list)
         for u in body:
             assert {"id", "email", "role", "mfa_enabled", "last_active"} <= set(u)
+
+
+class TestTakedowns:
+    def test_takedowns_routes_real_channels(self, client):
+        r = client.get("/api/takedowns")
+        assert r.status_code == 200
+        body = r.json()
+        assert isinstance(body, list)
+        for t in body:
+            assert {"id", "target_url", "channel", "channel_kind",
+                    "state", "reference_id", "updated_at"} <= set(t)
+            assert t["state"] in {"draft", "submitted", "acknowledged",
+                                  "resolved", "rejected"}
+            assert t["reference_id"].startswith("TKD-")

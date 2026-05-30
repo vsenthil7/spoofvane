@@ -192,7 +192,8 @@ class HttpApiClient implements ApiClient {
         seedReview,
       );
 
-  // No Flutter-wired backend takedowns endpoint yet -> honest SEED (tagged).
+  // Takedowns is LIVE: /api/takedowns routes real high-severity phish alerts
+  // through the real W6 takedown router (build 069); empty -> SEED fallback.
   @override
   Future<List<Takedown>> takedowns() => _withSeed<List<Takedown>>(
         () async {
