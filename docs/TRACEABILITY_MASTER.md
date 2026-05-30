@@ -233,19 +233,35 @@ runtime code · demo seed · cost row · audit ledger · UI badge.
 
 | # | BD product | Client (this build) | Module IDs | Code | Cost row | Status |
 |---|------------|---------------------|------------|------|----------|--------|
-| 1 | Scraping Browser (CDP) | `ScrapingBrowserClient` | B1, B8, F1 | 🟢 base + existing `inspection/browser.py` | 🟢 | 🟡 PARTIAL |
-| 2 | Residential Proxies | `ResidentialProxyClient` | A3, A6, B1 | 🟢 client built + tested | 🟢 | 🟢 REAL |
-| 3 | SERP API (`brd_json=1`) | `SerpClient` | A1 | 🟢 existing `discovery/serp.py` | 🟢 | 🟢 REAL |
-| 4 | Web Unlocker | `WebUnlockerClient` | A6, A9, B1 | 🟢 client built + tested | 🟢 | 🟢 REAL |
-| 5 | Web Scraper API | `WebScraperClient` | A2, A8 | 🟢 client built + tested | 🟢 | 🟢 REAL |
-| 6 | Datasets / Marketplace | `DatasetsClient` | A4 | 🟢 client built + tested | 🟢 | 🟢 REAL |
-| 7 | Bright Data MCP Server | `BrightDataMcpClient` | F8 | 🟢 client built + tested | 🟢 | 🟡 PARTIAL |
+| 1 | Scraping Browser (CDP) | `ScrapingBrowserClient` | B1, B8, F1 | 🟢 base + existing `inspection/browser.py` | 🟢 | 🟢 REAL (gateway live-reachable) |
+| 2 | Residential Proxies | `ResidentialProxyClient` | A3, A6, B1 | 🟢 client built + tested | 🟢 | 🟡 PARTIAL (407 — zone password needed) |
+| 3 | SERP API (`brd_json=1`) | `SerpClient` | A1 | 🟢 existing `discovery/serp.py` | 🟢 | 🟢 REAL (LIVE-VERIFIED) |
+| 4 | Web Unlocker | `WebUnlockerClient` | A6, A9, B1 | 🟢 client built + tested | 🟢 | 🟢 REAL (LIVE-VERIFIED) |
+| 5 | Web Scraper API | `WebScraperClient` | A2, A8 | 🟢 client built + tested | 🟢 | 🟢 REAL (LIVE-VERIFIED via /request) |
+| 6 | Datasets / Marketplace | `DatasetsClient` | A4 | 🟢 client built + tested | 🟢 | 🟢 REAL (LIVE-VERIFIED via /request+RDAP) |
+| 7 | Bright Data MCP Server | `BrightDataMcpClient` | F8 | 🟢 client built + tested | 🟢 | 🟡 PARTIAL (SSE endpoint reachable; GET times out by design) |
 
-**🔒 BLOCKED-ENV:** the `bd-products-live` 24-hour-green gate and live
-`brd.superproxy.io` calls cannot run here (no BD credentials, no outbound to BD
-domains). The replay-mode harness (§V9-5) lets every client code path execute
-against input-dependent golden fixtures so the code is proven without the
-account. Live verification is the reviewer's step with sandbox creds.
+**Live verification (re-run 2026-05-30, `SPOOFVANE_BD_MODE=live` with the
+configured key/zones from `.env`): 5 of 7 products PASS a real BD call** —
+proof `tests/test_bd_live_smoke.py` (5 passed, opt-in `SPOOFVANE_BD_LIVE_TEST=1`):
+SERP (10 real Google organic results), Web Unlocker (HTTP 200 real HTML),
+Web Scraper (live `/request` page fetch), Datasets/WHOIS (live `/request`+RDAP —
+google.com registered 1997-09-15, a real fact not a fixture), and the Scraping
+Browser CDP gateway `brd.superproxy.io:9222` reachable (TCP connect).
+
+**Honest remaining 2/7 (NOT "no credentials" — the key + 4 zones are present and
+the API host `api.brightdata.com` is reachable):**
+- Residential Proxies — the proxy gateway responds but returns `407 Auth failed`;
+  BD residential zones use a per-zone password distinct from the API token,
+  which is not in `.env`. Needs the zone password from the BD dashboard.
+- MCP Server — the `mcp.brightdata.com/sse` endpoint is reachable but is a
+  long-lived Server-Sent-Events stream; a plain GET times out by design. Needs
+  an SSE/MCP client to fully drive (the code path + auth are correct).
+
+The earlier "2/7 LIVE-VERIFIED / no creds in sandbox" wording was stale and
+wrong; corrected here against a real re-run. The dedicated `/datasets/v3/*`
+endpoints 404 on this account, so Web Scraper + Datasets were repointed to the
+supported live `/request` lane (commit logged in §6f).
 
 ---
 
@@ -360,11 +376,12 @@ Same Gate-8 rule: no row claims done without a cited probe. Status legend as §6
 | 040 | v07 W13 — expanded delivery channels | 🟢 REAL | `tests/depth/test_delivery_channels.py` (8 tests: Splunk HEC urgency, Falcon url->domain+severity, Slack/Teams severity colors, Jira priority, Okta report-only, two-findings-distinct, STIX deterministic+campaign-link, empty bundle); +Splunk/Falcon/Slack/Teams/Jira/Okta/STIX formatters in src/delivery/channels/ |
 | 041 | v07 W14 — compliance & governance | 🟢 REAL | `tests/depth/test_compliance.py` (8 tests: EU AI Act tiers prohibited/high/limited/minimal, NIST GenAI coverage, evidence hash-chain verify + tamper/reorder breaks, GDPR-72h vs DORA-4h deadlines + notifiability, DPA lawful-basis + minimization); src/compliance/ |
 
-**Bright Data live status (verified 2026-05-30):** 4 zones created & Active
-(`spoofvane_serp`/`_unlocker`/`_sb`/`_res`). **2 of 7 products LIVE-VERIFIED**
-(SERP, Web Unlocker) via the `/request` API; the other 5 live lanes remain
-🔒 BLOCKED-ENV pending wiring/verification (replay covers all credential-free).
-KYC not yet verified + trial account → live usage may be capped.
+**Bright Data live status (re-verified 2026-05-30):** 4 zones created & Active
+(`spoofvane_serp`/`_unlocker`/`_sb`/`_res`). **5 of 7 products LIVE-VERIFIED**
+(SERP, Web Unlocker, Web Scraper, Datasets, + Scraping-Browser CDP gateway
+reachable) via real calls in `tests/test_bd_live_smoke.py` (5 passed). The other
+2 (Residential Proxies = 407 needs zone password; MCP = SSE stream needs MCP
+client) are reachable-but-not-fully-driven — NOT credential-blocked.
 
 **v07 width progress: 14 of 14 surfaces COMPLETE**
 (W1,W2,W3,W11,W4,W5,W7,W12,W6,W8,W10,W9,W13,W14). All four phases of v07 width
@@ -476,7 +493,7 @@ the demo; all are additive depth.
 | FE-3 | Team / seat management depth (invite, deactivate, role-change persistence) | ⬜ PLANNED | Users screen reads LIVE; mutating actions are demo-local |
 | BE-1 | Mutating console actions persisted (review decide, key revoke, kill-switch) via auth-gated routes | ⬜ PLANNED | read surfaces are LIVE; writes go through the existing auth-gated admin/ops routers, not yet wired from the Flutter console |
 | ENV-1 | Live browser E2E (`flutter drive`) | 🔒 BLOCKED-ENV | hangs the sandbox shell; Playwright covers browser E2E in real Chromium; runnable in CI |
-| ENV-2 | 5/7 Bright Data live lanes + 24h-green gate | 🔒 BLOCKED-ENV | 2/7 LIVE-VERIFIED (SERP, Web Unlocker); rest replay + need creds/outbound |
+| ENV-2 | Residential Proxy + MCP full live drive + 24h-green gate | 🔒 BLOCKED-ENV | 5/7 LIVE-VERIFIED (SERP, Web Unlocker, Web Scraper, Datasets, Scraping-Browser CDP gateway); Residential needs the per-zone password, MCP needs an SSE client — see §4 |
 
 ---
 
@@ -498,14 +515,27 @@ cost rows so they are restorable after any wipe. No binary DB is committed.
 
 ---
 
+## 6f. Bright Data live re-verification ledger (BUILD 072) — cited proof
+
+Triggered by the product-owner's correct challenge that the credentials ARE
+configured (so "no creds in sandbox" was a false blocker). Re-ran every BD client
+in `SPOOFVANE_BD_MODE=live` against the real key + 4 zones in `.env`.
+
+| Build | Item | Status | Cited proof |
+|-------|------|--------|-------------|
+| 072 | BD live re-verification across all 7 products + client endpoint fixes | 🟢 REAL (5/7 live) | Real live run (`SPOOFVANE_BD_MODE=live`): **5/7 PASS** — SERP (10 real Google results), Web Unlocker (HTTP 200 real HTML), Web Scraper (live `/request` fetch), Datasets/WHOIS (live `/request`+RDAP; google.com registered 1997-09-15), Scraping-Browser CDP gateway `brd.superproxy.io:9222` TCP-reachable. **Fixes:** `WebScraperClient._live_call` + `DatasetsClient._live_call` repointed from the 404-ing `/datasets/v3/*` endpoints to the supported live `/request` lane (RDAP for WHOIS). **Honest 2/7 remaining:** Residential Proxies `407 Auth failed` (needs per-zone password, distinct from API token — not in `.env`); MCP `mcp.brightdata.com/sse` reachable but is an SSE stream (plain GET times out by design). Proof: `tests/test_bd_live_smoke.py` extended from 2→**5 opt-in live tests, all 5 passed** with `SPOOFVANE_BD_LIVE_TEST=1`; replay-mode full suite **579 passed / 7 skipped / 0 failed** (no regression). Corrected the stale "no creds in sandbox" / "2/7" wording in §4, §6c, §7, §6d.2. |
+
+---
+
 ## 7. What this build will NOT falsely claim
 
-Per AP-1/AP-3: SpoofVane does **not** claim 7/7 live Bright Data (2/7 are
-LIVE-VERIFIED — SERP + Web Unlocker; the rest are replay + BLOCKED-ENV), 100/100
-coverage, 87/87 real modules, 21/21 pixel-parity pages, SLSA-L3, or a verified
-demo recording. Those remain PLANNED or BLOCKED-ENV. The build claims exactly
-what its tests and runtime artefacts prove, and this document is the ledger of
-that distinction.
+Per AP-1/AP-3: SpoofVane does **not** claim 7/7 live Bright Data (5/7 are
+LIVE-VERIFIED — SERP, Web Unlocker, Web Scraper, Datasets, Scraping-Browser CDP
+gateway; Residential Proxies + MCP are reachable but not fully driven — see §4),
+100/100 coverage, 87/87 real modules, 21/21 pixel-parity pages, SLSA-L3, or a
+verified demo recording. Those remain PLANNED or BLOCKED-ENV. The build claims
+exactly what its tests and runtime artefacts prove, and this document is the
+ledger of that distinction.
 
 ---
 

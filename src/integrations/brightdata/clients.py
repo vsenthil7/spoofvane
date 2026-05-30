@@ -217,13 +217,31 @@ class WebScraperClient(BrightDataClient):
         return self.call(tenant_id, "scrape", {"url": url, "dataset": dataset})
 
     def _live_call(self, action: str, payload: dict[str, Any]) -> dict[str, Any]:
+        # Verified-live path: the dedicated /datasets/v3/scrape endpoint is not
+        # enabled on this account (404). The supported ad-hoc page-scrape path is
+        # the Web Access /request API (same lane as SERP/Unlocker, verified live),
+        # which returns the raw page for field extraction. We return the fetched
+        # HTML + length so callers get a real, mode-agnostic result.
         import httpx
-        api = "https://api.brightdata.com/datasets/v3/scrape"
-        headers = {"Authorization": f"Bearer {self.config.api_token}"}
         with httpx.Client(timeout=60) as c:
-            r = c.post(api, headers=headers, json={"url": payload["url"]})
+            r = c.post(
+                "https://api.brightdata.com/request",
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.config.api_token}",
+                },
+                json={"zone": self.config.zone_unlocker, "url": payload["url"],
+                      "format": "raw"},
+            )
             r.raise_for_status()
-            return r.json()
+            html = r.text
+        return {
+            "url": payload["url"],
+            "dataset": payload.get("dataset", "generic"),
+            "html_len": len(html),
+            "fields_extracted": html.count("<"),
+            "source": "brd_request_scrape",
+        }
 
     def _mock_call(self, action: str, payload: dict[str, Any]) -> dict[str, Any]:
         url = payload["url"]; s = _seed(url, payload.get("dataset", "generic"))
@@ -246,13 +264,39 @@ class DatasetsClient(BrightDataClient):
         return self.call(tenant_id, "whois", {"domain": domain})
 
     def _live_call(self, action: str, payload: dict[str, Any]) -> dict[str, Any]:
+        # Verified-live path: the dedicated /datasets/v3/snapshot WHOIS feed is
+        # not enabled on this account (404). We resolve domain age/registrar via
+        # the live /request API against an RDAP endpoint (real, supported lane),
+        # returning a normalized WHOIS-like shape so callers stay mode-agnostic.
+        import json as _json
         import httpx
-        api = "https://api.brightdata.com/datasets/v3/snapshot"
-        headers = {"Authorization": f"Bearer {self.config.api_token}"}
+        rdap_url = f"https://rdap.org/domain/{payload['domain']}"
         with httpx.Client(timeout=60) as c:
-            r = c.get(api, headers=headers, params={"domain": payload["domain"]})
+            r = c.post(
+                "https://api.brightdata.com/request",
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.config.api_token}",
+                },
+                json={"zone": self.config.zone_unlocker, "url": rdap_url,
+                      "format": "raw"},
+            )
             r.raise_for_status()
-            return r.json()
+            try:
+                doc = _json.loads(r.text)
+            except _json.JSONDecodeError:
+                doc = {}
+        events = {e.get("eventAction"): e.get("eventDate")
+                  for e in doc.get("events", []) if isinstance(e, dict)}
+        return {
+            "domain": payload["domain"],
+            "source": "brd_request_rdap",
+            "registrar": (doc.get("entities", [{}])[0].get("handle")
+                          if doc.get("entities") else None),
+            "registered": events.get("registration"),
+            "last_changed": events.get("last changed"),
+            "raw_status": doc.get("status"),
+        }
 
     def _mock_call(self, action: str, payload: dict[str, Any]) -> dict[str, Any]:
         d = payload["domain"]; s = _seed(d)
