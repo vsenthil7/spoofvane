@@ -41,3 +41,11 @@ final seedReview = <ReviewItem>[
   // Raised by the default reviewer -> demonstrates the SoD block in the UI.
   ReviewItem(id: 'rv_003', action: 'takedown.submit', targetUrl: 'https://globex-portal-update.cc/', verdict: Verdict.suspicious, raisedBy: 'reviewer.osei', ts: '2026-05-29T09:44:00Z'),
 ];
+
+final seedTakedowns = <Takedown>[
+  Takedown(id: 'td_001', targetUrl: 'https://acmebank-secure-login.top/verify', channel: 'Cloudflare', channelKind: 'registrar', state: TakedownState.acknowledged, referenceId: 'CF-AB-481920', updatedAt: '2026-05-29T10:05:00Z'),
+  Takedown(id: 'td_002', targetUrl: 'https://acmebank-secure-login.top/verify', channel: 'Hetzner', channelKind: 'hosting', state: TakedownState.submitted, referenceId: 'HZ-2026-77310', updatedAt: '2026-05-29T10:02:00Z'),
+  Takedown(id: 'td_003', targetUrl: 'https://my-acmebank-login.xyz/', channel: 'Namecheap', channelKind: 'registrar', state: TakedownState.resolved, referenceId: 'NC-559021', updatedAt: '2026-05-29T11:20:00Z'),
+  Takedown(id: 'td_004', targetUrl: 'https://globex-portal-update.cc/', channel: 'AWS', channelKind: 'hosting', state: TakedownState.rejected, referenceId: 'AWS-ABUSE-99812', updatedAt: '2026-05-29T11:45:00Z'),
+  Takedown(id: 'td_005', targetUrl: 'https://globex-portal-update.cc/', channel: 'GoDaddy', channelKind: 'registrar', state: TakedownState.draft, referenceId: '—', updatedAt: '2026-05-29T09:50:00Z'),
+];

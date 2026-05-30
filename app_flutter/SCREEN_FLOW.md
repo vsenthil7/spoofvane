@@ -59,7 +59,7 @@ cannot be the reviewer who approves its takedown.
 | P07 | /clusters | Clusters | analyst | yes | `ClustersScreen` | 🟢 built (LIVE) |
 | P08 | /deepfakes | Deepfakes | analyst | yes | `DeepfakeScreen` | 🟢 built |
 | P09 | /exec-protection | Exec protection | analyst | yes | `ExecScreen` | 🟢 built |
-| P10 | /takedowns | Takedowns | analyst | yes | `TakedownScreen` | ⬜ planned |
+| P10 | /takedowns | Takedowns | analyst | yes | `TakedownsScreen` | 🟢 built (multi-channel + override) |
 | P11 | /audit | Audit | auditor | yes | `AuditScreen` | 🟢 built |
 | P12 | /review | Review queue | reviewer | yes | `ReviewQueueScreen` | 🟢 built (SoD-gated) |
 | P13 | /cost | Cost | admin | yes | `CostScreen` | 🟢 built (LIVE) |

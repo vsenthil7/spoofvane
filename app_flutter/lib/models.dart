@@ -172,3 +172,65 @@ class ReviewItem {
         ts: (j['ts'] ?? '').toString(),
       );
 }
+
+/// Takedown status across one abuse channel (registrar or hosting provider).
+enum TakedownState { draft, submitted, acknowledged, resolved, rejected }
+
+TakedownState takedownStateFrom(String? s) {
+  switch ((s ?? '').toLowerCase()) {
+    case 'submitted':
+      return TakedownState.submitted;
+    case 'acknowledged':
+      return TakedownState.acknowledged;
+    case 'resolved':
+      return TakedownState.resolved;
+    case 'rejected':
+      return TakedownState.rejected;
+    default:
+      return TakedownState.draft;
+  }
+}
+
+class Takedown {
+  final String id;
+  final String targetUrl;
+  final String channel; // e.g. Cloudflare (registrar), AWS (hosting-abuse)
+  final String channelKind; // registrar | hosting
+  final TakedownState state;
+  final String referenceId; // provider ticket / case id
+  final String updatedAt;
+
+  Takedown({
+    required this.id,
+    required this.targetUrl,
+    required this.channel,
+    required this.channelKind,
+    required this.state,
+    required this.referenceId,
+    required this.updatedAt,
+  });
+
+  factory Takedown.fromJson(Map<String, dynamic> j) => Takedown(
+        id: (j['id'] ?? '').toString(),
+        targetUrl: (j['targetUrl'] ?? j['target_url'] ?? '').toString(),
+        channel: (j['channel'] ?? '').toString(),
+        channelKind: (j['channelKind'] ?? j['channel_kind'] ?? '').toString(),
+        state: takedownStateFrom(j['state']?.toString()),
+        referenceId: (j['referenceId'] ?? j['reference_id'] ?? '').toString(),
+        updatedAt: (j['updatedAt'] ?? j['updated_at'] ?? '').toString(),
+      );
+}
+
+Color takedownStateColor(TakedownState s) {
+  switch (s) {
+    case TakedownState.resolved:
+      return const Color(0xFF3DDC84);
+    case TakedownState.acknowledged:
+    case TakedownState.submitted:
+      return const Color(0xFF36C2CE);
+    case TakedownState.rejected:
+      return const Color(0xFFFF4D57);
+    case TakedownState.draft:
+      return const Color(0xFF93A1B8);
+  }
+}

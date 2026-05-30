@@ -44,4 +44,7 @@ class FakeApi implements ApiClient {
 
   @override
   Future<List<ReviewItem>> reviewQueue() async => seedReview;
+
+  @override
+  Future<List<Takedown>> takedowns() async => seedTakedowns;
 }

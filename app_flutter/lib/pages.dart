@@ -15,6 +15,7 @@ import 'screens/brands_screen.dart';
 import 'screens/cost_screen.dart';
 import 'screens/audit_screen.dart';
 import 'screens/review_queue_screen.dart';
+import 'screens/takedowns_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/placeholder_screen.dart';
 
@@ -71,7 +72,7 @@ final List<PageMeta> kPages = <PageMeta>[
   PageMeta(id: 'P07', route: '/clusters', title: 'Campaign Clusters', minRole: Role.analyst, nav: true, icon: Icons.hub_outlined, builder: (_) => const ClustersScreen()),
   PageMeta(id: 'P08', route: '/deepfakes', title: 'Deepfake Feed', minRole: Role.analyst, nav: true, icon: Icons.smart_display_outlined, builder: (_) => const DeepfakeScreen()),
   PageMeta(id: 'P09', route: '/exec-protection', title: 'Exec Protection', minRole: Role.analyst, nav: true, icon: Icons.shield_outlined, builder: (_) => const ExecScreen()),
-  _planned(id: 'P10', route: '/takedowns', title: 'Takedowns', minRole: Role.analyst, nav: true, icon: Icons.content_cut_outlined),
+  PageMeta(id: 'P10', route: '/takedowns', title: 'Takedowns', minRole: Role.analyst, nav: true, icon: Icons.content_cut_outlined, builder: (_) => const TakedownsScreen()),
   PageMeta(id: 'P11', route: '/audit', title: 'Audit Log', minRole: Role.auditor, nav: true, icon: Icons.receipt_long_outlined, builder: (_) => const AuditScreen()),
   PageMeta(id: 'P12', route: '/review', title: 'Review queue', minRole: Role.reviewer, nav: true, icon: Icons.check_circle_outline, builder: (_) => const ReviewQueueScreen()),
   PageMeta(id: 'P13', route: '/cost', title: 'Cost Attribution', minRole: Role.admin, nav: true, icon: Icons.payments_outlined, builder: (_) => const CostScreen()),

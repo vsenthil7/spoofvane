@@ -28,6 +28,7 @@ abstract class ApiClient {
   Future<List<CostRow>> cost();
   Future<List<AuditRow>> audit();
   Future<List<ReviewItem>> reviewQueue();
+  Future<List<Takedown>> takedowns();
 }
 
 /// Global accessor. Production code reads `Api.instance`; tests assign a fake to
@@ -179,5 +180,18 @@ class HttpApiClient implements ApiClient {
           return rows;
         },
         seedReview,
+      );
+
+  // No Flutter-wired backend takedowns endpoint yet -> honest SEED (tagged).
+  @override
+  Future<List<Takedown>> takedowns() => _withSeed<List<Takedown>>(
+        () async {
+          final rows = _asList(await _getJson('/api/takedowns'))
+              .map(Takedown.fromJson)
+              .toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
+        seedTakedowns,
       );
 }

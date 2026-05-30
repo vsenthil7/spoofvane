@@ -100,14 +100,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       onTap: _enter),
 
                   const SizedBox(height: 16),
-                  Row(children: [
-                    const Expanded(child: Divider(color: SvColors.border)),
-                    const Padding(
+                  const Row(children: [
+                    Expanded(child: Divider(color: SvColors.border)),
+                    Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       child: Text('or',
                           style: TextStyle(color: SvColors.faint, fontSize: 11)),
                     ),
-                    const Expanded(child: Divider(color: SvColors.border)),
+                    Expanded(child: Divider(color: SvColors.border)),
                   ]),
                   const SizedBox(height: 16),
 
