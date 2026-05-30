@@ -112,6 +112,8 @@ class MergedVerdict:
     member_verdicts: list[ModelVerdict] = field(default_factory=list)
     rationale: str = ""
     cost_path: str = "ensemble"
+    agreement_ratio: float = 1.0      # v07 D4 — provider-diversity metrics
+    diversity_multiplier: float = 1.0
 
 
 class VerdictMerger:
@@ -141,7 +143,12 @@ class VerdictMerger:
         winners = [v for v, n in tally.items() if n == top]
         verdict = max(winners, key=lambda v: VERDICTS.index(v))
         avg_conf = round(sum(m.confidence for m in members) / len(members), 3)
-        conf = round(avg_conf * (0.7 if dissent else 1.0), 3)
+        # v07 D4 — graduated diversity discount (replaces flat 0.7). Unanimous
+        # keeps full confidence; the more split the providers, the lower the
+        # multiplier (down to ~0.5 when evenly divided).
+        from .diversity import compute_diversity
+        div = compute_diversity(votes)
+        conf = round(avg_conf * div.diversity_multiplier, 3)
         escalate = dissent or verdict == "phish"
         return MergedVerdict(
             verdict=verdict, confidence=conf, dissent=dissent,
@@ -149,4 +156,6 @@ class VerdictMerger:
             rationale=("Models dissented; confidence discounted, routed to human."
                        if dissent else "Models agreed."),
             cost_path="ensemble",
+            agreement_ratio=div.agreement_ratio,
+            diversity_multiplier=div.diversity_multiplier,
         )
