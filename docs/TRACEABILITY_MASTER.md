@@ -372,6 +372,16 @@ done. Remaining v07 work: Phase 4 depth D1–D8 (wire new signals into composite
 scoring, per-family calibrators, MITRE TTP, multi-region cloaking, unified
 freshness/dedup, auto-report) + deferred console-page/route/seed/RBAC layering.
 
+### v07 Phase 4 depth ledger (D1+)
+
+| Build | Item | Status | Cited proof |
+|-------|------|--------|-------------|
+| 042 | D1 — cross-surface signal fusion into composite | 🟢 REAL | `tests/depth/test_signal_fusion.py` (7 tests: no-aux==pure-visual backward-compat, strong-aux raises/low-aux lowers composite, unknown-key ignored, clamp [0,1], multi-aux all used); `src/scoring/signal_fusion.py` wired into `composite.score(aux_signals=...)`; full suite 511 pass / 0 regressions proves visual-only path unchanged |
+
+**Phase 4 depth progress: 1 of 8 (D1). Remaining: D2 per-family calibrators,
+D3 active-learning, D4 ensemble diversity, D5 MITRE TTP, D6 multi-region cloaking,
+D7 unified freshness/dedup, D8 auto-report.**
+
 ---
 
 ## 7. What this build will NOT falsely claim

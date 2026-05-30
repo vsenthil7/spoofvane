@@ -35,6 +35,7 @@ def score(
     canonical_favicon_md5: str | None,
     inspection: InspectionResult,
     family_classification=None,  # type: ignore[no-untyped-def]  -- avoid scoring-family import cycle
+    aux_signals: dict[str, float] | None = None,  # v07 D1 cross-surface signals
 ) -> ScoringResult:
     """Compute the composite similarity score.
 
@@ -82,29 +83,14 @@ def score(
         "logo": base_weights["logo"] if canonical_logo else 0.0,
         "favicon": base_weights["favicon"] if canonical_favicon_md5 else 0.0,
     }
-    total_w = sum(weights.values())
-    if total_w == 0:
-        composite = 0.0
-    else:
-        composite = (
-            weights["phash"] * p
-            + weights["dom"] * d
-            + weights["logo"] * l
-            + weights["favicon"] * (1.0 if f else 0.0)
-        ) / total_w
-    composite = round(min(1.0, float(composite)), 4)
+    # v06 visual blend + v07 D1 cross-surface signal fusion. With no aux signals
+    # the result is identical to the pure visual blend (backward compatible).
+    from .signal_fusion import fuse
+    visual_values = {"phash": p, "dom": d, "logo": l, "favicon": (1.0 if f else 0.0)}
+    fused = fuse(weights, visual_values, aux_signals=aux_signals)
+    composite = fused.composite
     above = bool(composite >= brand.score_threshold)
-
-    # v06 §E — per-signal weighted contributions (sum ≈ composite). Guard div0.
-    if total_w == 0:
-        contributions = {"phash": 0.0, "dom": 0.0, "logo": 0.0, "favicon": 0.0}
-    else:
-        contributions = {
-            "phash": round(weights["phash"] * p / total_w, 4),
-            "dom": round(weights["dom"] * d / total_w, 4),
-            "logo": round(weights["logo"] * l / total_w, 4),
-            "favicon": round(weights["favicon"] * (1.0 if f else 0.0) / total_w, 4),
-        }
+    contributions = fused.contributions
     # Calibrated probability from the persisted fitted model (falls back to the
     # shipped default if no artifact present — never a no-op).
     from .calibration import calibrate, load_calibrator
