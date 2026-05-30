@@ -71,6 +71,12 @@ cannot be the reviewer who approves its takedown.
 | P19 | /settings | Settings | viewer | yes | `SettingsScreen` | 🟢 built (profile/MFA/API keys) |
 | P20 | * | Not found | viewer | no | `NotFoundScreen` | 🟢 built (404) |
 | P21 | /403 | Forbidden | viewer | no | `ForbiddenScreen` | 🟢 built (403) |
+| P22 | /api-keys | API Keys | admin | yes | `ApiKeysScreen` | 🟢 built (create/reveal-once/revoke) |
+| P23 | /usage | Usage | admin | yes | `UsageScreen` | 🟢 built (metered + overage) |
+| P24 | /billing | Billing | owner | yes | `BillingScreen` | 🟢 built (plan/card/invoices) |
+| P25 | /pricing | Pricing | viewer | no | `PricingScreen` | 🟢 built (4 tiers, public) |
+| — | (pre-auth) | Registration | — | no | `RegisterScreen` | 🟢 built (demo signup → onboarding) |
+| — | (pre-auth) | Onboarding | — | no | `OnboardingScreen` | 🟢 built (4-step wizard) |
 
 The Flutter app now ships all 21 screens (real, modular, role-gated). Every
 screen lands with its own widget tests, keeping coverage high; data-backed
