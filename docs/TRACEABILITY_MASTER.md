@@ -548,6 +548,20 @@ for LLM/BD services, bring their own keys, and how is everything audited.
 | UX-2 | **Account-menu follow-ups: real tenant switch + Playwright coverage** | ⬜ PLANNED | Two gaps found live by the owner (30 May, 23:29): (1) **Tenant switch is cosmetic** — `_switchTenant` updates only the chip label; it does NOT re-scope any data (the demo has a single backend tenant), and switching role resets the tenant back to AcmeBank (a new `Console` defaults `_tenant`). To make it real: lift tenant into a session/state object passed to `Console`, persist it across role switch, and pass `tenant_id` to the API so screens re-scope to that tenant's data (needs multi-tenant demo data + per-tenant API scoping — ties to MT-3/MT-4). (2) **No Playwright E2E** for the account menu — switch-role / switch-tenant / logout are covered by 5 widget tests only; add a real-Chromium spec driving the `account-menu` popup (it renders in an overlay, so it needs the coordinate/semantics handling the other Flutter-canvas specs use). |
 | MT-9 | **Web Scraper + MCP full setup** | ⬜ PLANNED | Web Scraper currently runs via the live `/request` lane (verified) — the dedicated BD Datasets/Scraper *dataset* product (`/datasets/v3/*`) needs enabling on the account if structured-dataset scraping is wanted. MCP Server needs an actual SSE/MCP client (the endpoint is reachable but is a streaming protocol) + the correct MCP auth handshake. Document exactly what to enable in the BD dashboard for each. |
 
+### 6g.2 The live-demo gap (HIGH PRIORITY for judging) — DEMO-1
+
+**The honest problem the owner identified (30 May, 23:30):** the seeded console
+data was generated in `SPOOFVANE_BD_MODE=replay`, and **no live LLM call has ever
+run** in this project. So when a judge clicks around the console, the frontend is
+just reading pre-computed rows from the DB — it is NOT showing BD + LLM working
+live. A judge who asks "detect this phishing URL live, right now" cannot currently
+see that end-to-end in the UI.
+
+| # | Mini-sprint | Status | Detail / acceptance |
+|---|-------------|--------|---------------------|
+| DEMO-1 | **Live "Scan this URL now" loop in the console** | ⬜ PLANNED (recommended next) | A button/box in the console where a judge pastes a suspect URL and watches the REAL pipeline run live: (1) BD Web Unlocker / Scraping Browser **live-fetches** the page (already verified working, 5/7 live); (2) the page is scored + an **LLM verdict runs live** (Anthropic/OpenAI keys are in `.env` but have NEVER been called — this is the missing piece); (3) the live verdict + evidence appears in the UI with the source pill showing LIVE and a real cost row added. Acceptance: judge pastes a URL → sees a real fetch + real model verdict in <~30s, not seed data. Needs: a `POST /api/scan` live endpoint wiring the existing pipeline in live mode; a live LLM round-trip test (MT-1); a console widget. **This is the difference between demo-theatre (clicking pre-seeded data) and showing the product actually works.** |
+| DEMO-2 | **Visible LIVE vs SEED honesty in the demo** | ⬜ PLANNED | Make it obvious to a judge which screens are live vs seed right now (the pill exists but is subtle). For the scan loop, show the real BD product used + real model name + real latency + real cost, so the judge can SEE it is not canned. |
+
 ### 6g.1 Bright Data Residential proxy — step-by-step to go live (BD-1)
 
 Observed from the dashboard (zone `spoofvane_res`, id `hl_b3e17b72`): **Active,
