@@ -27,6 +27,7 @@ abstract class ApiClient {
   Future<List<Cluster>> clusters();
   Future<List<CostRow>> cost();
   Future<List<AuditRow>> audit();
+  Future<List<ReviewItem>> reviewQueue();
 }
 
 /// Global accessor. Production code reads `Api.instance`; tests assign a fake to
@@ -165,5 +166,18 @@ class HttpApiClient implements ApiClient {
         () async =>
             _asList(await _getJson('/api/audit-log')).map(AuditRow.fromJson).toList(),
         seedAudit,
+      );
+
+  // No Flutter-wired backend review endpoint yet -> honest SEED (tagged).
+  @override
+  Future<List<ReviewItem>> reviewQueue() => _withSeed<List<ReviewItem>>(
+        () async {
+          final rows = _asList(await _getJson('/api/review'))
+              .map(ReviewItem.fromJson)
+              .toList();
+          if (rows.isEmpty) throw Exception('empty -> seed');
+          return rows;
+        },
+        seedReview,
       );
 }

@@ -34,3 +34,10 @@ final seedCost = <CostRow>[
   CostRow(product: 'scraping_browser', usd: 12.50),
   CostRow(product: 'residential', usd: 6.10),
 ];
+
+final seedReview = <ReviewItem>[
+  ReviewItem(id: 'rv_001', action: 'takedown.submit', targetUrl: 'https://acmebank-secure-login.top/verify', verdict: Verdict.phish, raisedBy: 'analyst.kim', ts: '2026-05-29T09:32:00Z'),
+  ReviewItem(id: 'rv_002', action: 'cred_poison.deploy', targetUrl: 'https://my-acmebank-login.xyz/', verdict: Verdict.suspicious, raisedBy: 'analyst.lee', ts: '2026-05-29T09:40:00Z'),
+  // Raised by the default reviewer -> demonstrates the SoD block in the UI.
+  ReviewItem(id: 'rv_003', action: 'takedown.submit', targetUrl: 'https://globex-portal-update.cc/', verdict: Verdict.suspicious, raisedBy: 'reviewer.osei', ts: '2026-05-29T09:44:00Z'),
+];

@@ -61,7 +61,7 @@ cannot be the reviewer who approves its takedown.
 | P09 | /exec-protection | Exec protection | analyst | yes | `ExecScreen` | 🟢 built |
 | P10 | /takedowns | Takedowns | analyst | yes | `TakedownScreen` | ⬜ planned |
 | P11 | /audit | Audit | auditor | yes | `AuditScreen` | 🟢 built |
-| P12 | /review | Review queue | reviewer | yes | `ReviewQueueScreen` | ⬜ planned |
+| P12 | /review | Review queue | reviewer | yes | `ReviewQueueScreen` | 🟢 built (SoD-gated) |
 | P13 | /cost | Cost | admin | yes | `CostScreen` | 🟢 built (LIVE) |
 | P14 | /compliance | Compliance | auditor | yes | `ComplianceScreen` | ⬜ planned |
 | P15 | /admin/agents | Agents | admin | yes | `AdminAgentsScreen` | ⬜ planned |

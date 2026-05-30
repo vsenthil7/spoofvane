@@ -142,3 +142,33 @@ class AuditRow {
         hash: (j['hash'] ?? '').toString(),
       );
 }
+
+/// A human-in-the-loop review item: a consequential action (e.g. a takedown)
+/// awaiting reviewer approval. Segregation of duties: the reviewer must differ
+/// from the analyst who raised it.
+class ReviewItem {
+  final String id;
+  final String action; // e.g. takedown.submit
+  final String targetUrl;
+  final Verdict verdict;
+  final String raisedBy; // analyst actor id
+  final String ts;
+
+  ReviewItem({
+    required this.id,
+    required this.action,
+    required this.targetUrl,
+    required this.verdict,
+    required this.raisedBy,
+    required this.ts,
+  });
+
+  factory ReviewItem.fromJson(Map<String, dynamic> j) => ReviewItem(
+        id: (j['id'] ?? '').toString(),
+        action: (j['action'] ?? '').toString(),
+        targetUrl: (j['targetUrl'] ?? j['target_url'] ?? '').toString(),
+        verdict: verdictFrom(j['verdict']?.toString()),
+        raisedBy: (j['raisedBy'] ?? j['raised_by'] ?? '').toString(),
+        ts: (j['ts'] ?? '').toString(),
+      );
+}

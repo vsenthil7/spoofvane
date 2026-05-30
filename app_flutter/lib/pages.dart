@@ -14,6 +14,7 @@ import 'screens/exec_screen.dart';
 import 'screens/brands_screen.dart';
 import 'screens/cost_screen.dart';
 import 'screens/audit_screen.dart';
+import 'screens/review_queue_screen.dart';
 import 'screens/placeholder_screen.dart';
 
 /// One console page: registry metadata + the screen builder it routes to.
@@ -71,7 +72,7 @@ final List<PageMeta> kPages = <PageMeta>[
   PageMeta(id: 'P09', route: '/exec-protection', title: 'Exec Protection', minRole: Role.analyst, nav: true, icon: Icons.shield_outlined, builder: (_) => const ExecScreen()),
   _planned(id: 'P10', route: '/takedowns', title: 'Takedowns', minRole: Role.analyst, nav: true, icon: Icons.content_cut_outlined),
   PageMeta(id: 'P11', route: '/audit', title: 'Audit Log', minRole: Role.auditor, nav: true, icon: Icons.receipt_long_outlined, builder: (_) => const AuditScreen()),
-  _planned(id: 'P12', route: '/review', title: 'Review queue', minRole: Role.reviewer, nav: true, icon: Icons.check_circle_outline),
+  PageMeta(id: 'P12', route: '/review', title: 'Review queue', minRole: Role.reviewer, nav: true, icon: Icons.check_circle_outline, builder: (_) => const ReviewQueueScreen()),
   PageMeta(id: 'P13', route: '/cost', title: 'Cost Attribution', minRole: Role.admin, nav: true, icon: Icons.payments_outlined, builder: (_) => const CostScreen()),
   _planned(id: 'P14', route: '/compliance', title: 'Compliance', minRole: Role.auditor, nav: true, icon: Icons.gavel_outlined),
   _planned(id: 'P15', route: '/admin/agents', title: 'Agents', minRole: Role.admin, nav: true, icon: Icons.settings_suggest_outlined),
