@@ -1,0 +1,46 @@
+# SpoofVane — production stack. Two containers:
+#   api  — FastAPI/uvicorn (the real backend; SQLite on a named volume)
+#   web  — Caddy serving the Flutter SPA + reverse-proxying /api -> api
+# Caddy is the only public entrypoint. The api container is NOT published to
+# the host — it's only reachable on the internal compose network.
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    container_name: spoofvane-api
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      # The demo DB lives on a named volume so it survives restarts.
+      - DATABASE_URL=sqlite:////data/spoofvane.db
+      - EVIDENCE_DIR=/data/evidence
+      - REPORTS_DIR=/data/reports
+      - CANONICAL_DIR=/data/canonical
+    volumes:
+      - spoofvane_data:/data
+    expose:
+      - "8000"
+    networks:
+      - spoofvane
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+    container_name: spoofvane-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "8081:8080"   # pre-TLS HTTP on host:8081 (avoids clashing with other
+                       # products on :8080); 03-tls.sh adds 80/443 for TLS.
+    networks:
+      - spoofvane
+
+networks:
+  spoofvane:
+
+volumes:
+  spoofvane_data:

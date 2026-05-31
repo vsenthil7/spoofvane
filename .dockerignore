@@ -1,0 +1,18 @@
+# Keep the build context lean and avoid leaking local artefacts into images.
+.git
+.venv
+app_flutter/build
+app_flutter/.dart_tool
+node_modules
+**/__pycache__
+**/*.pyc
+*.db
+data/backups
+data/*.db
+data/evidence
+data/reports
+.env
+coverage
+htmlcov
+_commitmsg.txt
+_*.py

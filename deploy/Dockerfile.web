@@ -1,0 +1,21 @@
+# SpoofVane console — build the Flutter web bundle, serve it via Caddy.
+# Caddy is the single public entrypoint: it serves the SPA and reverse-proxies
+# /api/* + /healthz to the api container, so the browser calls the same origin
+# (no CORS, no separate API domain needed).
+
+# ---- stage 1: build the Flutter web bundle ----
+FROM ghcr.io/cirruslabs/flutter:3.24.5 AS build
+WORKDIR /app
+COPY app_flutter/ ./app_flutter/
+WORKDIR /app/app_flutter
+RUN flutter config --enable-web \
+    && flutter pub get \
+    # API_BASE is empty -> the app calls the same origin (/api/...), which Caddy
+    # proxies to the api container. This is the production wiring.
+    && flutter build web --release --dart-define=API_BASE=
+
+# ---- stage 2: serve via Caddy ----
+FROM caddy:2-alpine
+COPY --from=build /app/app_flutter/build/web /srv/app
+COPY deploy/caddy/Caddyfile /etc/caddy/Caddyfile
+EXPOSE 80 443

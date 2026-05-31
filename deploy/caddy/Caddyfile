@@ -1,0 +1,21 @@
+# SpoofVane — dev/pre-TLS Caddyfile. Serves the SPA on :8080 over plain HTTP
+# and reverse-proxies the API. 03-tls.sh swaps in a Caddyfile.prod with the
+# real domain + automatic Let's Encrypt once DNS points at the box.
+:8080 {
+    encode zstd gzip
+
+    # API + health -> the api container (same origin, no CORS).
+    handle /api/* {
+        reverse_proxy api:8000
+    }
+    handle /healthz {
+        reverse_proxy api:8000
+    }
+
+    # SPA fallback.
+    handle {
+        root * /srv/app
+        try_files {path} /index.html
+        file_server
+    }
+}
