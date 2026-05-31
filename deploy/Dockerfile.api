@@ -24,8 +24,13 @@ COPY src ./src
 COPY scripts ./scripts
 COPY data ./data
 
-# Non-root runtime user.
-RUN useradd -m -u 10001 spoofvane && chown -R spoofvane:spoofvane /app
+# Non-root runtime user. Also create the /data mountpoint owned by that user so
+# that a FRESH named volume inherits uid 10001 ownership (Docker copies the
+# image mountpoint's perms into a new empty volume) and the app can create
+# /data/evidence, /data/reports, etc. at startup.
+RUN useradd -m -u 10001 spoofvane \
+    && mkdir -p /data/evidence /data/reports /data/canonical \
+    && chown -R spoofvane:spoofvane /app /data
 USER spoofvane
 
 EXPOSE 8000
