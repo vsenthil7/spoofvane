@@ -247,9 +247,13 @@ def _merge(members: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-@router.post("/scan")
-def scan(payload: ScanRequest = Body(...)) -> dict:
-    url = payload.url.strip()
+def run_scan(url: str, brand: str = "the targeted brand") -> dict:
+    """Core live scan: BD live-fetch -> multi-LLM ensemble -> merge.
+
+    Pure of FastAPI so it can be driven by the ScanAgent (DEMO-3) as a governed,
+    audited agent action AND by the HTTP endpoint. Never silently mocks.
+    """
+    url = (url or "").strip()
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
     host = urlparse(url).hostname or url
@@ -267,7 +271,7 @@ def scan(payload: ScanRequest = Body(...)) -> dict:
     skipped: list[dict[str, str]] = []
     for fn in (_claude_verdict, _gpt_verdict, _gemini_verdict):
         try:
-            members.append(fn(url, payload.brand, fetched["html"]))
+            members.append(fn(url, brand, fetched["html"]))
         except Exception as exc:  # noqa: BLE001
             name = fn.__name__.replace("_verdict", "").lstrip("_")
             skipped.append({"model": name, "reason": f"{type(exc).__name__}: {exc}"[:160]})
@@ -288,7 +292,7 @@ def scan(payload: ScanRequest = Body(...)) -> dict:
     llm_latency = sum(m["latency_ms"] for m in members)
     return {
         "mode": "live",
-        "url": url, "host": host, "brand": payload.brand,
+        "url": url, "host": host, "brand": brand,
         "fetch": {
             "product": fetched["product"], "status": fetched["status"],
             "html_len": fetched["html_len"], "latency_ms": fetched["latency_ms"],
@@ -322,3 +326,51 @@ def scan(payload: ScanRequest = Body(...)) -> dict:
         "total_cost_usd": round(bd_cost + llm_cost, 5),
         "total_latency_ms": fetched["latency_ms"] + llm_latency,
     }
+
+
+# --------------------------------------------------------------------------- #
+# DEMO-3 — run the live scan as a governed, audited AGENT action.
+# A process-local agent stack (kill-switch + hash-chained audit + governance)
+# wraps run_scan so the live demo is genuinely agentic, not a bare API call.
+# --------------------------------------------------------------------------- #
+from ..agents.lifecycle import (  # noqa: E402
+    AgentAuditLedger, GovernanceEngine, KillSwitch,
+)
+
+_SCAN_KILL = KillSwitch()
+_SCAN_AUDIT = AgentAuditLedger()
+_SCAN_GOV = GovernanceEngine(_SCAN_KILL, _SCAN_AUDIT)
+
+
+def _scan_via_agent(url: str, brand: str, tenant_id: str = "demo-tenant") -> dict:
+    """Run the scan through the ScanAgent so it is governed + hash-chain audited.
+
+    Falls back to a direct run_scan if the agent layer is unavailable, so the
+    endpoint never hard-fails on the agent wrapper.
+    """
+    try:
+        from ..agents.agents import ScanAgent
+        agent = ScanAgent(_SCAN_GOV)
+        result = agent.run(tenant_id, {"url": url, "brand": brand})
+        if result.halted:
+            return {"mode": "error", "stage": "agent", "url": url,
+                    "error": "Scan agent halted by kill-switch."}
+        out = dict(result.output)
+        last = _SCAN_AUDIT.entries()[-1] if _SCAN_AUDIT.entries() else None
+        out["agent"] = {
+            "name": agent.name,
+            "state": result.state.value,
+            "blast_radius": agent.blast_radius,
+            "audit_seq": last.seq if last else None,
+            "audit_verified": _SCAN_AUDIT.verify_chain(),
+        }
+        return out
+    except Exception as exc:  # noqa: BLE001 - wrapper must never hard-fail the scan
+        log.warning("scan_agent_fallback", error=str(exc))
+        return run_scan(url, brand)
+
+
+@router.post("/scan")
+def scan(payload: ScanRequest = Body(...)) -> dict:
+    """Live multi-LLM ensemble scan, run as a governed + audited agent action."""
+    return _scan_via_agent(payload.url, payload.brand)

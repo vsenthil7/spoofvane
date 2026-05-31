@@ -81,3 +81,25 @@ class SlmTriageAgent(BaseAgent):
         from ..verdict.ensemble import SlmTriage
         v = SlmTriage().decide(payload.get("evidence", {"composite": 0.3}))
         return {"verdict": v.verdict, "confidence": v.confidence, "cost_tier": v.cost_tier}
+
+
+class ScanAgent(BaseAgent):
+    """E-series live-scan agent (DEMO-3).
+
+    Wraps the live "scan this URL" loop as a governed, audited agent action:
+    Bright Data live-fetch -> multi-LLM ensemble verdict (Claude + GPT + Gemini)
+    -> disagreement-aware merge. Read-only detection, so blast_radius is low
+    (no HITL needed) — but it runs under the kill-switch and every run is written
+    to the hash-chained agent audit ledger, so the live demo is genuinely
+    agentic, not a bare API call.
+
+    The heavy lifting lives in ``src.api.scan_router`` (the live providers +
+    merger); this agent calls that logic so there is a single source of truth.
+    """
+    name = "scan_agent"
+    blast_radius = 0.2  # read-only detection; below the 0.5 HITL threshold
+
+    def _execute(self, tenant_id: str, payload: dict) -> dict:
+        from ..api.scan_router import run_scan
+        return run_scan(payload.get("url", ""),
+                        payload.get("brand", "the targeted brand"))

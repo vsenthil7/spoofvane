@@ -47,6 +47,8 @@ void main() {
     expect(find.text('LIVE'), findsOneWidget);
     // Both models appear as vote rows (Claude + GPT ensemble).
     expect(find.textContaining('claude-sonnet-4-6'), findsOneWidget);
+    // Agent provenance chip proves it ran as a governed/audited agent.
+    expect(find.textContaining('scan_agent'), findsOneWidget);
   });
 
   testWidgets('demo mode returns a canned sample tagged DEMO', (tester) async {

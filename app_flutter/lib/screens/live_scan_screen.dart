@@ -323,6 +323,12 @@ class _LiveScanScreenState extends State<LiveScanScreen> {
             _proofChip(Icons.http, 'HTTP', '${r.fetchStatus} · ${r.htmlLen}B'),
             _proofChip(Icons.groups, 'Models',
                 r.modelsUsed.isEmpty ? '—' : r.modelsUsed.join(' + ')),
+            if (r.ranAsAgent)
+              _proofChip(
+                  r.agentAuditVerified ? Icons.verified_user : Icons.smart_toy,
+                  'Agent',
+                  '${r.agentName} · ${r.agentState}'
+                      '${r.agentAuditVerified ? " · audit ✓" : ""}'),
             _proofChip(Icons.timer, 'Total latency', '${r.totalLatencyMs} ms'),
             _proofChip(Icons.attach_money, 'Total cost',
                 '\$${r.totalCostUsd.toStringAsFixed(4)}'),

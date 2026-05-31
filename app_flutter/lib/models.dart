@@ -578,6 +578,10 @@ class ScanResult {
   final bool dissent;
   final double agreementRatio;
   final List<String> skipped; // "Gemini: suspended" style notes
+  // Agent provenance (DEMO-3): the scan runs as a governed, audited agent.
+  final String agentName; // 'scan_agent' when run through the agent framework
+  final String agentState; // complete | blocked | halted ...
+  final bool agentAuditVerified; // hash-chained agent audit verifies
   // Error path.
   final String stage; // fetch | verdict | ''
   final String error;
@@ -608,11 +612,15 @@ class ScanResult {
     this.dissent = false,
     this.agreementRatio = 1,
     this.skipped = const [],
+    this.agentName = '',
+    this.agentState = '',
+    this.agentAuditVerified = false,
     this.stage = '',
     this.error = '',
   });
 
   bool get isLive => mode == 'live';
+  bool get ranAsAgent => agentName.isNotEmpty;
 
   factory ScanResult.fromJson(Map<String, dynamic> j) {
     final fetch = (j['fetch'] ?? const {}) as Map<String, dynamic>;
@@ -650,6 +658,10 @@ class ScanResult {
         if (s is Map) return '${s['model']}: ${s['reason']}';
         return s.toString();
       }).toList(),
+      agentName: ((j['agent'] ?? const {}) as Map)['name']?.toString() ?? '',
+      agentState: ((j['agent'] ?? const {}) as Map)['state']?.toString() ?? '',
+      agentAuditVerified:
+          ((j['agent'] ?? const {}) as Map)['audit_verified'] == true,
       stage: (j['stage'] ?? '').toString(),
       error: (j['error'] ?? '').toString(),
     );
