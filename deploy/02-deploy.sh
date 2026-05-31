@@ -61,13 +61,13 @@ grep -E '^(MOCK_MODE|SPOOFVANE_BD_MODE|ANTHROPIC_MODEL|OPENAI_MODEL|GEMINI_MODEL
 grep -E '^(ANTHROPIC_API_KEY|OPENAI_API_KEY|GEMINI_API_KEY|BRIGHTDATA_API_TOKEN)=' .env \
     | sed -E 's|(=).{6,}|\1***REDACTED***|' || true
 
-# ----- Build + start the stack -----
-echo "[deploy] docker compose up -d --build"
-docker compose -f deploy/docker-compose.yml --env-file .env up -d --build
+# ----- Build + start the stack (own project name -> isolated from ATRIO) -----
+echo "[deploy] docker compose up -d --build (project: spoofvane)"
+docker compose -p spoofvane -f deploy/docker-compose.yml --env-file .env up -d --build
 
 # ----- Seed the demo DB inside the api container -----
 echo "[deploy] seeding demo data..."
-docker compose -f deploy/docker-compose.yml exec -T api \
+docker compose -p spoofvane -f deploy/docker-compose.yml exec -T api \
     python -m scripts.seed_demo || echo "[deploy] seed step returned non-zero (may already be seeded)"
 
 # ----- Wait for the public health endpoint via Caddy -----
@@ -82,7 +82,7 @@ done
 curl -s http://localhost:8081/healthz | jq . || true
 
 echo
-docker compose -f deploy/docker-compose.yml ps
+docker compose -p spoofvane -f deploy/docker-compose.yml ps
 PUBLIC_IP=$(curl -fsS https://api.ipify.org || echo SERVER_IP)
 echo
 echo "[deploy] done. Public demo (pre-TLS): http://${PUBLIC_IP}:8081"

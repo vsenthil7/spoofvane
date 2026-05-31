@@ -71,6 +71,7 @@ EOF
 echo "[tls] wrote deploy/docker-compose.prod.yml"
 
 docker compose \
+    -p spoofvane \
     -f deploy/docker-compose.yml \
     -f deploy/docker-compose.prod.yml \
     --env-file .env \
